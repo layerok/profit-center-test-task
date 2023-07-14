@@ -31,6 +31,7 @@ export const StatsRoute = () => {
     navigate("/");
   };
 
+  // todo: fix this
   const limit = 102312312;
 
   const { data: stats, isLoading } = useQuery<IGetStatsRes>({
@@ -76,6 +77,7 @@ export const StatsRoute = () => {
           >
             {data.map((record) => (
               <div
+                key={record.id}
                 style={{
                   display: "flex",
                   marginBottom: 4,

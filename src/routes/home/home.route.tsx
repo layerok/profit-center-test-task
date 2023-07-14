@@ -5,26 +5,9 @@ import { statisticsApi } from "../../api/statApi";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { observer } from "mobx-react-lite";
 import { quotesStore } from "../../stores/quotes.store";
-
-const Debug = observer(() => {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        padding: 5,
-        fontSize: 10,
-        color: "white",
-        background: `rgba(28,28,28,.8)`,
-      }}
-    >
-      Total quotes: {quotesStore.quotes.length}
-    </div>
-  );
-});
+import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
+import { appConfig } from "../../app.config";
 
 export const HomeRoute = () => {
   const websocketRef = useRef<WebSocket | null>(null);
@@ -49,9 +32,7 @@ export const HomeRoute = () => {
   const connectWebsocket = () => {
     if (!websocketRef.current) {
       setWebsocketState(WebSocket.CONNECTING);
-      websocketRef.current = new WebSocket(
-        "wss://trade.termplat.com:8800/?password=1234"
-      );
+      websocketRef.current = new WebSocket(appConfig.wsUrl);
       if (websocketRef.current !== null) {
         const onMessage = (ev: MessageEvent<string>) => {
           const quote = JSON.parse(ev.data) as Quote;
@@ -96,7 +77,7 @@ export const HomeRoute = () => {
   return (
     <S.Container>
       <main>
-        <Debug />
+        <DebugPanel />
         <S.ControlsContainer>
           <S.Input
             type="number"

@@ -1,7 +1,6 @@
+import { appConfig } from "../app.config";
 import { Stat } from "../types";
 import { IGetStatsReq, IGetStatsRes } from "./statApi.types";
-
-const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const statisticsApi = {
   getAll: async ({
@@ -9,7 +8,7 @@ export const statisticsApi = {
     offset = 0,
   }: IGetStatsReq = {}): Promise<IGetStatsRes> => {
     const res = await fetch(
-      `${apiBaseUrl}/stats.php?limit=${limit}&offset=${offset}`
+      `${appConfig.apiBaseUrl}/stats.php?limit=${limit}&offset=${offset}`
     );
     return res.json();
   },
@@ -26,13 +25,13 @@ export const statisticsApi = {
     formData.append("standard_deviation", String(record.standard_deviation));
     formData.append("lost_quotes", String(record.lost_quotes));
     formData.append("quotes_amount", String(record.quotes_amount));
-    return fetch(`${apiBaseUrl}/add_stat.php`, {
+    return fetch(`${appConfig.apiBaseUrl}/add_stat.php`, {
       method: "POST",
       body: formData,
     });
   },
   getStat: async (id: number) => {
-    const res = await fetch(`${apiBaseUrl}/get_stat.php?id=${id}`);
+    const res = await fetch(`${appConfig.apiBaseUrl}/get_stat.php?id=${id}`);
     return res.json();
   },
 };
