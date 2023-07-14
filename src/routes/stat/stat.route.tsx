@@ -4,6 +4,7 @@ import * as S from "./stat.route.style";
 import { useQuery } from "@tanstack/react-query";
 import { statisticsApi } from "../../api/statisticsApi";
 import { DbStatistic } from "../../types";
+import { format } from "date-fns";
 
 export const StatRoute = () => {
   const params = useParams();
@@ -46,7 +47,7 @@ export const StatRoute = () => {
               }}
             >
               <S.Label>Початок розрахунків</S.Label>
-              <S.Value>{stat.start}</S.Value>
+              <S.Value>{format(new Date(+stat.start), "hh:mm:ss")}</S.Value>
             </div>
             <div
               style={{
@@ -54,7 +55,7 @@ export const StatRoute = () => {
               }}
             >
               <S.Label>Кінець розрахунків</S.Label>
-              <S.Value>{stat.end}</S.Value>
+              <S.Value>{format(new Date(+stat.end), "hh:mm:ss")}</S.Value>
             </div>
             <div
               style={{
@@ -62,11 +63,13 @@ export const StatRoute = () => {
               }}
             >
               <S.Label>Витраченний час</S.Label>
-              <S.Value>&lt;1ms</S.Value>
+              <S.Value>
+                {stat.time_spent < 1 ? "<1ms" : stat.time_spent}
+              </S.Value>
             </div>
             <div>
               <S.Label>Кількість котируваннь</S.Label>
-              <S.Value>200000...</S.Value>
+              <S.Value>{stat.quotes_amount}</S.Value>
             </div>
           </div>
 

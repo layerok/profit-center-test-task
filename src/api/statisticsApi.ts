@@ -1,9 +1,15 @@
 import { Statistic } from "../types";
+import { IGetStatsReq, IGetStatsRes } from "./statisticsApi.types";
 const apiBaseUrl = "http://localhost/profit_centre_statistics";
 
 export const statisticsApi = {
-  getAll: async () => {
-    const res = await fetch(`${apiBaseUrl}/stats.php`);
+  getAll: async ({
+    limit = 25,
+    offset = 0,
+  }: IGetStatsReq = {}): Promise<IGetStatsRes> => {
+    const res = await fetch(
+      `${apiBaseUrl}/stats.php?limit=${limit}&offset=${offset}`
+    );
     return res.json();
   },
   addStat: async (record: Statistic) => {

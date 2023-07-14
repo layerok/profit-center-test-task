@@ -1,11 +1,13 @@
-import { DbStatistic, TableRecord } from "../../types";
+import { TableRecord } from "../../types";
 import { ReactComponent as CloseSvg } from "../../assets/close.svg";
 import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "../../components/Table";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { statisticsApi } from "../../api/statisticsApi";
 import * as S from "./stats.route.style";
+import { IGetStatsRes } from "../../api/statisticsApi.types";
+import { format } from "date-fns";
 
 const columns: ColumnDef<TableRecord>[] = [
   {
@@ -29,14 +31,14 @@ export const StatsRoute = () => {
     navigate("/");
   };
 
-  const { data: stats, isLoading } = useQuery<DbStatistic[]>({
+  const { data: stats, isLoading } = useQuery<IGetStatsRes>({
     queryKey: ["stats"],
     queryFn: () => {
       return statisticsApi.getAll();
     },
   });
 
-  const data = (stats || [])?.map((stat) => ({
+  const data = (stats?.records || [])?.map((stat) => ({
     id: stat.id,
     created_at: stat.start,
   }));
@@ -62,7 +64,32 @@ export const StatsRoute = () => {
           >
             Статистика
           </div>
-          <Table columns={columns} data={data} />
+          <div
+            style={{
+              overflow: "auto",
+              height: 275,
+            }}
+          >
+            {data.map((record) => (
+              <div
+                style={{
+                  display: "flex",
+                  marginBottom: 4,
+                }}
+              >
+                <div>#{record.id}</div>
+                <div>
+                  &nbsp;&nbsp;
+                  {format(new Date(+record.created_at), "dd/MM/yyyy hh:mm:ss")}
+                </div>
+                <div>
+                  &nbsp;&nbsp;
+                  <Link to={`/stat/${record.id}`}>View</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* <Table columns={columns} data={data} /> */}
         </div>
       )}
     </>
