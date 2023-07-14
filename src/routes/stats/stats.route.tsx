@@ -74,7 +74,7 @@ export const StatsRoute = () => {
             </div>
             <div>
               &nbsp;&nbsp;
-              <Link to={routePaths.stat.replace(":id", record.id)}>View</Link>
+              <Link to={routePaths.stat.replace(":id", String(record.id))}>View</Link>
             </div>
           </S.Row>
         ))}
