@@ -4,9 +4,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "../../components/Table";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { statisticsApi } from "../../api/statisticsApi";
+import { statisticsApi } from "../../api/statApi";
 import * as S from "./stats.route.style";
-import { IGetStatsRes } from "../../api/statisticsApi.types";
+import { IGetStatsRes } from "../../api/statApi.types";
 import { format } from "date-fns";
 
 const columns: ColumnDef<TableRecord>[] = [

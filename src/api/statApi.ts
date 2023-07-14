@@ -1,5 +1,5 @@
-import { Statistic } from "../types";
-import { IGetStatsReq, IGetStatsRes } from "./statisticsApi.types";
+import { Stat } from "../types";
+import { IGetStatsReq, IGetStatsRes } from "./statApi.types";
 
 const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
@@ -13,7 +13,7 @@ export const statisticsApi = {
     );
     return res.json();
   },
-  addStat: async (record: Statistic) => {
+  addStat: async (record: Stat) => {
     const formData = new FormData();
     formData.append("avg", String(record.avg));
     formData.append("min", String(record.min));

@@ -3,7 +3,7 @@ export type Quote = {
   value: number;
 };
 
-export type Statistic = {
+export type Stat = {
   avg: number;
   min: number;
   max: number;
@@ -17,7 +17,7 @@ export type Statistic = {
   quotes_amount: number;
 };
 
-export type DbStatistic = Statistic & {
+export type DbStat = Stat & {
   id: number;
 };
 

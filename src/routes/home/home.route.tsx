@@ -1,16 +1,35 @@
 import React, { useRef, useState } from "react";
 import { computeStats } from "../../computeStats";
-import { Quote, Statistic } from "../../types";
-import { statisticsApi } from "../../api/statisticsApi";
+import { Quote, Stat } from "../../types";
+import { statisticsApi } from "../../api/statApi";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "../..";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { observer } from "mobx-react-lite";
+import { quotesStore } from "../../stores/quotes.store";
+
+const Debug = observer(() => {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        padding: 5,
+        fontSize: 10,
+        color: "white",
+        background: `rgba(28,28,28,.8)`,
+      }}
+    >
+      Total quotes: {quotesStore.quotes.length}
+    </div>
+  );
+});
 
 export const HomeRoute = () => {
   const websocketRef = useRef<WebSocket | null>(null);
-  const quotesRef = useRef<Quote[]>([]);
-  const statisticsRef = useRef<Statistic[]>([]);
+  const statisticsRef = useRef<Stat[]>([]);
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const [quotesLimit, setQuotesLimit] = useState(100);
@@ -19,7 +38,7 @@ export const HomeRoute = () => {
   );
 
   const statMutation = useMutation({
-    mutationFn: (record: Statistic) => {
+    mutationFn: (record: Stat) => {
       return statisticsApi.addStat(record);
     },
     onSettled: () => {
@@ -36,13 +55,13 @@ export const HomeRoute = () => {
       if (websocketRef.current !== null) {
         const onMessage = (ev: MessageEvent<string>) => {
           const quote = JSON.parse(ev.data) as Quote;
-          quotesRef.current.push(quote);
+          quotesStore.addQuote(quote);
           if (
-            quotesRef.current.length -
+            quotesStore.quotes.length -
               statisticsRef.current.length * quotesLimit ===
             quotesLimit
           ) {
-            const record = computeStats(quotesRef.current);
+            const record = computeStats(quotesStore.quotes);
 
             statMutation.mutate(record);
 
@@ -77,6 +96,7 @@ export const HomeRoute = () => {
   return (
     <S.Container>
       <main>
+        <Debug />
         <S.ControlsContainer>
           <S.Input
             type="number"
@@ -109,8 +129,8 @@ export const HomeRoute = () => {
           <S.SecondaryButton
             onClick={() => {
               navigate("/stats");
-              if (quotesRef.current.length > 2) {
-                const record = computeStats(quotesRef.current);
+              if (quotesStore.quotes.length > 2) {
+                const record = computeStats(quotesStore.quotes);
                 statMutation.mutate(record);
               }
             }}

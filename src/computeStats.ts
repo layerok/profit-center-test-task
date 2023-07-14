@@ -1,6 +1,6 @@
-import { Quote, Statistic } from "./types";
+import { Quote, Stat } from "./types";
 
-export function computeStats(quotes: Quote[]): Statistic {
+export function computeStats(quotes: Quote[]): Stat {
   if (quotes.length < 2) {
     throw Error("provide at least 2 quotes to compute stats");
   }

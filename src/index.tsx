@@ -3,35 +3,11 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { StatsRoute } from "./routes/stats/stats.route";
-import { HomeRoute } from "./routes/home/home.route";
-import { StatRoute } from "./routes/stat/stat.route";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LayoutRoute } from "./routes/layout/layout";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./queryClient";
+import { appRoutes } from "./routes";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomeRoute />,
-    children: [
-      {
-        element: <LayoutRoute />,
-        children: [
-          {
-            path: "/stats",
-            element: <StatsRoute />,
-          },
-          {
-            path: "/stat/:id",
-            element: <StatRoute />,
-          },
-        ],
-      },
-    ],
-  },
-]);
-
-export const queryClient = new QueryClient();
+const router = createBrowserRouter(appRoutes);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
