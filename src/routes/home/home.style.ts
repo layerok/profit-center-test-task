@@ -12,7 +12,7 @@ const Container = styled.div`
 const Input = styled.input`
   border: 1px solid black;
   height: 46px;
-  width: 228px;
+  width: 100%;
   padding: 0 13px;
   font-size: 20px;
 `;
@@ -23,7 +23,7 @@ const PrimaryButton = styled.button`
   color: white;
   background-color: black;
   border: none;
-  font-size: 26px;
+  font-size: 18px;
   cursor: pointer;
   &:hover {
     opacity: 0.7;
@@ -35,26 +35,22 @@ const PrimaryButton = styled.button`
 `;
 
 const SecondaryButton = styled.button`
-  background-color: #eaf5ff;
+  background-color: transparent;
   border: none;
   height: 45px;
   width: 161px;
-  color: #5891ff;
   cursor: pointer;
+  color: black;
   &:hover {
-    opacity: 0.7;
+    background: rgba(0,0,0,.06);
   }
 `;
 
-const StatsButtonContainer = styled.div`
-  position: absolute;
-  top: 15px;
-  right: 13px;
-`;
 
 const ControlsContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 400px;
 `;
 
 const ValidationMsg = styled.div`
@@ -77,7 +73,6 @@ export {
   PrimaryButton,
   SecondaryButton,
   ControlsContainer,
-  StatsButtonContainer,
   ValidationMsg,
   InputContainer
 };

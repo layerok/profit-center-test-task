@@ -95,39 +95,40 @@ export const HomeRoute = () => {
               </S.ValidationMsg>
             )}
           </S.InputContainer>
-
-          <S.PrimaryButton
-            disabled={+quotesLimit < 2}
-            style={{
-              marginTop: 14,
-            }}
-            onClick={() => {
-              if (websocketState === WebSocket.CLOSED) {
-                connectWebsocket();
-              } else {
-                disconnectWebsocket();
-              }
-            }}
-          >
-            {websocketState === WebSocket.CLOSED ? "Start" : ""}
-            {websocketState === WebSocket.CONNECTING ? "connecting..." : ""}
-            {websocketState === WebSocket.OPEN ? "Stop" : ""}
-            {websocketState === WebSocket.CLOSING ? "closing..." : ""}
-          </S.PrimaryButton>
+          <div style={{
+            display: 'flex',
+            marginTop: 14,
+            justifyContent: 'space-between'
+          }}>
+            <S.PrimaryButton
+              disabled={+quotesLimit < 2}
+ 
+              onClick={() => {
+                if (websocketState === WebSocket.CLOSED) {
+                  connectWebsocket();
+                } else {
+                  disconnectWebsocket();
+                }
+              }}
+            >
+              {websocketState === WebSocket.CLOSED ? "Start" : ""}
+              {websocketState === WebSocket.CONNECTING ? "connecting..." : ""}
+              {websocketState === WebSocket.OPEN ? "Stop" : ""}
+              {websocketState === WebSocket.CLOSING ? "closing..." : ""}
+            </S.PrimaryButton>
+            <S.SecondaryButton
+              onClick={() => {
+                navigate("/stats");
+                if (appStore.quotes.length > 2) {
+                  const record = computeStats(appStore.quotes);
+                  statMutation.mutate(record);
+                }
+              }}
+            >
+              Статистика
+            </S.SecondaryButton>
+          </div>
         </S.ControlsContainer>
-        <S.StatsButtonContainer>
-          <S.SecondaryButton
-            onClick={() => {
-              navigate("/stats");
-              if (appStore.quotes.length > 2) {
-                const record = computeStats(appStore.quotes);
-                statMutation.mutate(record);
-              }
-            }}
-          >
-            Статистика
-          </S.SecondaryButton>
-        </S.StatsButtonContainer>
       </main>
       <Outlet />
     </S.Container>
