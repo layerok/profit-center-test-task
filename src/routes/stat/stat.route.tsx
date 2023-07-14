@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowLeft } from "../../assets/arrow--left.svg";
 import * as S from "./stat.route.style";
 import { useQuery } from "@tanstack/react-query";
-import { statisticsApi } from "../../api/statApi";
 import { DbStat } from "../../types";
 import { format } from "date-fns";
 

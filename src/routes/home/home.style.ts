@@ -19,7 +19,7 @@ const Input = styled.input`
 
 const PrimaryButton = styled.button`
   height: 45px;
-  width: 228px;
+  width: 190px;
   color: white;
   background-color: black;
   border: none;
@@ -38,7 +38,7 @@ const SecondaryButton = styled.button`
   background-color: transparent;
   border: none;
   height: 45px;
-  width: 161px;
+  width: 190px;
   cursor: pointer;
   color: black;
   &:hover {

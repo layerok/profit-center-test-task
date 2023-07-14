@@ -4,9 +4,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "../../components/Table";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { statisticsApi } from "../../api/statApi";
+import { getAllStats } from "../../api/stats.api";
 import * as S from "./stats.route.style";
-import { IGetStatsRes } from "../../api/statApi.types";
+import { IGetStatsRes } from "../../api/stats.api.types";
 import { format } from "date-fns";
 
 const columns: ColumnDef<TableRecord>[] = [
@@ -37,7 +37,7 @@ export const StatsRoute = () => {
   const { data: stats, isLoading } = useQuery<IGetStatsRes>({
     queryKey: ["stats", limit],
     queryFn: () => {
-      return statisticsApi.getAll({
+      return getAllStats({
         limit,
       });
     },
