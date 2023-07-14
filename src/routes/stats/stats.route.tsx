@@ -28,7 +28,8 @@ const columns: ColumnDef<TableRecord>[] = [
 
 export const StatsRoute = () => {
   const navigate = useNavigate();
-  const close = () => {
+
+  const goHome = () => {
     navigate(routePaths.home);
   };
 
@@ -44,7 +45,7 @@ export const StatsRoute = () => {
     },
   });
 
-  const data = (stats?.records || [])?.map((stat) => ({
+  const data = (stats?.records || []).map((stat) => ({
     id: stat.id,
     created_at: stat.start,
   }));
@@ -59,35 +60,13 @@ export const StatsRoute = () => {
 
   return (
     <div>
-      <S.CloseSvgContainer
-        onClick={() => {
-          close();
-        }}
-      >
+      <S.CloseSvgContainer onClick={goHome}>
         <CloseSvg />
       </S.CloseSvgContainer>
-      <div
-        style={{
-          fontSize: 26,
-          fontWeight: 700,
-        }}
-      >
-        Статистика
-      </div>
-      <div
-        style={{
-          overflow: "auto",
-          height: 275,
-        }}
-      >
+      <S.Title>Статистика</S.Title>
+      <S.DataContainer>
         {data.map((record) => (
-          <div
-            key={record.id}
-            style={{
-              display: "flex",
-              marginBottom: 4,
-            }}
-          >
+          <S.Row key={record.id}>
             <div>#{record.id}</div>
             <div>
               &nbsp;&nbsp;
@@ -95,11 +74,11 @@ export const StatsRoute = () => {
             </div>
             <div>
               &nbsp;&nbsp;
-              <Link to={`/stat/${record.id}`}>View</Link>
+              <Link to={routePaths.stat.replace(":id", record.id)}>View</Link>
             </div>
-          </div>
+          </S.Row>
         ))}
-      </div>
+      </S.DataContainer>
       {/* <Table columns={columns} data={data} /> */}
     </div>
   );
