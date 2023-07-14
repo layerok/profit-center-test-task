@@ -6,6 +6,8 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { StatsRoute } from "./routes/stats/stats.route";
 import { HomeRoute } from "./routes/home/home.route";
 import { StatRoute } from "./routes/stat/stat.route";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LayoutRoute } from "./routes/layout/layout";
 
 const router = createBrowserRouter([
   {
@@ -13,23 +15,32 @@ const router = createBrowserRouter([
     element: <HomeRoute />,
     children: [
       {
-        path: "/stats",
-        element: <StatsRoute />,
-      },
-      {
-        path: "/stat/:id",
-        element: <StatRoute />,
+        element: <LayoutRoute />,
+        children: [
+          {
+            path: "/stats",
+            element: <StatsRoute />,
+          },
+          {
+            path: "/stat/:id",
+            element: <StatRoute />,
+          },
+        ],
       },
     ],
   },
 ]);
+
+export const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

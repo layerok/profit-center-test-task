@@ -11,8 +11,13 @@ export type Statistic = {
   end: number; // ms
   moda: number;
   time_spent: number; //ms
-  standart_deviation: number;
+  standard_deviation: number;
   lost_quotes: number;
+  quotes_amount: number;
+};
+
+export type DbStatistic = Statistic & {
+  id: number;
 };
 
 export type TableRecord = {

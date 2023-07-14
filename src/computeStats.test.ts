@@ -18,10 +18,11 @@ test("should compute right statistics", () => {
   expect(record.min).toBe(233);
   expect(record.avg).toBe(338.5);
   expect(record.lost_quotes).toBe(8);
-  expect(record.standart_deviation).toBe(149.19953083036154);
+  expect(record.standard_deviation).toBe(149.19953083036154);
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
   expect(record.end).toBeGreaterThanOrEqual(record.start);
+  expect(record.quotes_amount).toBe(2);
 });
 
 test("should compute right statistics 2", () => {
@@ -53,10 +54,11 @@ test("should compute right statistics 2", () => {
   expect(record.min).toBe(101);
   expect(record.avg).toBe(602.2);
   expect(record.lost_quotes).toBe(16);
-  expect(record.standart_deviation).toBe(790.9947534592123);
+  expect(record.standard_deviation).toBe(790.9947534592123);
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
   expect(record.end).toBeGreaterThanOrEqual(record.start);
+  expect(record.quotes_amount).toBe(5);
 });
 
 test("should compute right statistics 3", () => {
@@ -92,8 +94,9 @@ test("should compute right statistics 3", () => {
   expect(record.min).toBe(-5032);
   expect(record.avg).toBe(739.8333333333334);
   expect(record.lost_quotes).toBe(1);
-  expect(record.standart_deviation).toBe(3377.5580774676055);
+  expect(record.standard_deviation).toBe(3377.5580774676055);
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
   expect(record.end).toBeGreaterThanOrEqual(record.start);
+  expect(record.quotes_amount).toBe(6);
 });

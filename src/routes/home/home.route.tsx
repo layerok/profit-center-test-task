@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { computeStats } from "../../computeStats";
 import { Quote, Statistic } from "../../types";
 import { statisticsApi } from "../../api/statisticsApi";
@@ -11,59 +11,63 @@ export const HomeRoute = () => {
   const statisticsRef = useRef<Statistic[]>([]);
 
   const navigate = useNavigate();
-  useEffect(() => {
-    statisticsApi.getAll().then(console.log);
-  }, []);
-
   const [quotesLimit, setQuotesLimit] = useState(25);
+  const [websocketState, setWebsocketState] = useState<number>(
+    WebSocket.CLOSED
+  );
 
-  const start = () => {
+  const connectWebsocket = () => {
     if (!websocketRef.current) {
+      setWebsocketState(WebSocket.CONNECTING);
       websocketRef.current = new WebSocket(
         "wss://trade.termplat.com:8800/?password=1234"
       );
       if (websocketRef.current !== null) {
-        websocketRef.current.addEventListener("open", (ev: Event) => {
-          console.log("open", ev);
-        });
-        websocketRef.current.addEventListener(
-          "message",
-          (ev: MessageEvent<string>) => {
-            const quote = JSON.parse(ev.data) as Quote;
-            quotesRef.current.push(quote);
-            if (
-              quotesRef.current.length -
-                statisticsRef.current.length * quotesLimit >
-              quotesLimit
-            ) {
-              const record = computeStats(quotesRef.current);
-              if (false) {
-                statisticsApi.addStat(record);
-              }
-              console.log("statistics computed", record);
-              statisticsRef.current.push(record);
+        const onMessage = (ev: MessageEvent<string>) => {
+          const quote = JSON.parse(ev.data) as Quote;
+          quotesRef.current.push(quote);
+          if (
+            quotesRef.current.length -
+              statisticsRef.current.length * quotesLimit ===
+            quotesLimit
+          ) {
+            const record = computeStats(quotesRef.current);
+            if (false) {
+              statisticsApi.addStat(record);
             }
+            console.log("statistics computed", record);
+            statisticsRef.current.push(record);
           }
-        );
+        };
+        const onFail = () => {
+          setWebsocketState(WebSocket.CLOSING);
+        };
+        const onClose = () => {
+          setWebsocketState(WebSocket.CLOSED);
+        };
+        const onOpen = (ev: Event) => {
+          setWebsocketState(WebSocket.OPEN);
+        };
+
+        websocketRef.current.addEventListener("open", onOpen);
+        websocketRef.current.addEventListener("close", onClose);
+        websocketRef.current.addEventListener("fail", onFail);
+        websocketRef.current.addEventListener("message", onMessage);
       }
     }
   };
 
-  const stop = () => {
+  const disconnectWebsocket = () => {
+    setWebsocketState(WebSocket.CLOSING);
     websocketRef.current?.close(1000);
     websocketRef.current = null;
   };
 
   return (
     <S.Container>
-      <button onClick={stop}>Stop</button>
+      {/* <button onClick={stop}>Stop</button> */}
       <main>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <S.ControlsContainer>
           <S.Input
             type="number"
             min="2"
@@ -77,18 +81,21 @@ export const HomeRoute = () => {
             style={{
               marginTop: 14,
             }}
-            onClick={start}
+            onClick={() => {
+              if (websocketState === WebSocket.CLOSED) {
+                connectWebsocket();
+              } else {
+                disconnectWebsocket();
+              }
+            }}
           >
-            Start
+            {websocketState === WebSocket.CLOSED ? "Start" : ""}
+            {websocketState === WebSocket.CONNECTING ? "connecting..." : ""}
+            {websocketState === WebSocket.OPEN ? "Stop" : ""}
+            {websocketState === WebSocket.CLOSING ? "closing..." : ""}
           </S.PrimaryButton>
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            top: 15,
-            right: 13,
-          }}
-        >
+        </S.ControlsContainer>
+        <S.StatsButtonContainer>
           <S.SecondaryButton
             onClick={() => {
               navigate("/stats");
@@ -96,7 +103,7 @@ export const HomeRoute = () => {
           >
             Stats
           </S.SecondaryButton>
-        </div>
+        </S.StatsButtonContainer>
       </main>
       <Outlet />
     </S.Container>

@@ -42,4 +42,22 @@ const SecondaryButton = styled.button`
   }
 `;
 
-export { Container, Input, PrimaryButton, SecondaryButton };
+const StatsButtonContainer = styled.div`
+  position: absolute;
+  top: 15px;
+  right: 13px;
+`;
+
+const ControlsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export {
+  Container,
+  Input,
+  PrimaryButton,
+  SecondaryButton,
+  ControlsContainer,
+  StatsButtonContainer,
+};

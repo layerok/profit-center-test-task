@@ -1,10 +1,11 @@
-import { TableRecord } from "../../types";
-import { BaseModal } from "../../components/BaseModal";
+import { DbStatistic, TableRecord } from "../../types";
 import { ReactComponent as CloseSvg } from "../../assets/close.svg";
 import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "../../components/Table";
-import { data } from "../../data";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { statisticsApi } from "../../api/statisticsApi";
+import * as S from "./stats.route.style";
 
 const columns: ColumnDef<TableRecord>[] = [
   {
@@ -18,6 +19,7 @@ const columns: ColumnDef<TableRecord>[] = [
   {
     id: "actions",
     accessorKey: "id",
+    header: "",
   },
 ];
 
@@ -26,59 +28,43 @@ export const StatsRoute = () => {
   const close = () => {
     navigate("/");
   };
+
+  const { data: stats, isLoading } = useQuery<DbStatistic[]>({
+    queryKey: ["stats"],
+    queryFn: () => {
+      return statisticsApi.getAll();
+    },
+  });
+
+  const data = (stats || [])?.map((stat) => ({
+    id: stat.id,
+    created_at: stat.start,
+  }));
+
   return (
-    <BaseModal
-      onOpenChange={(open) => {
-        if (!open) {
-          close();
-        }
-      }}
-      open={true}
-      overlayStyles={{
-        justifyItems: "center",
-        alignItems: "center",
-        background: "rgba(0, 0, 0, 0.4)",
-        display: "grid",
-        zIndex: 999999,
-      }}
-      render={() => {
-        return (
-          <div
-            style={{
-              background: "white",
-              width: 476,
-              height: 359,
-              padding: 20,
-              position: "relative",
+    <>
+      {isLoading ? (
+        "...loading"
+      ) : (
+        <div>
+          <S.CloseSvgContainer
+            onClick={() => {
+              close();
             }}
           >
-            <div
-              style={{
-                position: "absolute",
-                top: 22,
-                right: 32,
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                close();
-              }}
-            >
-              <CloseSvg />
-            </div>
-            <div
-              style={{
-                fontSize: 26,
-                fontWeight: 700,
-              }}
-            >
-              Статистика
-            </div>
-            <Table columns={columns} data={data} />
+            <CloseSvg />
+          </S.CloseSvgContainer>
+          <div
+            style={{
+              fontSize: 26,
+              fontWeight: 700,
+            }}
+          >
+            Статистика
           </div>
-        );
-      }}
-    >
-      <div></div>
-    </BaseModal>
+          <Table columns={columns} data={data} />
+        </div>
+      )}
+    </>
   );
 };

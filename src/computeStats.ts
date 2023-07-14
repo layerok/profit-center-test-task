@@ -15,7 +15,7 @@ export function computeStats(quotes: Quote[]): Statistic {
 
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
-    
+
     if (i !== 0) {
       const prevQuote = quotes[i - 1];
       if (prevQuote.id + 1 !== quote.id) {
@@ -67,8 +67,9 @@ export function computeStats(quotes: Quote[]): Statistic {
     start: startTime,
     end: endTime,
     time_spent: endTime - startTime,
-    standart_deviation: standartDeviation,
+    standard_deviation: standartDeviation,
     lost_quotes: lostQuotes,
     moda: quoteWithBiggestModa.value,
+    quotes_amount: quotes.length,
   };
 }
