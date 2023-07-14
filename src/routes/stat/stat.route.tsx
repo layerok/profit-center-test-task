@@ -25,18 +25,17 @@ export const StatRoute = () => {
   if (isLoading) {
     return <div>"...loading"</div>;
   }
+
   if (!stat) {
     return <div>No data</div>;
   }
+
   return (
     <>
       <S.Header>
-        <ArrowLeft
-          style={{
-            cursor: "pointer",
-          }}
-          onClick={goBackToList}
-        />
+        <S.BackButtonContainer>
+          <ArrowLeft onClick={goBackToList} />
+        </S.BackButtonContainer>
         <S.Title>Статистика #{params.id}</S.Title>
       </S.Header>
       <S.Row

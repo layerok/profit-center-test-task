@@ -34,4 +34,8 @@ const Row = styled.div`
   display: flex;
 `
 
-export { Header, Title, Label, Value, Row, Prop };
+const BackButtonContainer = styled.div`
+  cursor: pointer;
+`;
+
+export { Header, Title, Label, Value, Row, Prop, BackButtonContainer };
