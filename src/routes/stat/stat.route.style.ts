@@ -18,6 +18,11 @@ const Label = styled.div`
   line-height: normal;
 `;
 
+const Prop = styled.div`
+  width: 103px;
+  margin-right: 17px;
+`
+
 const Value = styled.div`
   font-size: 20px;
   font-style: normal;
@@ -25,4 +30,8 @@ const Value = styled.div`
   line-height: normal;
 `;
 
-export { Header, Title, Label, Value };
+const Row = styled.div`
+  display: flex;
+`
+
+export { Header, Title, Label, Value, Row, Prop };

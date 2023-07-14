@@ -19,7 +19,7 @@ export const LayoutRoute = () => {
           position: "fixed",
         },
         content: {
-          width: 476,
+          width: 520,
           height: 359,
           border: "none",
           padding: 20,

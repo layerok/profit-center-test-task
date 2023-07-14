@@ -35,100 +35,65 @@ export const StatRoute = () => {
             />
             <S.Title>Статистика #{params.id}</S.Title>
           </S.Header>
-          <div
+          <S.Row
             style={{
               marginTop: 38,
-              display: "flex",
             }}
           >
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
-              <S.Label>Початок розрахунків</S.Label>
+            <S.Prop>
+              <S.Label>Начало вычислений</S.Label>
               <S.Value>{format(new Date(+stat.start), "hh:mm:ss")}</S.Value>
-            </div>
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
-              <S.Label>Кінець розрахунків</S.Label>
+            </S.Prop>
+            <S.Prop>
+              <S.Label>Конец вычислений</S.Label>
               <S.Value>{format(new Date(+stat.end), "hh:mm:ss")}</S.Value>
-            </div>
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
-              <S.Label>Витраченний час</S.Label>
+            </S.Prop>
+            <S.Prop>
+              <S.Label>Время потраченно</S.Label>
               <S.Value>
                 {stat.time_spent < 1 ? "<1ms" : stat.time_spent}
               </S.Value>
-            </div>
-            <div>
-              <S.Label>Кількість котируваннь</S.Label>
+            </S.Prop>
+            <S.Prop>
+              <S.Label>Кол-во котировок</S.Label>
               <S.Value>{stat.quotes_amount}</S.Value>
-            </div>
-          </div>
+            </S.Prop>
+          </S.Row>
 
-          <div
+          <S.Row
             style={{
-              display: "flex",
               marginTop: 48,
             }}
           >
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
+            <S.Prop>
               <S.Label>Середне арефметичке</S.Label>
               <S.Value>{stat.avg}</S.Value>
-            </div>
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
+            </S.Prop>
+            <S.Prop>
               <S.Label>Мінімальне значення</S.Label>
               <S.Value>{stat.min}</S.Value>
-            </div>
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
+            </S.Prop>
+            <S.Prop>
               <S.Label>Максимальне значення</S.Label>
               <S.Value>{stat.max}</S.Value>
-            </div>
-          </div>
-          <div
+            </S.Prop>
+          </S.Row>
+          <S.Row
             style={{
-              display: "flex",
               marginTop: 27,
             }}
           >
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
+            <S.Prop>
               <S.Label>Стандартное отклонение</S.Label>
               <S.Value>{stat.standard_deviation}</S.Value>
-            </div>
-            <div
-              style={{
-                marginRight: 17,
-              }}
-            >
+            </S.Prop>
+            <S.Prop>
               <S.Label>Мода</S.Label>
               <S.Value>
-                {stat.moda} ({stat.moda_count} раза)
+                {stat.moda} ({stat.moda_count}x)
               </S.Value>
-            </div>
-          </div>
+            </S.Prop>
+          </S.Row>
         </>
       ) : (
         "no data"
