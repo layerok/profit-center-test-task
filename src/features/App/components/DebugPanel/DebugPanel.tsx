@@ -8,8 +8,25 @@ export const DebugPanel = observer(() => {
     <S.Container>
       <S.Title>Debug panel</S.Title>
       <S.Stats>
-        <div>Quotes received: {appStore.quotes.length}</div>
-        <div>Stats computed: {appStore.stats.length}</div>
+        <S.Stat>
+          <S.Label>WebsSocket state: </S.Label>
+          <S.Value>
+            {appStore.websocketState === WebSocket.CLOSED ? "Closed" : ""}
+            {appStore.websocketState === WebSocket.CONNECTING
+              ? "Connecting"
+              : ""}
+            {appStore.websocketState === WebSocket.OPEN ? "Open" : ""}
+            {appStore.websocketState === WebSocket.CLOSING ? "Closing" : ""}
+          </S.Value>
+        </S.Stat>
+        <S.Stat>
+          <S.Label>Quotes received: </S.Label>
+          <S.Value>{appStore.quotes.length}</S.Value>
+        </S.Stat>
+        <S.Stat>
+          <S.Label>Stats computed: </S.Label>
+          <S.Value> {appStore.stats.length}</S.Value>
+        </S.Stat>
       </S.Stats>
     </S.Container>
   );
