@@ -7,7 +7,7 @@ const Container = styled.div`
   padding: 5px;
   color: white;
   background: rgba(28, 28, 28, 0.8);
-  width: 150px;
+  width: 170px;
   padding-bottom: 10px;
 `;
 
