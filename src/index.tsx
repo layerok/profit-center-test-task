@@ -5,9 +5,30 @@ import reportWebVitals from "./reportWebVitals";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
-import { appRoutes } from "./routes";
+import { appRoutePaths } from "./features/App/route.paths";
+import { statsRoutePaths } from "./features/Stats/route.paths";
 
-const router = createBrowserRouter(appRoutes);
+const router = createBrowserRouter([
+  {
+    path: appRoutePaths.home,
+    lazy: () => import("./features/App/routes/home/home.route"),
+    children: [
+      {
+        lazy: () => import("./features/Stats/routes/layout/layout"),
+        children: [
+          {
+            path: statsRoutePaths.list,
+            lazy: () => import("./features/Stats/routes/list/list.route"),
+          },
+          {
+            path: statsRoutePaths.detail,
+            lazy: () => import("./features/Stats/routes/detail/detail.route"),
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
