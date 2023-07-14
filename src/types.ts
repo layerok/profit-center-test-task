@@ -10,6 +10,7 @@ export type Statistic = {
   start: number; // ms
   end: number; // ms
   moda: number;
+  moda_count: number;
   time_spent: number; //ms
   standard_deviation: number;
   lost_quotes: number;

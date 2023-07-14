@@ -42,7 +42,7 @@ export function computeStats(quotes: Quote[]): Statistic {
 
   const avg = sum / quotes.length;
   let sum2 = 0;
-  let biggestModaAmount = modaMap[quotes[0].value];
+  let biggestModaCount = modaMap[quotes[0].value];
   let quoteWithBiggestModa: Quote = quotes[0];
 
   for (let i = 0; i < quotes.length; i++) {
@@ -50,8 +50,8 @@ export function computeStats(quotes: Quote[]): Statistic {
 
     sum2 += Math.pow(quote.value - avg, 2);
 
-    if (modaMap[quote.value] > biggestModaAmount) {
-      biggestModaAmount = modaMap[quote.value];
+    if (modaMap[quote.value] > biggestModaCount) {
+      biggestModaCount = modaMap[quote.value];
       quoteWithBiggestModa = quote;
     }
   }
@@ -71,5 +71,6 @@ export function computeStats(quotes: Quote[]): Statistic {
     lost_quotes: lostQuotes,
     moda: quoteWithBiggestModa.value,
     quotes_amount: quotes.length,
+    moda_count: biggestModaCount,
   };
 }

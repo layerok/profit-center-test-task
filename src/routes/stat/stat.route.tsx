@@ -124,7 +124,9 @@ export const StatRoute = () => {
               }}
             >
               <S.Label>Мода</S.Label>
-              <S.Value>{stat.moda} (2 раза)</S.Value>
+              <S.Value>
+                {stat.moda} ({stat.moda_count} раза)
+              </S.Value>
             </div>
           </div>
         </>

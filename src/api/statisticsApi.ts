@@ -19,6 +19,7 @@ export const statisticsApi = {
     formData.append("max", String(record.max));
     formData.append("start", String(record.start));
     formData.append("moda", String(record.moda));
+    formData.append("moda_count", String(record.moda_count));
     formData.append("end", String(record.end));
     formData.append("time_spent", String(record.time_spent));
     formData.append("standard_deviation", String(record.standard_deviation));

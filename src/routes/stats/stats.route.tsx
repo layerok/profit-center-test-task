@@ -31,10 +31,14 @@ export const StatsRoute = () => {
     navigate("/");
   };
 
+  const limit = 102312312;
+
   const { data: stats, isLoading } = useQuery<IGetStatsRes>({
-    queryKey: ["stats"],
+    queryKey: ["stats", limit],
     queryFn: () => {
-      return statisticsApi.getAll();
+      return statisticsApi.getAll({
+        limit,
+      });
     },
   });
 

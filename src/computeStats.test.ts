@@ -22,6 +22,7 @@ test("should compute right statistics", () => {
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
   expect(record.end).toBeGreaterThanOrEqual(record.start);
+  expect(record.moda_count).toBe(1);
   expect(record.quotes_amount).toBe(2);
 });
 
@@ -58,6 +59,7 @@ test("should compute right statistics 2", () => {
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
   expect(record.end).toBeGreaterThanOrEqual(record.start);
+  expect(record.moda_count).toBe(2);
   expect(record.quotes_amount).toBe(5);
 });
 
@@ -98,5 +100,6 @@ test("should compute right statistics 3", () => {
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
   expect(record.end).toBeGreaterThanOrEqual(record.start);
+  expect(record.moda_count).toBe(2);
   expect(record.quotes_amount).toBe(6);
 });
