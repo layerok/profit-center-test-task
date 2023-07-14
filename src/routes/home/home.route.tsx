@@ -90,3 +90,5 @@ export const HomeRoute = observer(() => {
     </S.Container>
   );
 });
+
+export const Component = HomeRoute;

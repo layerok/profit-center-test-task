@@ -83,3 +83,5 @@ export const StatsRoute = () => {
     </div>
   );
 };
+
+export const Component = StatsRoute;

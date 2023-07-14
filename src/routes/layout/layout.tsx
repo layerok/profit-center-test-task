@@ -34,3 +34,5 @@ export const LayoutRoute = () => {
     </ReactModal>
   );
 };
+
+export const Component = LayoutRoute;

@@ -14,7 +14,7 @@ const Title = styled.div`
 
 const DataContainer = styled.div`
   overflow: auto;
-  height: 275pxl;
+  height: 275px;
 `;
 
 const Row = styled.div`

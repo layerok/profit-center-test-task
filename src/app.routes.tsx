@@ -7,18 +7,18 @@ import { routePaths } from "./constants/route.constant";
 export const appRoutes = [
   {
     path: routePaths.home,
-    element: <HomeRoute />,
+    lazy: () => import('./routes/home/home.route'),
     children: [
       {
-        element: <LayoutRoute />,
+        lazy: () => import('./routes/layout/layout'),
         children: [
           {
             path: routePaths.stats,
-            element: <StatsRoute />,
+            lazy: () => import('./routes/stats/stats.route')
           },
           {
             path: routePaths.stat,
-            element: <StatRoute />,
+            lazy: () => import('./routes/stat/stat.route'),
           },
         ],
       },

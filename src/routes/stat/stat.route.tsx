@@ -98,3 +98,5 @@ export const StatRoute = () => {
     </>
   );
 };
+
+export const Component = StatRoute;
