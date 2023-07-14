@@ -4,6 +4,8 @@ import { Quote, Statistic } from "../../types";
 import { statisticsApi } from "../../api/statisticsApi";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "../..";
 
 export const HomeRoute = () => {
   const websocketRef = useRef<WebSocket | null>(null);
@@ -11,10 +13,19 @@ export const HomeRoute = () => {
   const statisticsRef = useRef<Statistic[]>([]);
 
   const navigate = useNavigate();
-  const [quotesLimit, setQuotesLimit] = useState(25);
+  const [quotesLimit, setQuotesLimit] = useState(100);
   const [websocketState, setWebsocketState] = useState<number>(
     WebSocket.CLOSED
   );
+
+  const statMutation = useMutation({
+    mutationFn: (record: Statistic) => {
+      return statisticsApi.addStat(record);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["stats"]);
+    },
+  });
 
   const connectWebsocket = () => {
     if (!websocketRef.current) {
@@ -32,9 +43,9 @@ export const HomeRoute = () => {
             quotesLimit
           ) {
             const record = computeStats(quotesRef.current);
-            if (false) {
-              statisticsApi.addStat(record);
-            }
+
+            statMutation.mutate(record);
+
             console.log("statistics computed", record);
             statisticsRef.current.push(record);
           }
@@ -65,7 +76,6 @@ export const HomeRoute = () => {
 
   return (
     <S.Container>
-      {/* <button onClick={stop}>Stop</button> */}
       <main>
         <S.ControlsContainer>
           <S.Input
@@ -99,6 +109,10 @@ export const HomeRoute = () => {
           <S.SecondaryButton
             onClick={() => {
               navigate("/stats");
+              if (quotesRef.current.length > 2) {
+                const record = computeStats(quotesRef.current);
+                statMutation.mutate(record);
+              }
             }}
           >
             Stats

@@ -4,7 +4,6 @@ import * as S from "./stat.route.style";
 import { useQuery } from "@tanstack/react-query";
 import { statisticsApi } from "../../api/statisticsApi";
 import { DbStatistic } from "../../types";
-import ReactModal from "react-modal";
 
 export const StatRoute = () => {
   const params = useParams();
