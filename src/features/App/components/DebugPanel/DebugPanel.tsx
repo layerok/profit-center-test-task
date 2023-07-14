@@ -6,7 +6,6 @@ export const DebugPanel = observer(() => {
   const appStore = useAppStore();
   return (
     <S.Container>
-      <S.Title>Debug panel</S.Title>
       <S.Stats>
         <S.Stat>
           <S.Label>WebsSocket state: </S.Label>

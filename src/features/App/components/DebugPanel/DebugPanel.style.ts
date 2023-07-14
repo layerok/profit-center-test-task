@@ -11,19 +11,14 @@ const Container = styled.div`
   padding-bottom: 10px;
 `;
 
-const Title = styled.div`
-  font-size: 16px;
-  font-weight: 700;
+const Stats = styled.div`
+  text-align: right;
 `;
 
 const Stat = styled.div`
   display: flex;
   font-size: 10px;
-  margin-top: 3px;
-`;
-
-const Stats = styled.div`
-  margin-top: 8px;
+  margin-top: 5px;
 `;
 
 const Label = styled.div`
@@ -35,4 +30,4 @@ const Value = styled.div`
   margin-left: 2px;
 `;
 
-export { Title, Container, Stats, Label, Value, Stat };
+export { Container, Stats, Label, Value, Stat };
