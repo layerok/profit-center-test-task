@@ -14,3 +14,8 @@ export type Statistic = {
   standart_deviation: number;
   lost_quotes: number;
 };
+
+export type TableRecord = {
+  created_at: number;
+  id: number;
+};

@@ -3,7 +3,6 @@ import {
   CSSProperties,
   ReactElement,
   ReactNode,
-  useEffect,
   useId,
   useState,
 } from "react";
@@ -17,7 +16,6 @@ import {
   FloatingNode,
   FloatingTree,
   useFloatingNodeId,
-  useFloatingTree,
   FloatingOverlay,
   useFloatingParentNodeId,
 } from "@floating-ui/react-dom-interactions";
@@ -37,6 +35,7 @@ export type IBaseModalProps = {
     toggle?: boolean;
     ignoreMouse?: boolean;
   };
+  onOpenChange: (state: boolean) => void;
 };
 
 export const BaseModalComponent = ({
@@ -45,15 +44,18 @@ export const BaseModalComponent = ({
   open: passedOpen = false,
   children,
   useClickOptions = {},
+  onOpenChange,
 }: IBaseModalProps) => {
   const [open, setOpen] = useState(passedOpen);
-  const [allowDismiss, setAllowDismiss] = useState(true);
+  const [allowDismiss] = useState(true);
   const nodeId = useFloatingNodeId();
-  const parentId = useFloatingParentNodeId();
 
   const { reference, floating, context, refs } = useFloating({
     open,
-    onOpenChange: setOpen,
+    onOpenChange: (state) => {
+      onOpenChange?.(state);
+      setOpen(state);
+    },
   });
 
   const id = useId();
@@ -67,37 +69,6 @@ export const BaseModalComponent = ({
       enabled: allowDismiss,
     }),
   ]);
-
-  const tree = useFloatingTree();
-
-  useEffect(() => {
-    function onTreeOpenChange({
-      open,
-      reference,
-      parentId: dataParentId,
-      nodeId: dataNodeId,
-    }) {
-      if (nodeId === dataParentId) {
-        // если открылка дочерний модал, то запрещаем закрывать родительский пока не закрыли дочерний
-        setAllowDismiss(!open);
-      }
-    }
-
-    tree?.events.on("openChange", onTreeOpenChange);
-
-    return () => {
-      tree?.events.off("openChange", onTreeOpenChange);
-    };
-  }, [nodeId, open, parentId, tree, refs.reference]);
-
-  useEffect(() => {
-    tree?.events.emit("openChange", {
-      open,
-      parentId,
-      nodeId,
-      reference: refs.reference.current,
-    });
-  }, [nodeId, parentId, tree, open, refs.reference]);
 
   const close = () => setOpen(false);
 

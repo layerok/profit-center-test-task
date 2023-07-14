@@ -1,17 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { computeStats } from "./computeStats";
-import { Quote, Statistic } from "./types";
-import { statisticsApi } from "./statisticsApi";
-import * as S from "./App.style";
-import ReactModal from "react-modal";
-import { BaseModal } from "./components/BaseModal";
+import { computeStats } from "../../computeStats";
+import { Quote, Statistic } from "../../types";
+import { statisticsApi } from "../../api/statisticsApi";
+import * as S from "./home.style";
+import { Outlet, useNavigate } from "react-router-dom";
 
-function App() {
+export const HomeRoute = () => {
   const websocketRef = useRef<WebSocket | null>(null);
   const quotesRef = useRef<Quote[]>([]);
   const statisticsRef = useRef<Statistic[]>([]);
-  const [showStatistics, setShowStatistics] = useState(false);
 
+  const navigate = useNavigate();
   useEffect(() => {
     statisticsApi.getAll().then(console.log);
   }, []);
@@ -55,10 +54,6 @@ function App() {
     websocketRef.current = null;
   };
 
-  const openStats = () => {
-    setShowStatistics((prevState) => !prevState);
-  };
-
   return (
     <S.Container>
       <button onClick={stop}>Stop</button>
@@ -87,7 +82,6 @@ function App() {
             Start
           </S.PrimaryButton>
         </div>
-
         <div
           style={{
             position: "absolute",
@@ -95,14 +89,16 @@ function App() {
             right: 13,
           }}
         >
-          <S.SecondaryButton onClick={openStats}>Stats</S.SecondaryButton>
+          <S.SecondaryButton
+            onClick={() => {
+              navigate("/stats");
+            }}
+          >
+            Stats
+          </S.SecondaryButton>
         </div>
-       
-
-
       </main>
+      <Outlet />
     </S.Container>
   );
-}
-
-export default App;
+};

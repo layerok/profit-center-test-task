@@ -1,4 +1,4 @@
-import { Statistic } from "./types";
+import { Statistic } from "../types";
 const apiBaseUrl = "http://localhost/profit_centre_statistics";
 
 export const statisticsApi = {
