@@ -8,6 +8,7 @@ import { getAllStats } from "../../api/stats.api";
 import * as S from "./stats.route.style";
 import { IGetStatsRes } from "../../api/stats.api.types";
 import { format } from "date-fns";
+import { routePaths } from "../../constants/route.constant";
 
 const columns: ColumnDef<TableRecord>[] = [
   {
@@ -28,7 +29,7 @@ const columns: ColumnDef<TableRecord>[] = [
 export const StatsRoute = () => {
   const navigate = useNavigate();
   const close = () => {
-    navigate("/");
+    navigate(routePaths.home);
   };
 
   // todo: fix this

@@ -2,21 +2,22 @@ import { StatsRoute } from "./routes/stats/stats.route";
 import { HomeRoute } from "./routes/home/home.route";
 import { StatRoute } from "./routes/stat/stat.route";
 import { LayoutRoute } from "./routes/layout/layout";
+import { routePaths } from "./constants/route.constant";
 
 export const appRoutes = [
   {
-    path: "/",
+    path: routePaths.home,
     element: <HomeRoute />,
     children: [
       {
         element: <LayoutRoute />,
         children: [
           {
-            path: "/stats",
+            path: routePaths.stats,
             element: <StatsRoute />,
           },
           {
-            path: "/stat/:id",
+            path: routePaths.stat,
             element: <StatRoute />,
           },
         ],

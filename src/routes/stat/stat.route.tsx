@@ -4,19 +4,20 @@ import * as S from "./stat.route.style";
 import { useQuery } from "@tanstack/react-query";
 import { DbStat } from "../../types";
 import { format } from "date-fns";
+import { routePaths } from "../../constants/route.constant";
+import { getStat } from "../../api/stats.api";
 
 export const StatRoute = () => {
   const params = useParams();
   const navigate = useNavigate();
   const back = () => {
-    navigate("/stats");
+    navigate(routePaths.stats);
   };
 
   const { data: stat, isLoading } = useQuery<DbStat>({
     queryKey: ["stat", params.id],
     queryFn: () => {
-      // @ts-ignore
-      return statisticsApi.getStat(params.id);
+      return getStat(+(params.id as string));
     },
   });
   return (

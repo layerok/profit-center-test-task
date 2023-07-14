@@ -6,6 +6,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
+import { routePaths } from "../../constants/route.constant";
 import { TableRecord } from "../../types";
 
 export const Table = ({
@@ -82,7 +83,9 @@ export const Table = ({
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        navigate("/stat/" + cell.getValue());
+                        navigate(
+                          routePaths.stat.replace(":id", String((cell.getValue() as number)))
+                        );
                       }}
                     >
                       View

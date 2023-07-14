@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
+import { routePaths } from "../../constants/route.constant";
 
 export const HomeRoute = observer(() => {
   const queryClient = useQueryClient();
@@ -30,7 +31,7 @@ export const HomeRoute = observer(() => {
       appStore.addStat(record);
       statMutation.mutate(record);
     }
-    navigate("/stats");
+    navigate(routePaths.stats);
   };
 
   return (
