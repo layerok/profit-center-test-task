@@ -14,6 +14,7 @@ export const StatsRoute = () => {
   };
 
   // todo: implement infinite list
+  // todo: implement virtual list
   const limit = 102312312;
 
   const { data: stats, isLoading } = useStatsQuery({
