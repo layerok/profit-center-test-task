@@ -5,7 +5,7 @@ import { statisticsApi } from "../../api/statApi";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { appStore } from "../../stores/app.store";
+import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { appConfig } from "../../config/app.config";
 import { observer } from "mobx-react-lite";
@@ -13,6 +13,7 @@ import { observer } from "mobx-react-lite";
 export const HomeRoute = observer(() => {
   const websocketRef = useRef<WebSocket | null>(null);
   const queryClient = useQueryClient();
+  const appStore = useAppStore();
 
   const navigate = useNavigate();
   const [quotesLimit, setQuotesLimit] = useState(100);
@@ -75,6 +76,7 @@ export const HomeRoute = observer(() => {
     navigate("/stats");
     if (appStore.quotes.length > 2) {
       const record = computeStats(appStore.quotes);
+      appStore.addStat(record);
       statMutation.mutate(record);
     }
   }

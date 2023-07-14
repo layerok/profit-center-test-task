@@ -23,3 +23,7 @@ class AppStore {
 }
 
 export const appStore = new AppStore();
+
+export const useAppStore = () => {
+  return appStore;
+};
