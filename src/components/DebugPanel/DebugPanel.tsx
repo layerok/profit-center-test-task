@@ -6,7 +6,10 @@ export const DebugPanel = observer(() => {
   return (
     <S.Container>
       <S.Title>Debug panel</S.Title>
-      <S.Stats>Quotes received: {appStore.quotes.length}</S.Stats>
+      <S.Stats>
+        <div>Quotes received: {appStore.quotes.length}</div>
+        <div>Stats computed: {appStore.stats.length}</div>
+      </S.Stats>
     </S.Container>
   );
 });

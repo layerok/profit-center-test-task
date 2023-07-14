@@ -67,6 +67,12 @@ const InputContainer = styled.div`
   position: relative;
 `
 
+const ButtonGroup = styled.div`
+  display: flex;
+  margin-top: 14px;
+  justify-content: space-between;
+`;
+
 export {
   Container,
   Input,
@@ -74,5 +80,6 @@ export {
   SecondaryButton,
   ControlsContainer,
   ValidationMsg,
-  InputContainer
+  InputContainer,
+  ButtonGroup
 };

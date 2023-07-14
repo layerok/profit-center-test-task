@@ -8,17 +8,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { appStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { appConfig } from "../../config/app.config";
+import { observer } from "mobx-react-lite";
 
-export const HomeRoute = () => {
+export const HomeRoute = observer(() => {
   const websocketRef = useRef<WebSocket | null>(null);
-  const statisticsRef = useRef<Stat[]>([]);
   const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const [quotesLimit, setQuotesLimit] = useState(100);
-  const [websocketState, setWebsocketState] = useState<number>(
-    WebSocket.CLOSED
-  );
 
   const statMutation = useMutation({
     mutationFn: (record: Stat) => {
@@ -31,7 +28,7 @@ export const HomeRoute = () => {
 
   const connectWebsocket = () => {
     if (!websocketRef.current) {
-      setWebsocketState(WebSocket.CONNECTING);
+      appStore.setWebSocketState(WebSocket.CONNECTING);
       websocketRef.current = new WebSocket(appConfig.wsUrl);
       if (websocketRef.current !== null) {
         const onMessage = (ev: MessageEvent<string>) => {
@@ -39,7 +36,7 @@ export const HomeRoute = () => {
           appStore.addQuote(quote);
           if (
             appStore.quotes.length -
-              statisticsRef.current.length * quotesLimit ===
+              appStore.stats.length * quotesLimit ===
             quotesLimit
           ) {
             const record = computeStats(appStore.quotes);
@@ -47,17 +44,17 @@ export const HomeRoute = () => {
             statMutation.mutate(record);
 
             console.log("statistics computed", record);
-            statisticsRef.current.push(record);
+            appStore.addStat(record);
           }
         };
         const onFail = () => {
-          setWebsocketState(WebSocket.CLOSING);
+          appStore.setWebSocketState(WebSocket.CLOSING);
         };
         const onClose = () => {
-          setWebsocketState(WebSocket.CLOSED);
+          appStore.setWebSocketState(WebSocket.CLOSED);
         };
         const onOpen = (ev: Event) => {
-          setWebsocketState(WebSocket.OPEN);
+          appStore.setWebSocketState(WebSocket.OPEN);
         };
 
         websocketRef.current.addEventListener("open", onOpen);
@@ -69,10 +66,18 @@ export const HomeRoute = () => {
   };
 
   const disconnectWebsocket = () => {
-    setWebsocketState(WebSocket.CLOSING);
+    appStore.setWebSocketState(WebSocket.CLOSING);
     websocketRef.current?.close(1000);
     websocketRef.current = null;
   };
+
+  const showStats = () => {
+    navigate("/stats");
+    if (appStore.quotes.length > 2) {
+      const record = computeStats(appStore.quotes);
+      statMutation.mutate(record);
+    }
+  }
 
   return (
     <S.Container>
@@ -95,42 +100,33 @@ export const HomeRoute = () => {
               </S.ValidationMsg>
             )}
           </S.InputContainer>
-          <div style={{
-            display: 'flex',
-            marginTop: 14,
-            justifyContent: 'space-between'
-          }}>
+          <S.ButtonGroup>
             <S.PrimaryButton
               disabled={+quotesLimit < 2}
- 
               onClick={() => {
-                if (websocketState === WebSocket.CLOSED) {
+                if (appStore.websocketState === WebSocket.CLOSED) {
                   connectWebsocket();
                 } else {
                   disconnectWebsocket();
                 }
               }}
             >
-              {websocketState === WebSocket.CLOSED ? "Start" : ""}
-              {websocketState === WebSocket.CONNECTING ? "connecting..." : ""}
-              {websocketState === WebSocket.OPEN ? "Stop" : ""}
-              {websocketState === WebSocket.CLOSING ? "closing..." : ""}
+              {appStore.websocketState === WebSocket.CLOSED ? "Start" : ""}
+              {appStore.websocketState === WebSocket.CONNECTING
+                ? "connecting..."
+                : ""}
+              {appStore.websocketState === WebSocket.OPEN ? "Stop" : ""}
+              {appStore.websocketState === WebSocket.CLOSING
+                ? "closing..."
+                : ""}
             </S.PrimaryButton>
-            <S.SecondaryButton
-              onClick={() => {
-                navigate("/stats");
-                if (appStore.quotes.length > 2) {
-                  const record = computeStats(appStore.quotes);
-                  statMutation.mutate(record);
-                }
-              }}
-            >
+            <S.SecondaryButton onClick={showStats}>
               Статистика
             </S.SecondaryButton>
-          </div>
+          </S.ButtonGroup>
         </S.ControlsContainer>
       </main>
       <Outlet />
     </S.Container>
   );
-};
+});
