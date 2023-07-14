@@ -49,56 +49,58 @@ export const StatsRoute = () => {
     created_at: stat.start,
   }));
 
+  if (isLoading) {
+    return <div>...loading</div>;
+  }
+
+  if (!stats) {
+    return <div>No data</div>;
+  }
+
   return (
-    <>
-      {isLoading ? (
-        "...loading"
-      ) : (
-        <div>
-          <S.CloseSvgContainer
-            onClick={() => {
-              close();
-            }}
-          >
-            <CloseSvg />
-          </S.CloseSvgContainer>
+    <div>
+      <S.CloseSvgContainer
+        onClick={() => {
+          close();
+        }}
+      >
+        <CloseSvg />
+      </S.CloseSvgContainer>
+      <div
+        style={{
+          fontSize: 26,
+          fontWeight: 700,
+        }}
+      >
+        Статистика
+      </div>
+      <div
+        style={{
+          overflow: "auto",
+          height: 275,
+        }}
+      >
+        {data.map((record) => (
           <div
+            key={record.id}
             style={{
-              fontSize: 26,
-              fontWeight: 700,
+              display: "flex",
+              marginBottom: 4,
             }}
           >
-            Статистика
+            <div>#{record.id}</div>
+            <div>
+              &nbsp;&nbsp;
+              {format(new Date(+record.created_at), "dd/MM/yyyy hh:mm:ss")}
+            </div>
+            <div>
+              &nbsp;&nbsp;
+              <Link to={`/stat/${record.id}`}>View</Link>
+            </div>
           </div>
-          <div
-            style={{
-              overflow: "auto",
-              height: 275,
-            }}
-          >
-            {data.map((record) => (
-              <div
-                key={record.id}
-                style={{
-                  display: "flex",
-                  marginBottom: 4,
-                }}
-              >
-                <div>#{record.id}</div>
-                <div>
-                  &nbsp;&nbsp;
-                  {format(new Date(+record.created_at), "dd/MM/yyyy hh:mm:ss")}
-                </div>
-                <div>
-                  &nbsp;&nbsp;
-                  <Link to={`/stat/${record.id}`}>View</Link>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* <Table columns={columns} data={data} /> */}
-        </div>
-      )}
-    </>
+        ))}
+      </div>
+      {/* <Table columns={columns} data={data} /> */}
+    </div>
   );
 };
