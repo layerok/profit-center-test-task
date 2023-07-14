@@ -1,29 +1,21 @@
-import { computeStatsFromQuotes } from "../../computeStatsFromQuotes";
-import { Stat } from "../../types";
-import { addStat } from "../../api/stats.api";
+import { Stat } from "../../../Stats/types";
+import { addStat } from "../../../Stats/api/api";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAppStore } from "../../stores/app.store";
+import { useAppStore } from "../../app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
-import { routePaths } from "../../constants/route.constant";
+import { statsRoutePaths } from "../../../Stats/route.paths";
+import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
+import { useAddStat } from "../../../Stats/mutations";
 
 export const HomeRoute = observer(() => {
-  const queryClient = useQueryClient();
-
   const appStore = useAppStore();
 
   const navigate = useNavigate();
 
-  const statMutation = useMutation({
-    mutationFn: (record: Stat) => {
-      return addStat(record);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(["stats"]);
-    },
-  });
+  const statMutation = useAddStat(); 
 
   const showStats = () => {
     if (appStore.quotes.length > 2) {
@@ -31,7 +23,7 @@ export const HomeRoute = observer(() => {
       appStore.addStat(record);
       statMutation.mutate(record);
     }
-    navigate(routePaths.stats);
+    navigate(statsRoutePaths.list);
   };
 
   return (

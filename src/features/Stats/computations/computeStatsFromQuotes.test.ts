@@ -1,5 +1,5 @@
 import { computeStatsFromQuotes } from "./computeStatsFromQuotes";
-import { Quote } from "./types";
+import { Quote } from "../types";
 
 test("should compute right statistics", () => {
   const quotes: Quote[] = [

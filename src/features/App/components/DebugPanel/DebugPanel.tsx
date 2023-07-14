@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useAppStore } from "../../stores/app.store";
+import { useAppStore } from "../../app.store";
 import * as S from "./DebugPanel.style";
 
 export const DebugPanel = observer(() => {

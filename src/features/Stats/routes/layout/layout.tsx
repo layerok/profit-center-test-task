@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
-import { routePaths } from "../../constants/route.constant";
+import { appRoutePaths } from "../../../App/route.paths";
 
 export const LayoutRoute = () => {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ export const LayoutRoute = () => {
     <ReactModal
       isOpen={true}
       onRequestClose={() => {
-        navigate(routePaths.home);
+        navigate(appRoutePaths.home);
       }}
       style={{
         overlay: {

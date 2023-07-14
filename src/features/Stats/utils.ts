@@ -1,7 +1,7 @@
 export const calculateStandardDeviation = (values: number[]) => {
   if (values.length < 2) {
     throw new Error(
-      "provide at least to values to calculate standard deviation"
+      "provide at least 2 values to calculate standard deviation"
     );
   }
 

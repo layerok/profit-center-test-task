@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import { computeStatsFromQuotes } from "../computeStatsFromQuotes";
-import { appConfig } from "../config/app.config";
-import { Quote, Stat } from "../types";
+import { appConfig } from "../../config/app.config";
+import { computeStatsFromQuotes } from "../Stats/computations/computeStatsFromQuotes";
+import { Quote, Stat } from "../Stats/types";
 
 class AppStore {
   constructor() {

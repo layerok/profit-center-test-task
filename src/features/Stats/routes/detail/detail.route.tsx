@@ -1,29 +1,22 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ReactComponent as ArrowLeft } from "../../assets/arrow--left.svg";
-import * as S from "./stat.route.style";
-import { useQuery } from "@tanstack/react-query";
-import { DbStat } from "../../types";
 import { format } from "date-fns";
-import { routePaths } from "../../constants/route.constant";
-import { getStat } from "../../api/stats.api";
+import { ReactComponent as ArrowLeft } from "../../assets/arrow--left.svg";
+import * as S from "./detail.route.style";
+import { statsRoutePaths } from "../../route.paths";
+import { useStatQuery } from "../../queries";
 
 export const StatRoute = () => {
   const params = useParams();
   const navigate = useNavigate();
 
   const goBackToList = () => {
-    navigate(routePaths.stats);
+    navigate(statsRoutePaths.list);
   };
 
-  const { data: stat, isLoading } = useQuery<DbStat>({
-    queryKey: ["stat", params.id],
-    queryFn: () => {
-      return getStat(Number(params.id as string));
-    },
-  });
+  const { data: stat, isLoading } = useStatQuery(Number(params.id));
 
   if (isLoading) {
-    return <div>"...loading"</div>;
+    return <div>...loading</div>;
   }
 
   if (!stat) {

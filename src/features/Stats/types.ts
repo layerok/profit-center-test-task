@@ -21,7 +21,3 @@ export type DbStat = Stat & {
   id: number;
 };
 
-export type TableRecord = {
-  created_at: number;
-  id: number;
-};

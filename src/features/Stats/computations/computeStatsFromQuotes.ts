@@ -1,4 +1,4 @@
-import { Quote, Stat } from "./types";
+import { Quote, Stat } from "./../types";
 
 export function computeStatsFromQuotes(quotes: Quote[]): Stat {
   if (quotes.length < 2) {

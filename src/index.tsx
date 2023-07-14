@@ -5,7 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
-import { appRoutes } from "./app.routes";
+import { appRoutes } from "./routes";
 
 const router = createBrowserRouter(appRoutes);
 
