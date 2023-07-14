@@ -1,4 +1,4 @@
-import { computeStats } from "../../computeStats";
+import { computeStatsFromQuotes } from "../../computeStatsFromQuotes";
 import { Stat } from "../../types";
 import { addStat } from "../../api/stats.api";
 import * as S from "./home.style";
@@ -27,7 +27,7 @@ export const HomeRoute = observer(() => {
 
   const showStats = () => {
     if (appStore.quotes.length > 2) {
-      const record = computeStats(appStore.quotes);
+      const record = computeStatsFromQuotes(appStore.quotes);
       appStore.addStat(record);
       statMutation.mutate(record);
     }

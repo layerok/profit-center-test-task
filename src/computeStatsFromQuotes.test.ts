@@ -1,4 +1,4 @@
-import { computeStats } from "./computeStats";
+import { computeStatsFromQuotes } from "./computeStatsFromQuotes";
 import { Quote } from "./types";
 
 test("should compute right statistics", () => {
@@ -12,7 +12,7 @@ test("should compute right statistics", () => {
       value: 444,
     },
   ];
-  const record = computeStats(quotes);
+  const record = computeStatsFromQuotes(quotes);
   expect(record.max).toBe(444);
   expect(record.moda).toBe(233);
   expect(record.min).toBe(233);
@@ -49,7 +49,7 @@ test("should compute right statistics 2", () => {
       value: 233,
     },
   ];
-  const record = computeStats(quotes);
+  const record = computeStatsFromQuotes(quotes);
   expect(record.max).toBe(2000);
   expect(record.moda).toBe(233);
   expect(record.min).toBe(101);
@@ -90,7 +90,7 @@ test("should compute right statistics 3", () => {
       value: 2233,
     },
   ];
-  const record = computeStats(quotes);
+  const record = computeStatsFromQuotes(quotes);
   expect(record.max).toBe(5003);
   expect(record.moda).toBe(1);
   expect(record.min).toBe(-5032);
