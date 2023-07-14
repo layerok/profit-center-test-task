@@ -8,6 +8,8 @@ import { queryClient } from "./queryClient";
 import { appRoutePaths } from "./features/App/route.paths";
 import { statsRoutePaths } from "./features/Stats/route.paths";
 
+console.log("env", process.env);
+
 const router = createBrowserRouter([
   {
     path: appRoutePaths.home,
