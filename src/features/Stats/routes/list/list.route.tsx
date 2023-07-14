@@ -13,7 +13,7 @@ export const StatsRoute = () => {
     navigate(appRoutePaths.home);
   };
 
-  // todo: fix this
+  // todo: implement infinite list
   const limit = 102312312;
 
   const { data: stats, isLoading } = useStatsQuery({
