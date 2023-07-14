@@ -1,6 +1,7 @@
 import { Statistic } from "../types";
 import { IGetStatsReq, IGetStatsRes } from "./statisticsApi.types";
-const apiBaseUrl = "http://localhost/profit_centre_statistics";
+
+const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const statisticsApi = {
   getAll: async ({
