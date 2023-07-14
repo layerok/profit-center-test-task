@@ -1,20 +1,12 @@
 import { observer } from "mobx-react-lite";
-import { quotesStore } from "../../stores/quotes.store";
+import { appStore } from "../../stores/app.store";
+import * as S from "./DebugPanel.style";
 
 export const DebugPanel = observer(() => {
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        padding: 5,
-        fontSize: 10,
-        color: "white",
-        background: `rgba(28,28,28,.8)`,
-      }}
-    >
-      Total quotes: {quotesStore.quotes.length}
-    </div>
+    <S.Container>
+      <S.Title>Debug panel</S.Title>
+      <S.Stats>Quotes received: {appStore.quotes.length}</S.Stats>
+    </S.Container>
   );
 });

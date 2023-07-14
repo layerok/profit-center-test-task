@@ -5,9 +5,9 @@ import { statisticsApi } from "../../api/statApi";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { quotesStore } from "../../stores/quotes.store";
+import { appStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
-import { appConfig } from "../../app.config";
+import { appConfig } from "../../config/app.config";
 
 export const HomeRoute = () => {
   const websocketRef = useRef<WebSocket | null>(null);
@@ -36,13 +36,13 @@ export const HomeRoute = () => {
       if (websocketRef.current !== null) {
         const onMessage = (ev: MessageEvent<string>) => {
           const quote = JSON.parse(ev.data) as Quote;
-          quotesStore.addQuote(quote);
+          appStore.addQuote(quote);
           if (
-            quotesStore.quotes.length -
+            appStore.quotes.length -
               statisticsRef.current.length * quotesLimit ===
             quotesLimit
           ) {
-            const record = computeStats(quotesStore.quotes);
+            const record = computeStats(appStore.quotes);
 
             statMutation.mutate(record);
 
@@ -79,16 +79,25 @@ export const HomeRoute = () => {
       <main>
         <DebugPanel />
         <S.ControlsContainer>
-          <S.Input
-            type="number"
-            min="2"
-            defaultValue={quotesLimit}
-            placeholder="Enter quotes amount"
-            onChange={(event) => {
-              setQuotesLimit(+event.currentTarget.value);
-            }}
-          />
+          <S.InputContainer>
+            <S.Input
+              type="number"
+              min="2"
+              defaultValue={quotesLimit}
+              placeholder="Кол-во котировок"
+              onChange={(event) => {
+                setQuotesLimit(+event.currentTarget.value);
+              }}
+            />
+            {quotesLimit < 2 && (
+              <S.ValidationMsg>
+                Котировок должно быть не меньше двух
+              </S.ValidationMsg>
+            )}
+          </S.InputContainer>
+
           <S.PrimaryButton
+            disabled={+quotesLimit < 2}
             style={{
               marginTop: 14,
             }}
@@ -110,13 +119,13 @@ export const HomeRoute = () => {
           <S.SecondaryButton
             onClick={() => {
               navigate("/stats");
-              if (quotesStore.quotes.length > 2) {
-                const record = computeStats(quotesStore.quotes);
+              if (appStore.quotes.length > 2) {
+                const record = computeStats(appStore.quotes);
                 statMutation.mutate(record);
               }
             }}
           >
-            Stats
+            Статистика
           </S.SecondaryButton>
         </S.StatsButtonContainer>
       </main>

@@ -28,6 +28,10 @@ const PrimaryButton = styled.button`
   &:hover {
     opacity: 0.7;
   }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 `;
 
 const SecondaryButton = styled.button`
@@ -53,6 +57,20 @@ const ControlsContainer = styled.div`
   flex-direction: column;
 `;
 
+const ValidationMsg = styled.div`
+  background: red;
+  color: white;
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  font-size: 10px;
+  padding: 4px;
+`;
+
+const InputContainer = styled.div`
+  position: relative;
+`
+
 export {
   Container,
   Input,
@@ -60,4 +78,6 @@ export {
   SecondaryButton,
   ControlsContainer,
   StatsButtonContainer,
+  ValidationMsg,
+  InputContainer
 };

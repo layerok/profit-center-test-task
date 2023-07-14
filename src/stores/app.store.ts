@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Quote } from "../types";
 
-class QuotesStore {
+class AppStore {
   constructor() {
     makeAutoObservable(this);
   }
@@ -12,4 +12,4 @@ class QuotesStore {
   }
 }
 
-export const quotesStore = new QuotesStore();
+export const appStore = new AppStore();
