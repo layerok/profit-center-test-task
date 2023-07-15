@@ -4,6 +4,7 @@ import { ReactComponent as ArrowLeft } from "../../assets/arrow--left.svg";
 import * as S from "./detail.route.style";
 import { statsRoutePaths } from "../../route.paths";
 import { useStatQuery } from "../../queries";
+import { formatMs } from "../../utils";
 
 export const StatRoute = () => {
   const params = useParams();
@@ -16,11 +17,11 @@ export const StatRoute = () => {
   const { data: stat, isLoading } = useStatQuery(Number(params.id));
 
   if (isLoading) {
-    return <div>...loading</div>;
+    return <div>загрузка...</div>;
   }
 
   if (!stat) {
-    return <div>No data</div>;
+    return <div>Не удалось загрузить данные</div>;
   }
 
   return (
@@ -46,11 +47,17 @@ export const StatRoute = () => {
         </S.Prop>
         <S.Prop>
           <S.Label>Время потраченно</S.Label>
-          <S.Value>{stat.time_spent < 1 ? "<1ms" : stat.time_spent}</S.Value>
+          <S.Value title={String(stat.time_spent)}>
+            {stat.time_spent < 1
+              ? "<" + formatMs(1)
+              : formatMs(stat.time_spent)}
+          </S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Кол-во котировок</S.Label>
-          <S.Value>{stat.quotes_amount}</S.Value>
+          <S.Value title={String(stat.quotes_amount)}>
+            {stat.quotes_amount} шт.
+          </S.Value>
         </S.Prop>
       </S.Row>
 
@@ -61,15 +68,15 @@ export const StatRoute = () => {
       >
         <S.Prop>
           <S.Label>Середне арефметичке</S.Label>
-          <S.Value>{stat.avg}</S.Value>
+          <S.Value title={String(stat.avg)}>{stat.avg}</S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Мінімальне значення</S.Label>
-          <S.Value>{stat.min}</S.Value>
+          <S.Value title={String(stat.min)}>{stat.min}</S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Максимальне значення</S.Label>
-          <S.Value>{stat.max}</S.Value>
+          <S.Value title={String(stat.max)}>{stat.max}</S.Value>
         </S.Prop>
       </S.Row>
       <S.Row
@@ -79,11 +86,13 @@ export const StatRoute = () => {
       >
         <S.Prop>
           <S.Label>Стандартное отклонение</S.Label>
-          <S.Value>{stat.standard_deviation}</S.Value>
+          <S.Value title={String(stat.standard_deviation)}>
+            {stat.standard_deviation}
+          </S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Мода</S.Label>
-          <S.Value>
+          <S.Value title={String(stat.moda)}>
             {stat.moda} ({stat.moda_count}x)
           </S.Value>
         </S.Prop>

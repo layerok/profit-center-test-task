@@ -22,11 +22,11 @@ export const StatsRoute = () => {
   });
 
   if (isLoading) {
-    return <div>...loading</div>;
+    return <div>загрузка...</div>;
   }
 
   if (!stats) {
-    return <div>No data</div>;
+    return <div>Не удалось загрузить данные</div>;
   }
 
   return (

@@ -21,6 +21,7 @@ const Label = styled.div`
 const Prop = styled.div`
   width: 103px;
   margin-right: 17px;
+
 `
 
 const Value = styled.div`
@@ -28,6 +29,9 @@ const Value = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const Row = styled.div`
