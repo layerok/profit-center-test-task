@@ -53,13 +53,6 @@ export const HomeRoute = observer(() => {
     return () => unbind();
   });
 
-  const showStats = () => {
-    if (statsStore.quoteValues.length > 2) {
-      statsStore.createStat(statsStore.quoteValues);
-    }
-    navigate(statsRoutePaths.list);
-  };
-
   return (
     <S.Container>
       <main>
@@ -101,7 +94,14 @@ export const HomeRoute = observer(() => {
               {appStore.isStarted ? "Stop" : ""}
               {appStore.isStopping ? "stopping..." : ""}
             </S.PrimaryButton>
-            <S.SecondaryButton onClick={showStats}>
+            <S.SecondaryButton
+              onClick={() => {
+                if (statsStore.quoteValues.length > 2) {
+                  statsStore.createStat(statsStore.quoteValues);
+                }
+                navigate(statsRoutePaths.list);
+              }}
+            >
               Статистика
             </S.SecondaryButton>
           </S.ButtonGroup>
