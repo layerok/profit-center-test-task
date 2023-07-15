@@ -56,19 +56,20 @@ class AppStore {
       this.webSocketInstance = new WebSocket(appConfig.wsUrl);
 
       const onMessage = (ev: MessageEvent<string>) => {
-        const quote = JSON.parse(ev.data) as Quote;
+        const incomingQuote = JSON.parse(ev.data) as Quote;
         if (this.lastQuoteId !== null) {
-          // I assume order of quotes is never violated,
+          // I assume the order of quotes is never violated,
           // so quote#5 can't come before quote#4
-          const prevQuoteId = this.lastQuoteId;
-          if (prevQuoteId + 1 !== quote.id) {
-            this.setLostQuotes(this.lostQuotes + quote.id - (prevQuoteId + 1));
+          if (this.lastQuoteId + 1 !== incomingQuote.id) {
+            this.setLostQuotes(
+              this.lostQuotes + incomingQuote.id - (this.lastQuoteId + 1)
+            );
           }
         }
-        this.lastQuoteId = quote.id;
+        this.lastQuoteId = incomingQuote.id;
         this.incrementTotalQuotes();
 
-        onQuoteRecieved(quote);
+        onQuoteRecieved(incomingQuote);
       };
       const onFail = () => {
         this.setWebSocketState(WebSocket.CLOSING);
