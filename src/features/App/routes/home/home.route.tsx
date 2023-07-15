@@ -10,10 +10,12 @@ import { useEffect } from "react";
 import { Quote } from "../../../Stats/types";
 import { useDebugStore } from "../../debug.store";
 import { runInAction } from "mobx";
+import { useStatsStore } from "../../../Stats/stats.store";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
   const debugStore = useDebugStore();
+  const statsStore = useStatsStore();
 
   const navigate = useNavigate();
 
@@ -21,29 +23,30 @@ export const HomeRoute = observer(() => {
 
   useEffect(() => {
     const onQuoteReceived = (incomingQuote: Quote) => {
-      if (appStore.lastQuoteId !== null) {
+      if (statsStore.lastQuoteId !== null) {
         // I assume the order of quotes is never violated,
         // so quote#5 can't come before quote#4
-        if (appStore.lastQuoteId + 1 !== incomingQuote.id) {
+        if (statsStore.lastQuoteId + 1 !== incomingQuote.id) {
           const lostQuotes =
-            appStore.lostQuotes + incomingQuote.id - (appStore.lastQuoteId + 1);
-          appStore.setLostQuotes(lostQuotes);
+            statsStore.lostQuotes +
+            incomingQuote.id -
+            (statsStore.lastQuoteId + 1);
+          statsStore.setLostQuotes(lostQuotes);
           debugStore.setLostQuotes(lostQuotes);
         }
       }
-      appStore.setLastQuoteId(incomingQuote.id);
+      statsStore.setLastQuoteId(incomingQuote.id);
       debugStore.setLastQuoteId(incomingQuote.id);
-      appStore.incrementNewQuotes();
+      statsStore.incrementNewQuotes();
       debugStore.incrementTotalQuotesReceived();
-      appStore.addQuoteValue(incomingQuote.value);
-      if (appStore.newQuotes === appStore.quotesLimit) {
+      statsStore.addQuoteValue(incomingQuote.value);
+      if (statsStore.newQuotes === statsStore.quotesLimit) {
         const startTime = Date.now();
-        const result = computeStatsFromQuotes(appStore.quoteValues);
+        const result = computeStatsFromQuotes(statsStore.quoteValues);
         const endTime = Date.now();
         runInAction(() => {
-          appStore.newQuotes = 0;
+          statsStore.newQuotes = 0;
         });
-
 
         debugStore.incrementStatsComputedCount();
         statMutation.mutate({
@@ -51,7 +54,7 @@ export const HomeRoute = observer(() => {
           start_time: startTime,
           end_time: endTime,
           time_spent: endTime - startTime,
-          lost_quotes: appStore.lostQuotes,
+          lost_quotes: statsStore.lostQuotes,
         });
       }
     };
@@ -63,18 +66,18 @@ export const HomeRoute = observer(() => {
   }, []);
 
   const showStats = () => {
-    if (appStore.quoteValues.length > 2) {
+    if (statsStore.quoteValues.length > 2) {
       const startTime = Date.now();
-      const result = computeStatsFromQuotes(appStore.quoteValues);
+      const result = computeStatsFromQuotes(statsStore.quoteValues);
       const endTime = Date.now();
-      
+
       debugStore.incrementStatsComputedCount();
       statMutation.mutate({
         ...result,
         start_time: startTime,
         end_time: endTime,
         time_spent: endTime - startTime,
-        lost_quotes: appStore.lostQuotes,
+        lost_quotes: statsStore.lostQuotes,
       });
     }
     navigate(statsRoutePaths.list);
@@ -97,13 +100,13 @@ export const HomeRoute = observer(() => {
             <S.Input
               type="number"
               min="2"
-              defaultValue={appStore.quotesLimit}
+              defaultValue={statsStore.quotesLimit}
               placeholder="Кол-во котировок"
               onChange={(event) => {
-                appStore.setQuotesLimit(+event.currentTarget.value);
+                statsStore.setQuotesLimit(+event.currentTarget.value);
               }}
             />
-            {appStore.quotesLimit < 2 && (
+            {statsStore.quotesLimit < 2 && (
               <S.ValidationMsg>
                 Котировок должно быть не меньше двух
               </S.ValidationMsg>
@@ -111,7 +114,7 @@ export const HomeRoute = observer(() => {
           </S.InputContainer>
           <S.ButtonGroup>
             <S.PrimaryButton
-              disabled={appStore.quotesLimit < 2}
+              disabled={statsStore.quotesLimit < 2}
               onClick={startOrStop}
             >
               {appStore.isIdling ? "Start" : ""}

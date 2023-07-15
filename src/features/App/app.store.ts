@@ -17,7 +17,6 @@ enum AppStateEnum {
 class AppStore {
   constructor() {
     makeAutoObservable(this, {
-      quoteValues: false,
       emitter: false,
     });
     this.emitter = createNanoEvents<Events>();
@@ -25,36 +24,6 @@ class AppStore {
   emitter: Emitter<Events>;
   ws: WebSocket | null = null;
   state: AppStateEnum = AppStateEnum.Idling;
-  lastQuoteId: number | null = null;
-  newQuotes = 0;
-  quotesLimit = 100;
-  lostQuotes = 0;
-  quoteValues: number[] = [];
-
-
-  incrementNewQuotes() {
-    this.newQuotes++;
-  }
-
-  addQuoteValue(value: number) {
-    this.quoteValues.push(value);
-  }
-
-  setLastQuoteId(id: number) {
-    this.lastQuoteId = id;
-  }
-
-  setLostQuotes(count: number) {
-    this.lostQuotes = count;
-  }
-
-  setQuotesLimit(limit: number) {
-    this.quotesLimit = limit;
-  }
-
-  setState(state: AppStateEnum) {
-    this.state = state;
-  }
 
   get isIdling() {
     return this.state === AppStateEnum.Idling;
