@@ -19,20 +19,20 @@ export const DebugPanel = observer(() => {
           </S.Value>
         </S.Stat>
         <S.Stat>
-          <S.Label>Quotes received: </S.Label>
-          <S.Value>{appStore.recievedQuotesCount}</S.Value>
+          <S.Label>Total quotes: </S.Label>
+          <S.Value>{appStore.totalQuotes}</S.Value>
         </S.Stat>
         <S.Stat>
           <S.Label>Stats computed: </S.Label>
           <S.Value> {appStore.statsComputedCount}</S.Value>
         </S.Stat>
         <S.Stat>
-          <S.Label>Last quote id: </S.Label>
-          <S.Value> {appStore.lastQuoteId}</S.Value>
-        </S.Stat>
-        <S.Stat>
           <S.Label>Lost quotes: </S.Label>
           <S.Value> {appStore.lostQuotes}</S.Value>
+        </S.Stat>
+        <S.Stat>
+          <S.Label>Last quote id: </S.Label>
+          <S.Value> {appStore.lastQuoteId}</S.Value>
         </S.Stat>
       </S.Stats>
     </S.Container>

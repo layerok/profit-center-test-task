@@ -7,15 +7,15 @@ class AppStore {
     makeAutoObservable(this);
   }
   webSocketInstance: WebSocket | null = null;
-  recievedQuotesCount = 0;
+  totalQuotes = 0;
   lastQuoteId: number | null = null;
   statsComputedCount = 0;
   websocketState: number = WebSocket.CLOSED;
   quotesLimit = 100;
   lostQuotes = 0;
 
-  incrementRecievedQuotesCount() {
-    this.recievedQuotesCount++;
+  incrementTotalQuotes() {
+    this.totalQuotes++;
   }
 
   incrementStatsComputedCount() {
@@ -43,9 +43,7 @@ class AppStore {
   }
 
   get newlyReceivedQuotes() {
-    return (
-      this.recievedQuotesCount - this.statsComputedCount * this.quotesLimit
-    );
+    return this.totalQuotes - this.statsComputedCount * this.quotesLimit;
   }
 
   connectWebSocket({
@@ -60,15 +58,15 @@ class AppStore {
       const onMessage = (ev: MessageEvent<string>) => {
         const quote = JSON.parse(ev.data) as Quote;
         if (this.lastQuoteId !== null) {
-          // here I assume provided quotes are sorted by id in ascending order
-          // I it is not the case, then lostQuotes will be incorrect
+          // I assume order of quotes is never violated,
+          // so quote#5 can't come before quote#4
           const prevQuoteId = this.lastQuoteId;
           if (prevQuoteId + 1 !== quote.id) {
             this.setLostQuotes(this.lostQuotes + quote.id - (prevQuoteId + 1));
           }
         }
         this.lastQuoteId = quote.id;
-        this.incrementRecievedQuotesCount();
+        this.incrementTotalQuotes();
 
         onQuoteRecieved(quote);
       };
