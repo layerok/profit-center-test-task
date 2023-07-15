@@ -12,7 +12,19 @@ export const getAllStats = async ({
   return res.json();
 };
 
-export const addStat = async (record: Stat) => {
+export const addStat = async (record: {
+  avg: number,
+  min_value: number,
+  max_value: number,
+  start_time: number,
+  mode: number,
+  end_time: number;
+  standard_deviation: number
+  mode_count: number;
+  time_spent: number;
+  lost_quotes: number;
+  quotes_count: number;
+}) => {
   const formData = new FormData();
   formData.append("avg", String(record.avg));
   formData.append("min_value", String(record.min_value));

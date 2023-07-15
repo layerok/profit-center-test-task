@@ -11,8 +11,6 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
   let valueCountMap: Record<number, number> = {};
   let lostQuotes = 0;
 
-  const startTime = Date.now();
-
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
 
@@ -51,8 +49,9 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
 
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
+    const diff = quote.value - avg;
 
-    sum2 += Math.pow(quote.value - avg, 2);
+    sum2 += diff * diff;
 
     if (valueCountMap[quote.value] > mostFrequentValueCount) {
       mostFrequentValue = quote.value;
@@ -62,15 +61,10 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
 
   const standartDeviation = Math.sqrt(sum2 / (quotes.length - 1));
 
-  const endTime = Date.now();
-
   return {
     avg,
     min_value: minValue,
     max_value: maxValue,
-    start_time: startTime,
-    end_time: endTime,
-    time_spent: endTime - startTime,
     standard_deviation: standartDeviation,
     lost_quotes: lostQuotes,
     mode: mostFrequentValue,

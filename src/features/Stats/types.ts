@@ -7,11 +7,8 @@ export type Stat = {
   avg: number;
   min_value: number;
   max_value: number;
-  start_time: number; // ms
-  end_time: number; // ms
   mode: number;
   mode_count: number;
-  time_spent: number; //ms
   standard_deviation: number;
   lost_quotes: number;
   quotes_count: number;
@@ -19,5 +16,8 @@ export type Stat = {
 
 export type DbStat = Stat & {
   id: number;
+  start_time: number; // ms
+  end_time: number; // ms
+  time_spent: number; //ms
 };
 

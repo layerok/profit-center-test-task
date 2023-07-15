@@ -41,7 +41,7 @@ class AppStore {
     return toJS(this.quotes);
   }
 
-  connectWebSocket({ onComputeStat }: { onComputeStat: (stat: Stat) => void }) {
+  connectWebSocket({ onCollectEnough }: { onCollectEnough: (quotes: Quote[]) => void }) {
     if (!this.webSocketInstance) {
       this.setWebSocketState(WebSocket.CONNECTING);
       this.webSocketInstance = new WebSocket(appConfig.wsUrl);
@@ -51,9 +51,7 @@ class AppStore {
         this.addQuote(quote);
 
         if (this.newlyReceivedQuotes === this.quotesLimit) {
-          const record = computeStatsFromQuotes(this.quotesAsPlainArray);
-          onComputeStat?.(record);
-          this.addStat(record);
+          onCollectEnough(this.quotesAsPlainArray)
         }
       };
       const onFail = () => {

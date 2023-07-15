@@ -7,6 +7,7 @@ import { statsRoutePaths } from "../../../Stats/route.paths";
 import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
 import { useAddStat } from "../../../Stats/mutations";
 import { toJS } from "mobx";
+import { profile } from "../../../Stats/utils";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -18,9 +19,16 @@ export const HomeRoute = observer(() => {
   const showStats = () => {
     if (appStore.quotes.length > 2) {
       // use toJS to convert ObservableArray to plain array, so calculations are faster
-      const record = computeStatsFromQuotes(toJS(appStore.quotes));
-      appStore.addStat(record);
-      statMutation.mutate(record);
+      const profileResult = profile(() => {
+        return computeStatsFromQuotes(toJS(appStore.quotes));
+      })
+      appStore.addStat(profileResult.result);
+      statMutation.mutate({
+        ...profileResult.result,
+        start_time: profileResult.startTime,
+        end_time: profileResult.endTime,
+        time_spent: profileResult.timeSpent
+      });
     }
     navigate(statsRoutePaths.list);
   };
@@ -52,9 +60,19 @@ export const HomeRoute = observer(() => {
               onClick={() => {
                 if (appStore.websocketState === WebSocket.CLOSED) {
                   appStore.connectWebSocket({
-                    onComputeStat: (record) => {
-                      statMutation.mutate(record);
-                      console.log("statistics computed", record);
+                    onCollectEnough: (quotes) => {
+                      const profileResult = profile(() => {
+                        return computeStatsFromQuotes(quotes);
+                      });
+               
+                      appStore.addStat(profileResult.result);
+                      statMutation.mutate({
+                        ...profileResult.result,
+                        start_time: profileResult.startTime,
+                        end_time: profileResult.endTime,
+                        time_spent: profileResult.timeSpent
+                      });
+                      console.log("statistics computed", profileResult);
                     },
                   });
                 } else {
