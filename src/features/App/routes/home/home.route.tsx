@@ -22,43 +22,57 @@ export const HomeRoute = observer(() => {
   const statMutation = useAddStat();
 
   useEffect(() => {
-    const onQuoteReceived = (incomingQuote: Quote) => {
-      if (statsStore.lastQuoteId !== null) {
-        // I assume the order of quotes is never violated,
-        // so quote#5 can't come before quote#4
-        if (statsStore.lastQuoteId + 1 !== incomingQuote.id) {
-          const lostQuotes =
-            statsStore.lostQuotes +
-            incomingQuote.id -
-            (statsStore.lastQuoteId + 1);
-          statsStore.setLostQuotes(lostQuotes);
-          debugStore.setLostQuotes(lostQuotes);
+    const unbind = appStore.emitter.on("quoteReceived", (incomingQuote) => {
+      debugStore.incrementTotalQuotesReceived();
+      if (debugStore.lastQuoteId !== null) {
+        const lost = incomingQuote.id - debugStore.lastQuoteId - 1;
+        debugStore.addLostQuotes(lost);
+      }
+
+      debugStore.setLastQuoteId(incomingQuote.id);
+    });
+    return () => unbind();
+  }, []);
+
+  useEffect(() => {
+    const unbind = statsStore.emitter.on("statCreated", (stat) => {
+      debugStore.incrementStatsComputedCount();
+    });
+
+    return () => unbind();
+  }, []);
+
+  useEffect(() => {
+    const unbind = appStore.emitter.on(
+      "quoteReceived",
+      (incomingQuote: Quote) => {
+        if (statsStore.lastQuoteId !== null) {
+          const lostCount = incomingQuote.id - statsStore.lastQuoteId - 1;
+          statsStore.addLostQuotes(lostCount);
+        }
+        statsStore.setLastQuoteId(incomingQuote.id);
+        statsStore.incrementFreshQuotes();
+        statsStore.addQuote(incomingQuote);
+
+        if (statsStore.freshQuotes === statsStore.step) {
+          const startTime = Date.now();
+          const result = computeStatsFromQuotes(statsStore.quoteValues);
+          const endTime = Date.now();
+          statsStore.emitter.emit("statCreated", result);
+          runInAction(() => {
+            statsStore.freshQuotes = 0;
+          });
+
+          statMutation.mutate({
+            ...result,
+            start_time: startTime,
+            end_time: endTime,
+            time_spent: endTime - startTime,
+            lost_quotes: statsStore.lostQuotes,
+          });
         }
       }
-      statsStore.setLastQuoteId(incomingQuote.id);
-      debugStore.setLastQuoteId(incomingQuote.id);
-      statsStore.incrementNewQuotes();
-      debugStore.incrementTotalQuotesReceived();
-      statsStore.addQuoteValue(incomingQuote.value);
-      if (statsStore.newQuotes === statsStore.quotesLimit) {
-        const startTime = Date.now();
-        const result = computeStatsFromQuotes(statsStore.quoteValues);
-        const endTime = Date.now();
-        runInAction(() => {
-          statsStore.newQuotes = 0;
-        });
-
-        debugStore.incrementStatsComputedCount();
-        statMutation.mutate({
-          ...result,
-          start_time: startTime,
-          end_time: endTime,
-          time_spent: endTime - startTime,
-          lost_quotes: statsStore.lostQuotes,
-        });
-      }
-    };
-    const unbind = appStore.emitter.on("quoteReceived", onQuoteReceived);
+    );
 
     return () => {
       unbind();
@@ -71,7 +85,8 @@ export const HomeRoute = observer(() => {
       const result = computeStatsFromQuotes(statsStore.quoteValues);
       const endTime = Date.now();
 
-      debugStore.incrementStatsComputedCount();
+      statsStore.emitter.emit("statCreated", result);
+
       statMutation.mutate({
         ...result,
         start_time: startTime,
@@ -100,13 +115,13 @@ export const HomeRoute = observer(() => {
             <S.Input
               type="number"
               min="2"
-              defaultValue={statsStore.quotesLimit}
+              defaultValue={statsStore.step}
               placeholder="Кол-во котировок"
               onChange={(event) => {
-                statsStore.setQuotesLimit(+event.currentTarget.value);
+                statsStore.setStep(+event.currentTarget.value);
               }}
             />
-            {statsStore.quotesLimit < 2 && (
+            {statsStore.step < 2 && (
               <S.ValidationMsg>
                 Котировок должно быть не меньше двух
               </S.ValidationMsg>
@@ -114,7 +129,11 @@ export const HomeRoute = observer(() => {
           </S.InputContainer>
           <S.ButtonGroup>
             <S.PrimaryButton
-              disabled={statsStore.quotesLimit < 2}
+              disabled={
+                statsStore.step < 2 ||
+                appStore.isStarting ||
+                appStore.isStopping
+              }
               onClick={startOrStop}
             >
               {appStore.isIdling ? "Start" : ""}

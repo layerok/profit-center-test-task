@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { Quote } from "../Stats/types";
 
 class DebugStore {
   constructor() {
@@ -26,6 +27,9 @@ class DebugStore {
     this.lostQuotes = count;
   }
 
+  addLostQuotes(amount: number) {
+    this.lostQuotes += amount;
+  }
 }
 
 export const debugStore = new DebugStore();

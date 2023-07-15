@@ -41,6 +41,10 @@ class AppStore {
     return this.state === AppStateEnum.Started;
   }
 
+  setState(state: AppStateEnum) {
+    this.state = state;
+  }
+
   start() {
     if (this.isIdling) {
       this.state = AppStateEnum.Starting;
@@ -51,13 +55,13 @@ class AppStore {
         this.emitter.emit("quoteReceived", incomingQuote);
       };
       const onFail = () => {
-        this.state = AppStateEnum.Stopping;
+        this.setState(AppStateEnum.Stopping);
       };
       const onClose = () => {
-        this.state = AppStateEnum.Idling;
+        this.setState(AppStateEnum.Idling);
       };
       const onOpen = (ev: Event) => {
-        this.state = AppStateEnum.Started;
+        this.setState(AppStateEnum.Started);
       };
 
       this.ws.addEventListener("open", onOpen);
@@ -68,9 +72,11 @@ class AppStore {
   }
 
   stop() {
-    this.state = AppStateEnum.Stopping;
-    this.ws?.close(1000);
-    this.ws = null;
+    if (!this.isStopping && !this.isIdling) {
+      this.state = AppStateEnum.Stopping;
+      this.ws?.close(1000);
+      this.ws = null;
+    }
   }
 }
 

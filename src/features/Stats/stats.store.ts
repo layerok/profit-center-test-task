@@ -1,24 +1,33 @@
 import { makeAutoObservable } from "mobx";
+import { Quote, Stat } from "./types";
+import { createNanoEvents, Emitter } from "nanoevents";
+
+type Events = {
+  statCreated: (stat: Stat) => void;
+};
 
 class StatsStore {
   constructor() {
     makeAutoObservable(this, {
       quoteValues: false,
+      emitter: false,
     });
+    this.emitter = createNanoEvents<Events>();
   }
-  
+  emitter: Emitter<Events>;
+
   lastQuoteId: number | null = null;
-  newQuotes = 0;
-  quotesLimit = 100;
+  freshQuotes = 0;
+  step = 100;
   lostQuotes = 0;
   quoteValues: number[] = [];
 
-  incrementNewQuotes() {
-    this.newQuotes++;
+  incrementFreshQuotes() {
+    this.freshQuotes++;
   }
 
-  addQuoteValue(value: number) {
-    this.quoteValues.push(value);
+  addQuote(quote: Quote) {
+    this.quoteValues.push(quote.value);
   }
 
   setLastQuoteId(id: number) {
@@ -29,10 +38,13 @@ class StatsStore {
     this.lostQuotes = count;
   }
 
-  setQuotesLimit(limit: number) {
-    this.quotesLimit = limit;
+  setStep(step: number) {
+    this.step = step;
   }
 
+  addLostQuotes(amount: number) {
+    this.lostQuotes += amount;
+  }
 }
 
 export const statsStore = new StatsStore();
