@@ -6,6 +6,8 @@ import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
 import { useAddStat } from "../../../Stats/mutations";
+import { useEffect } from "react";
+import { Quote } from "../../../Stats/types";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -13,6 +15,30 @@ export const HomeRoute = observer(() => {
   const navigate = useNavigate();
 
   const statMutation = useAddStat();
+
+  useEffect(() => {
+    const onQuoteReceived = (quote: Quote) => {
+      if (appStore.newlyReceivedQuotes === appStore.quotesLimit) {
+        const startTime = Date.now();
+        const result = computeStatsFromQuotes(appStore.quoteValues);
+        const endTime = Date.now();
+
+        appStore.incrementStatsComputedCount();
+        statMutation.mutate({
+          ...result,
+          start_time: startTime,
+          end_time: endTime,
+          time_spent: endTime - startTime,
+          lost_quotes: appStore.lostQuotes,
+        });
+      }
+    };
+    const unbind = appStore.emitter.on('quoteReceived', onQuoteReceived)
+
+    return () => {
+      unbind();
+    }
+  }, [])
 
   const showStats = () => {
     if (appStore.quoteValues.length > 2) {
@@ -32,27 +58,10 @@ export const HomeRoute = observer(() => {
   };
 
   const start = () => {
-    if (appStore.websocketState === WebSocket.CLOSED) {
-      appStore.connectWebSocket({
-        onQuoteRecieved: (quote) => {
-          if (appStore.newlyReceivedQuotes === appStore.quotesLimit) {
-            const startTime = Date.now();
-            const result = computeStatsFromQuotes(appStore.quoteValues);
-            const endTime = Date.now();
-
-            appStore.incrementStatsComputedCount();
-            statMutation.mutate({
-              ...result,
-              start_time: startTime,
-              end_time: endTime,
-              time_spent: endTime - startTime,
-              lost_quotes: appStore.lostQuotes,
-            });
-          }
-        },
-      });
+    if (appStore.isIdle) {
+      appStore.startListeningForQuotes();
     } else {
-      appStore.disconnectWebsocket();
+      appStore.endListeningForQuotes();
     }
   };
 

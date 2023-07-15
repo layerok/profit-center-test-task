@@ -1,13 +1,21 @@
 import { makeAutoObservable } from "mobx";
 import { appConfig } from "../../config/app.config";
 import { Quote } from "../Stats/types";
+import { createNanoEvents, Emitter } from "nanoevents";
+
+type Events = {
+  quoteReceived: (quote: Quote) => void;
+}
 
 class AppStore {
   constructor() {
     makeAutoObservable(this, {
       quoteValues: false,
+      emitter: false
     });
+    this.emitter = createNanoEvents<Events>();
   }
+  emitter: Emitter<Events>;
   webSocketInstance: WebSocket | null = null;
   totalQuotes = 0;
   lastQuoteId: number | null = null;
@@ -53,11 +61,11 @@ class AppStore {
     return this.totalQuotes - this.statsComputedCount * this.quotesLimit;
   }
 
-  connectWebSocket({
-    onQuoteRecieved,
-  }: {
-    onQuoteRecieved: (quote: Quote) => void;
-  }) {
+  get isIdle() {
+    return appStore.websocketState === WebSocket.CLOSED;
+  }
+
+  startListeningForQuotes() {
     if (!this.webSocketInstance) {
       this.setWebSocketState(WebSocket.CONNECTING);
       this.webSocketInstance = new WebSocket(appConfig.wsUrl);
@@ -76,8 +84,7 @@ class AppStore {
         this.setLastQuoteId(incomingQuote.id);
         this.incrementTotalQuotes();
         this.addQuoteValue(incomingQuote.value);
-
-        onQuoteRecieved(incomingQuote);
+        this.emitter.emit('quoteReceived', incomingQuote)
       };
       const onFail = () => {
         this.setWebSocketState(WebSocket.CLOSING);
@@ -96,7 +103,7 @@ class AppStore {
     }
   }
 
-  disconnectWebsocket() {
+  endListeningForQuotes() {
     this.setWebSocketState(WebSocket.CLOSING);
     this.webSocketInstance?.close(1000);
     this.setWebSocketInstance(null);
