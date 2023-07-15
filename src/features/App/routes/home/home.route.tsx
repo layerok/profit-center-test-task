@@ -8,6 +8,7 @@ import { computeStatsFromQuotes } from "../../../Stats/computations/computeStats
 import { useAddStat } from "../../../Stats/mutations";
 import { toJS } from "mobx";
 import { profile } from "../../../Stats/utils";
+import { findLostQuotes } from "../../../Stats/computations/findLostQuotes";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -22,12 +23,15 @@ export const HomeRoute = observer(() => {
       const profileResult = profile(() => {
         return computeStatsFromQuotes(toJS(appStore.quotes));
       })
+      // todo: check lost quotes when they arrive
+      const lostQuotes = findLostQuotes(toJS(appStore.quotes));
       appStore.addStat(profileResult.result);
       statMutation.mutate({
         ...profileResult.result,
         start_time: profileResult.startTime,
         end_time: profileResult.endTime,
-        time_spent: profileResult.timeSpent
+        time_spent: profileResult.timeSpent,
+        lost_quotes: lostQuotes
       });
     }
     navigate(statsRoutePaths.list);
@@ -64,13 +68,15 @@ export const HomeRoute = observer(() => {
                       const profileResult = profile(() => {
                         return computeStatsFromQuotes(quotes);
                       });
+                      const lostQuotes = findLostQuotes(quotes);
                
                       appStore.addStat(profileResult.result);
                       statMutation.mutate({
                         ...profileResult.result,
                         start_time: profileResult.startTime,
                         end_time: profileResult.endTime,
-                        time_spent: profileResult.timeSpent
+                        time_spent: profileResult.timeSpent,
+                        lost_quotes: lostQuotes
                       });
                       console.log("statistics computed", profileResult);
                     },

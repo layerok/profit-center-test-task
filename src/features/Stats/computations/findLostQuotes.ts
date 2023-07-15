@@ -1,15 +1,10 @@
 import { Quote } from "./../types";
 
-export function findLostQuotes(quotes: Quote[]): {
-    lost_quotes: number;
-    spent_time: number;
-} {
+export function findLostQuotes(quotes: Quote[]): number {
   if (quotes.length < 2) {
     throw Error("provide at least 2 quotes to compute stats");
   }
   let lostQuotes = 0;
-
-  const startTime = Date.now();
 
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
@@ -23,10 +18,6 @@ export function findLostQuotes(quotes: Quote[]): {
       }
     }
   }
-  const endTime = Date.now();
 
-  return {
-    lost_quotes: lostQuotes,
-    spent_time: endTime - startTime,
-  };
+  return lostQuotes;
 }

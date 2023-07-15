@@ -1,17 +1,11 @@
-import { Quote, Stat } from "./../types";
-
-export function findMinValue(quotes: Quote[]): number {
-  if (quotes.length < 2) {
-    throw Error("provide at least 2 quotes to compute stats");
-  }
-
+export function findMinValue(items: number[]): number {
   let minValue = +Infinity;
 
-  for (let i = 0; i < quotes.length; i++) {
-    const quote = quotes[i];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
 
-    if (minValue > quote.value) {
-      minValue = quote.value;
+    if (minValue > item) {
+      minValue = item;
     }
   }
 

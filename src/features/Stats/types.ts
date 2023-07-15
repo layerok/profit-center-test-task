@@ -10,7 +10,6 @@ export type Stat = {
   mode: number;
   mode_count: number;
   standard_deviation: number;
-  lost_quotes: number;
   quotes_count: number;
 };
 
@@ -19,5 +18,6 @@ export type DbStat = Stat & {
   start_time: number; // ms
   end_time: number; // ms
   time_spent: number; //ms
+  lost_quotes: number;
 };
 

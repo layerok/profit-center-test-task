@@ -2,7 +2,7 @@ export const formatMs = (ms: number) => {
   return `${ms}ms`;
 };
 
-export function profile<R>(cb: () => R): {
+export function profile<R>(cb: () => R, name = 'profile'): {
   result: R;
   startTime: number;
   endTime: number;
@@ -12,10 +12,13 @@ export function profile<R>(cb: () => R): {
   const result = cb();
   const endTime = Date.now();
   const timeSpent = endTime - startTime;
-  return {
+
+  const info = {
     result,
     startTime,
     endTime,
     timeSpent,
   };
-};
+  console.log(name, info);
+  return info;
+}

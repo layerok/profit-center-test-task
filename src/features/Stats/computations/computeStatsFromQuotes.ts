@@ -9,19 +9,9 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
   let minValue = +Infinity;
   let maxValue = -Infinity;
   let valueCountMap: Record<number, number> = {};
-  let lostQuotes = 0;
 
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
-
-    if (i !== 0) {
-      // here I assume provided quotes are sorted by id in ascending order
-      // I it is not the case, then lostQuotes will be incorrect
-      const prevQuote = quotes[i - 1];
-      if (prevQuote.id + 1 !== quote.id) {
-        lostQuotes += quote.id - (prevQuote.id + 1);
-      }
-    }
 
     valueSum += quote.value;
 
@@ -66,7 +56,6 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
     min_value: minValue,
     max_value: maxValue,
     standard_deviation: standartDeviation,
-    lost_quotes: lostQuotes,
     mode: mostFrequentValue,
     quotes_count: quotes.length,
     mode_count: mostFrequentValueCount,
