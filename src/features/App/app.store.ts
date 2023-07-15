@@ -4,7 +4,9 @@ import { Quote } from "../Stats/types";
 
 class AppStore {
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      quoteValues: false,
+    });
   }
   webSocketInstance: WebSocket | null = null;
   totalQuotes = 0;
@@ -13,6 +15,7 @@ class AppStore {
   websocketState: number = WebSocket.CLOSED;
   quotesLimit = 100;
   lostQuotes = 0;
+  quoteValues: number[] = [];
 
   incrementTotalQuotes() {
     this.totalQuotes++;
@@ -20,6 +23,10 @@ class AppStore {
 
   incrementStatsComputedCount() {
     this.statsComputedCount++;
+  }
+
+  addQuoteValue(value: number) {
+    this.quoteValues.push(value);
   }
 
   setLastQuoteId(id: number) {
@@ -66,8 +73,9 @@ class AppStore {
             );
           }
         }
-        this.lastQuoteId = incomingQuote.id;
+        this.setLastQuoteId(incomingQuote.id);
         this.incrementTotalQuotes();
+        this.addQuoteValue(incomingQuote.value);
 
         onQuoteRecieved(incomingQuote);
       };

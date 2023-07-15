@@ -6,8 +6,6 @@ import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
 import { useAddStat } from "../../../Stats/mutations";
-import { profile } from "../../../Stats/utils";
-import { useRef } from "react";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -15,23 +13,47 @@ export const HomeRoute = observer(() => {
   const navigate = useNavigate();
 
   const statMutation = useAddStat();
-  const quoteValuesRef = useRef<number[]>([]);
 
   const showStats = () => {
-    if (quoteValuesRef.current.length > 2) {
-      const profileResult = profile(() => {
-        return computeStatsFromQuotes(quoteValuesRef.current);
-      });
+    if (appStore.quoteValues.length > 2) {
+      const startTime = Date.now();
+      const result = computeStatsFromQuotes(appStore.quoteValues);
+      const endTime = Date.now();
       appStore.incrementStatsComputedCount();
       statMutation.mutate({
-        ...profileResult.result,
-        start_time: profileResult.startTime,
-        end_time: profileResult.endTime,
-        time_spent: profileResult.timeSpent,
+        ...result,
+        start_time: startTime,
+        end_time: endTime,
+        time_spent: endTime - startTime,
         lost_quotes: appStore.lostQuotes,
       });
     }
     navigate(statsRoutePaths.list);
+  };
+
+  const start = () => {
+    if (appStore.websocketState === WebSocket.CLOSED) {
+      appStore.connectWebSocket({
+        onQuoteRecieved: (quote) => {
+          if (appStore.newlyReceivedQuotes === appStore.quotesLimit) {
+            const startTime = Date.now();
+            const result = computeStatsFromQuotes(appStore.quoteValues);
+            const endTime = Date.now();
+
+            appStore.incrementStatsComputedCount();
+            statMutation.mutate({
+              ...result,
+              start_time: startTime,
+              end_time: endTime,
+              time_spent: endTime - startTime,
+              lost_quotes: appStore.lostQuotes,
+            });
+          }
+        },
+      });
+    } else {
+      appStore.disconnectWebsocket();
+    }
   };
 
   return (
@@ -58,34 +80,7 @@ export const HomeRoute = observer(() => {
           <S.ButtonGroup>
             <S.PrimaryButton
               disabled={appStore.quotesLimit < 2}
-              onClick={() => {
-                if (appStore.websocketState === WebSocket.CLOSED) {
-                  appStore.connectWebSocket({
-                    onQuoteRecieved: (quote) => {
-                      quoteValuesRef.current.push(quote.value);
-                      if (
-                        appStore.newlyReceivedQuotes === appStore.quotesLimit
-                      ) {
-                        const profileResult = profile(() => {
-                          return computeStatsFromQuotes(quoteValuesRef.current);
-                        });
-
-                        appStore.incrementStatsComputedCount();
-                        statMutation.mutate({
-                          ...profileResult.result,
-                          start_time: profileResult.startTime,
-                          end_time: profileResult.endTime,
-                          time_spent: profileResult.timeSpent,
-                          lost_quotes: appStore.lostQuotes,
-                        });
-                        console.log("statistics computed", profileResult);
-                      }
-                    },
-                  });
-                } else {
-                  appStore.disconnectWebsocket();
-                }
-              }}
+              onClick={start}
             >
               {appStore.websocketState === WebSocket.CLOSED ? "Start" : ""}
               {appStore.websocketState === WebSocket.CONNECTING
