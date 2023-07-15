@@ -17,7 +17,7 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
     const quote = quotes[i];
 
     if (i !== 0) {
-      // here I assume provided quotes to be sorted by id
+      // here I assume provided quotes are sorted by id in ascending order
       // I it is not the case, then lostQuotes will be incorrect
       const prevQuote = quotes[i - 1];
       if (prevQuote.id + 1 !== quote.id) {
