@@ -11,16 +11,16 @@ class AppStore {
   constructor() {
     makeAutoObservable(this, {
       quoteValues: false,
-      emitter: false
+      emitter: false,
     });
     this.emitter = createNanoEvents<Events>();
   }
   emitter: Emitter<Events>;
-  webSocketInstance: WebSocket | null = null;
+  ws: WebSocket | null = null;
   totalQuotes = 0;
   lastQuoteId: number | null = null;
   statsComputedCount = 0;
-  websocketState: number = WebSocket.CLOSED;
+  wsState: number = WebSocket.CLOSED;
   quotesLimit = 100;
   lostQuotes = 0;
   quoteValues: number[] = [];
@@ -45,14 +45,6 @@ class AppStore {
     this.lostQuotes = count;
   }
 
-  setWebSocketState(state: number) {
-    this.websocketState = state;
-  }
-
-  setWebSocketInstance(instance: WebSocket | null) {
-    this.webSocketInstance = instance;
-  }
-
   setQuotesLimit(limit: number) {
     this.quotesLimit = limit;
   }
@@ -61,52 +53,56 @@ class AppStore {
     return this.totalQuotes - this.statsComputedCount * this.quotesLimit;
   }
 
-  get isIdle() {
-    return appStore.websocketState === WebSocket.CLOSED;
+  setWsState(state: number) {
+    this.wsState = state;
   }
 
-  startListeningForQuotes() {
-    if (!this.webSocketInstance) {
-      this.setWebSocketState(WebSocket.CONNECTING);
-      this.webSocketInstance = new WebSocket(appConfig.wsUrl);
+  get isIdling() {
+    return this.wsState === WebSocket.CLOSED;
+  }
+
+  get isStarting() {
+    return this.wsState === WebSocket.CONNECTING;
+  }
+
+  get isStopping() {
+    return this.wsState === WebSocket.CLOSING;
+  }
+
+  get isStarted() {
+    return this.wsState === WebSocket.OPEN;
+  }
+
+  start() {
+    if (!this.ws) {
+      this.setWsState(WebSocket.CONNECTING);
+      this.ws = new WebSocket(appConfig.wsUrl);
 
       const onMessage = (ev: MessageEvent<string>) => {
         const incomingQuote = JSON.parse(ev.data) as Quote;
-        if (this.lastQuoteId !== null) {
-          // I assume the order of quotes is never violated,
-          // so quote#5 can't come before quote#4
-          if (this.lastQuoteId + 1 !== incomingQuote.id) {
-            this.setLostQuotes(
-              this.lostQuotes + incomingQuote.id - (this.lastQuoteId + 1)
-            );
-          }
-        }
-        this.setLastQuoteId(incomingQuote.id);
-        this.incrementTotalQuotes();
-        this.addQuoteValue(incomingQuote.value);
-        this.emitter.emit('quoteReceived', incomingQuote)
+        this.emitter.emit("quoteReceived", incomingQuote);
       };
       const onFail = () => {
-        this.setWebSocketState(WebSocket.CLOSING);
+        this.setWsState(WebSocket.CLOSING);
       };
       const onClose = () => {
-        this.setWebSocketState(WebSocket.CLOSED);
+        this.setWsState(WebSocket.CLOSED);
       };
       const onOpen = (ev: Event) => {
-        this.setWebSocketState(WebSocket.OPEN);
+        this.setWsState(WebSocket.OPEN);
       };
 
-      this.webSocketInstance.addEventListener("open", onOpen);
-      this.webSocketInstance.addEventListener("close", onClose);
-      this.webSocketInstance.addEventListener("fail", onFail);
-      this.webSocketInstance.addEventListener("message", onMessage);
+      this.ws.addEventListener("open", onOpen);
+      this.ws.addEventListener("close", onClose);
+      this.ws.addEventListener("fail", onFail);
+      this.ws.addEventListener("message", onMessage);
     }
   }
 
-  endListeningForQuotes() {
-    this.setWebSocketState(WebSocket.CLOSING);
-    this.webSocketInstance?.close(1000);
-    this.setWebSocketInstance(null);
+  stop() {
+    this.setWsState(WebSocket.CLOSING);
+    this.ws?.close(1000);
+    this.ws = null;
   }
 }
 

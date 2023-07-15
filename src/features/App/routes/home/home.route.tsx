@@ -17,7 +17,19 @@ export const HomeRoute = observer(() => {
   const statMutation = useAddStat();
 
   useEffect(() => {
-    const onQuoteReceived = (quote: Quote) => {
+    const onQuoteReceived = (incomingQuote: Quote) => {
+      if (appStore.lastQuoteId !== null) {
+        // I assume the order of quotes is never violated,
+        // so quote#5 can't come before quote#4
+        if (appStore.lastQuoteId + 1 !== incomingQuote.id) {
+          appStore.setLostQuotes(
+            appStore.lostQuotes + incomingQuote.id - (appStore.lastQuoteId + 1)
+          );
+        }
+      }
+      appStore.setLastQuoteId(incomingQuote.id);
+      appStore.incrementTotalQuotes();
+      appStore.addQuoteValue(incomingQuote.value);
       if (appStore.newlyReceivedQuotes === appStore.quotesLimit) {
         const startTime = Date.now();
         const result = computeStatsFromQuotes(appStore.quoteValues);
@@ -33,12 +45,12 @@ export const HomeRoute = observer(() => {
         });
       }
     };
-    const unbind = appStore.emitter.on('quoteReceived', onQuoteReceived)
+    const unbind = appStore.emitter.on("quoteReceived", onQuoteReceived);
 
     return () => {
       unbind();
-    }
-  }, [])
+    };
+  }, []);
 
   const showStats = () => {
     if (appStore.quoteValues.length > 2) {
@@ -58,10 +70,10 @@ export const HomeRoute = observer(() => {
   };
 
   const start = () => {
-    if (appStore.isIdle) {
-      appStore.startListeningForQuotes();
+    if (appStore.isIdling) {
+      appStore.start();
     } else {
-      appStore.endListeningForQuotes();
+      appStore.stop();
     }
   };
 
@@ -91,14 +103,10 @@ export const HomeRoute = observer(() => {
               disabled={appStore.quotesLimit < 2}
               onClick={start}
             >
-              {appStore.websocketState === WebSocket.CLOSED ? "Start" : ""}
-              {appStore.websocketState === WebSocket.CONNECTING
-                ? "connecting..."
-                : ""}
-              {appStore.websocketState === WebSocket.OPEN ? "Stop" : ""}
-              {appStore.websocketState === WebSocket.CLOSING
-                ? "closing..."
-                : ""}
+              {appStore.isIdling ? "Start" : ""}
+              {appStore.isStarting ? "starting..." : ""}
+              {appStore.isStarted ? "Stop" : ""}
+              {appStore.isStopping ? "stopping..." : ""}
             </S.PrimaryButton>
             <S.SecondaryButton onClick={showStats}>
               Статистика
