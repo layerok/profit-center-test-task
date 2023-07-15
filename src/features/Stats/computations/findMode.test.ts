@@ -16,8 +16,8 @@ test("performance test", () => {
     const value = Math.ceil(Math.random() * 5000);
     values.push(value);
   }
-  const profilInfo = profile(() => {
+  const info = profile(() => {
     return findMode(values);
   }, "calculateMode of 50 000 000 items");
-  expect(profilInfo.timeSpent).toBeLessThan(1000);
+  expect(info.timeSpent).toBeLessThan(1000);
 });

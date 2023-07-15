@@ -71,15 +71,15 @@ export const StatRoute = () => {
         }}
       >
         <S.Prop>
-          <S.Label>Середне арефметичке</S.Label>
+          <S.Label>Среднее ареф.</S.Label>
           <S.Value title={String(stat.avg)}>{stat.avg}</S.Value>
         </S.Prop>
         <S.Prop>
-          <S.Label>Мінімальне значення</S.Label>
+          <S.Label>Минимальное значение</S.Label>
           <S.Value title={String(stat.min_value)}>{stat.min_value}</S.Value>
         </S.Prop>
         <S.Prop>
-          <S.Label>Максимальне значення</S.Label>
+          <S.Label>Максимальное значение</S.Label>
           <S.Value title={String(stat.max_value)}>{stat.max_value}</S.Value>
         </S.Prop>
       </S.Row>

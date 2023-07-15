@@ -12,15 +12,22 @@ const Title = styled.div`
   font-weight: 700;
 `;
 
-const DataContainer = styled.div`
+const ListContainer = styled.div`
   margin-top: 20px;
   overflow: auto;
   height: 265px;
 `;
 
+const List = styled.div`
+  position: relative;
+`;
+
 const Row = styled.div`
   display: flex;
-  margin-bottom: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 `;
 
 const ID = styled.div`
@@ -36,4 +43,4 @@ const Action = styled.div`
   margin-left: 10px;
 `;
 
-export { CloseSvgContainer, Title, DataContainer, Row, ID, Date, Action };
+export { CloseSvgContainer, Title, ListContainer, List, Row, ID, Date, Action };
