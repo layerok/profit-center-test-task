@@ -1,5 +1,4 @@
 import { appConfig } from "../../../config/app.config";
-import { Stat } from "../types";
 import { IGetStatsReq, IGetStatsRes } from "./api.types";
 
 export const getAllStats = async ({
