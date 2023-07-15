@@ -8,9 +8,12 @@ import { computeStatsFromQuotes } from "../../../Stats/computations/computeStats
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { Quote } from "../../../Stats/types";
+import { useDebugStore } from "../../debug.store";
+import { runInAction } from "mobx";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
+  const debugStore = useDebugStore();
 
   const navigate = useNavigate();
 
@@ -22,20 +25,27 @@ export const HomeRoute = observer(() => {
         // I assume the order of quotes is never violated,
         // so quote#5 can't come before quote#4
         if (appStore.lastQuoteId + 1 !== incomingQuote.id) {
-          appStore.setLostQuotes(
-            appStore.lostQuotes + incomingQuote.id - (appStore.lastQuoteId + 1)
-          );
+          const lostQuotes =
+            appStore.lostQuotes + incomingQuote.id - (appStore.lastQuoteId + 1);
+          appStore.setLostQuotes(lostQuotes);
+          debugStore.setLostQuotes(lostQuotes);
         }
       }
       appStore.setLastQuoteId(incomingQuote.id);
-      appStore.incrementTotalQuotes();
+      debugStore.setLastQuoteId(incomingQuote.id);
+      appStore.incrementNewQuotes();
+      debugStore.incrementTotalQuotes();
       appStore.addQuoteValue(incomingQuote.value);
-      if (appStore.newlyReceivedQuotes === appStore.quotesLimit) {
+      if (appStore.newQuotes === appStore.quotesLimit) {
         const startTime = Date.now();
         const result = computeStatsFromQuotes(appStore.quoteValues);
         const endTime = Date.now();
+        runInAction(() => {
+          appStore.newQuotes = 0;
+        });
 
-        appStore.incrementStatsComputedCount();
+
+        debugStore.incrementStatsComputedCount();
         statMutation.mutate({
           ...result,
           start_time: startTime,
@@ -57,7 +67,8 @@ export const HomeRoute = observer(() => {
       const startTime = Date.now();
       const result = computeStatsFromQuotes(appStore.quoteValues);
       const endTime = Date.now();
-      appStore.incrementStatsComputedCount();
+      
+      debugStore.incrementStatsComputedCount();
       statMutation.mutate({
         ...result,
         start_time: startTime,
@@ -69,7 +80,7 @@ export const HomeRoute = observer(() => {
     navigate(statsRoutePaths.list);
   };
 
-  const start = () => {
+  const startOrStop = () => {
     if (appStore.isIdling) {
       appStore.start();
     } else {
@@ -101,7 +112,7 @@ export const HomeRoute = observer(() => {
           <S.ButtonGroup>
             <S.PrimaryButton
               disabled={appStore.quotesLimit < 2}
-              onClick={start}
+              onClick={startOrStop}
             >
               {appStore.isIdling ? "Start" : ""}
               {appStore.isStarting ? "starting..." : ""}

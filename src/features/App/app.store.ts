@@ -5,6 +5,13 @@ import { createNanoEvents, Emitter } from "nanoevents";
 
 type Events = {
   quoteReceived: (quote: Quote) => void;
+};
+
+enum AppStateEnum {
+  Idling = "idling",
+  Stopping = "stopping",
+  Starting = "starting",
+  Started = "started",
 }
 
 class AppStore {
@@ -17,20 +24,16 @@ class AppStore {
   }
   emitter: Emitter<Events>;
   ws: WebSocket | null = null;
-  totalQuotes = 0;
+  state: AppStateEnum = AppStateEnum.Idling;
   lastQuoteId: number | null = null;
-  statsComputedCount = 0;
-  wsState: number = WebSocket.CLOSED;
+  newQuotes = 0;
   quotesLimit = 100;
   lostQuotes = 0;
   quoteValues: number[] = [];
 
-  incrementTotalQuotes() {
-    this.totalQuotes++;
-  }
 
-  incrementStatsComputedCount() {
-    this.statsComputedCount++;
+  incrementNewQuotes() {
+    this.newQuotes++;
   }
 
   addQuoteValue(value: number) {
@@ -49,33 +52,29 @@ class AppStore {
     this.quotesLimit = limit;
   }
 
-  get newlyReceivedQuotes() {
-    return this.totalQuotes - this.statsComputedCount * this.quotesLimit;
-  }
-
-  setWsState(state: number) {
-    this.wsState = state;
+  setState(state: AppStateEnum) {
+    this.state = state;
   }
 
   get isIdling() {
-    return this.wsState === WebSocket.CLOSED;
+    return this.state === AppStateEnum.Idling;
   }
 
   get isStarting() {
-    return this.wsState === WebSocket.CONNECTING;
+    return this.state === AppStateEnum.Starting;
   }
 
   get isStopping() {
-    return this.wsState === WebSocket.CLOSING;
+    return this.state === AppStateEnum.Stopping;
   }
 
   get isStarted() {
-    return this.wsState === WebSocket.OPEN;
+    return this.state === AppStateEnum.Started;
   }
 
   start() {
-    if (!this.ws) {
-      this.setWsState(WebSocket.CONNECTING);
+    if (this.isIdling) {
+      this.state = AppStateEnum.Starting;
       this.ws = new WebSocket(appConfig.wsUrl);
 
       const onMessage = (ev: MessageEvent<string>) => {
@@ -83,13 +82,13 @@ class AppStore {
         this.emitter.emit("quoteReceived", incomingQuote);
       };
       const onFail = () => {
-        this.setWsState(WebSocket.CLOSING);
+        this.state = AppStateEnum.Stopping;
       };
       const onClose = () => {
-        this.setWsState(WebSocket.CLOSED);
+        this.state = AppStateEnum.Idling;
       };
       const onOpen = (ev: Event) => {
-        this.setWsState(WebSocket.OPEN);
+        this.state = AppStateEnum.Started;
       };
 
       this.ws.addEventListener("open", onOpen);
@@ -100,7 +99,7 @@ class AppStore {
   }
 
   stop() {
-    this.setWsState(WebSocket.CLOSING);
+    this.state = AppStateEnum.Stopping;
     this.ws?.close(1000);
     this.ws = null;
   }
