@@ -9,7 +9,7 @@ export const DebugPanel = observer(() => {
       <S.Stats>
         <S.Stat>
           <S.Label>Total quotes: </S.Label>
-          <S.Value>{debugStore.totalQuotes}</S.Value>
+          <S.Value>{debugStore.totalQuotesReceived}</S.Value>
         </S.Stat>
         <S.Stat>
           <S.Label>Stats computed: </S.Label>

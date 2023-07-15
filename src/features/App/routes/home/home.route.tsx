@@ -34,7 +34,7 @@ export const HomeRoute = observer(() => {
       appStore.setLastQuoteId(incomingQuote.id);
       debugStore.setLastQuoteId(incomingQuote.id);
       appStore.incrementNewQuotes();
-      debugStore.incrementTotalQuotes();
+      debugStore.incrementTotalQuotesReceived();
       appStore.addQuoteValue(incomingQuote.value);
       if (appStore.newQuotes === appStore.quotesLimit) {
         const startTime = Date.now();

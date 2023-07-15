@@ -5,13 +5,13 @@ class DebugStore {
     makeAutoObservable(this);
   }
 
-  totalQuotes = 0;
+  totalQuotesReceived = 0;
   lastQuoteId: number | null = null;
   statsComputedCount = 0;
   lostQuotes = 0;
 
-  incrementTotalQuotes() {
-    this.totalQuotes++;
+  incrementTotalQuotesReceived() {
+    this.totalQuotesReceived++;
   }
 
   incrementStatsComputedCount() {
