@@ -37,6 +37,10 @@ class AppStore {
     return this.quotes.length - this.stats.length * this.quotesLimit;
   }
 
+  get quotesAsPlainArray() {
+    return toJS(this.quotes);
+  }
+
   connectWebSocket({ onComputeStat }: { onComputeStat: (stat: Stat) => void }) {
     if (!this.webSocketInstance) {
       this.setWebSocketState(WebSocket.CONNECTING);
@@ -47,7 +51,7 @@ class AppStore {
         this.addQuote(quote);
 
         if (this.newlyReceivedQuotes === this.quotesLimit) {
-          const record = computeStatsFromQuotes(toJS(this.quotes));
+          const record = computeStatsFromQuotes(this.quotesAsPlainArray);
           onComputeStat?.(record);
           this.addStat(record);
         }
