@@ -16,6 +16,7 @@ const Label = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  height: 24px;
 `;
 
 const Prop = styled.div`
