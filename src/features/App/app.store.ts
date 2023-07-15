@@ -1,24 +1,33 @@
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { appConfig } from "../../config/app.config";
-import { computeStatsFromQuotes } from "../Stats/computations/computeStatsFromQuotes";
-import { Quote, Stat } from "../Stats/types";
+import { Quote } from "../Stats/types";
 
 class AppStore {
   constructor() {
     makeAutoObservable(this);
   }
   webSocketInstance: WebSocket | null = null;
-  quotes: Quote[] = [];
-  stats: Stat[] = [];
+  recievedQuotesCount = 0;
+  lastQuoteId: number | null = null;
+  statsComputedCount = 0;
   websocketState: number = WebSocket.CLOSED;
   quotesLimit = 100;
+  lostQuotes = 0;
 
-  addQuote(quote: Quote) {
-    this.quotes.push(quote);
+  incrementRecievedQuotesCount() {
+    this.recievedQuotesCount++;
   }
 
-  addStat(stat: Stat) {
-    this.stats.push(stat);
+  incrementStatsComputedCount() {
+    this.statsComputedCount++;
+  }
+
+  setLastQuoteId(id: number) {
+    this.lastQuoteId = id;
+  }
+
+  setLostQuotes(count: number) {
+    this.lostQuotes = count;
   }
 
   setWebSocketState(state: number) {
@@ -34,25 +43,34 @@ class AppStore {
   }
 
   get newlyReceivedQuotes() {
-    return this.quotes.length - this.stats.length * this.quotesLimit;
+    return (
+      this.recievedQuotesCount - this.statsComputedCount * this.quotesLimit
+    );
   }
 
-  get quotesAsPlainArray() {
-    return toJS(this.quotes);
-  }
-
-  connectWebSocket({ onCollectEnough }: { onCollectEnough: (quotes: Quote[]) => void }) {
+  connectWebSocket({
+    onQuoteRecieved,
+  }: {
+    onQuoteRecieved: (quote: Quote) => void;
+  }) {
     if (!this.webSocketInstance) {
       this.setWebSocketState(WebSocket.CONNECTING);
       this.webSocketInstance = new WebSocket(appConfig.wsUrl);
 
       const onMessage = (ev: MessageEvent<string>) => {
         const quote = JSON.parse(ev.data) as Quote;
-        this.addQuote(quote);
-
-        if (this.newlyReceivedQuotes === this.quotesLimit) {
-          onCollectEnough(this.quotesAsPlainArray)
+        if (this.lastQuoteId !== null) {
+          // here I assume provided quotes are sorted by id in ascending order
+          // I it is not the case, then lostQuotes will be incorrect
+          const prevQuoteId = this.lastQuoteId;
+          if (prevQuoteId + 1 !== quote.id) {
+            this.setLostQuotes(this.lostQuotes + quote.id - (prevQuoteId + 1));
+          }
         }
+        this.lastQuoteId = quote.id;
+        this.incrementRecievedQuotesCount();
+
+        onQuoteRecieved(quote);
       };
       const onFail = () => {
         this.setWebSocketState(WebSocket.CLOSING);

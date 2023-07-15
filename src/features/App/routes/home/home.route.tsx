@@ -6,9 +6,9 @@ import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
 import { useAddStat } from "../../../Stats/mutations";
-import { toJS } from "mobx";
 import { profile } from "../../../Stats/utils";
-import { findLostQuotes } from "../../../Stats/computations/findLostQuotes";
+import { useRef } from "react";
+import { Quote } from "../../../Stats/types";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -16,22 +16,20 @@ export const HomeRoute = observer(() => {
   const navigate = useNavigate();
 
   const statMutation = useAddStat();
+  const quotesRef = useRef<Quote[]>([]);
 
   const showStats = () => {
-    if (appStore.quotes.length > 2) {
-      // use toJS to convert ObservableArray to plain array, so calculations are faster
+    if (quotesRef.current.length > 2) {
       const profileResult = profile(() => {
-        return computeStatsFromQuotes(toJS(appStore.quotes));
-      })
-      // todo: check lost quotes when they arrive
-      const lostQuotes = findLostQuotes(toJS(appStore.quotes));
-      appStore.addStat(profileResult.result);
+        return computeStatsFromQuotes(quotesRef.current);
+      });
+      appStore.incrementStatsComputedCount();
       statMutation.mutate({
         ...profileResult.result,
         start_time: profileResult.startTime,
         end_time: profileResult.endTime,
         time_spent: profileResult.timeSpent,
-        lost_quotes: lostQuotes
+        lost_quotes: appStore.lostQuotes,
       });
     }
     navigate(statsRoutePaths.list);
@@ -64,21 +62,25 @@ export const HomeRoute = observer(() => {
               onClick={() => {
                 if (appStore.websocketState === WebSocket.CLOSED) {
                   appStore.connectWebSocket({
-                    onCollectEnough: (quotes) => {
-                      const profileResult = profile(() => {
-                        return computeStatsFromQuotes(quotes);
-                      });
-                      const lostQuotes = findLostQuotes(quotes);
-               
-                      appStore.addStat(profileResult.result);
-                      statMutation.mutate({
-                        ...profileResult.result,
-                        start_time: profileResult.startTime,
-                        end_time: profileResult.endTime,
-                        time_spent: profileResult.timeSpent,
-                        lost_quotes: lostQuotes
-                      });
-                      console.log("statistics computed", profileResult);
+                    onQuoteRecieved: (quote) => {
+                      quotesRef.current.push(quote);
+                      if (
+                        appStore.newlyReceivedQuotes === appStore.quotesLimit
+                      ) {
+                        const profileResult = profile(() => {
+                          return computeStatsFromQuotes(quotesRef.current);
+                        });
+
+                        appStore.incrementStatsComputedCount();
+                        statMutation.mutate({
+                          ...profileResult.result,
+                          start_time: profileResult.startTime,
+                          end_time: profileResult.endTime,
+                          time_spent: profileResult.timeSpent,
+                          lost_quotes: appStore.lostQuotes,
+                        });
+                        console.log("statistics computed", profileResult);
+                      }
                     },
                   });
                 } else {
