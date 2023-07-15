@@ -42,16 +42,18 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
 
   const avg = valueSum / quotes.length;
 
-  let sum2 = 0;
+  
   let mostFrequentValue = quotes[0].value;
   let mostFrequentValueCount = valueCountMap[quotes[0].value];
+
+  let sum2 = 0;
 
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
 
     sum2 += Math.pow(quote.value - avg, 2);
 
-    if (valueCountMap[quote.value] > mostFrequentValue) {
+    if (valueCountMap[quote.value] > mostFrequentValueCount) {
       mostFrequentValue = quote.value;
       mostFrequentValueCount = valueCountMap[quote.value];
     }
