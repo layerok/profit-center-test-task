@@ -5,16 +5,16 @@ export type Quote = {
 
 export type Stat = {
   avg: number;
-  min: number;
-  max: number;
-  start: number; // ms
-  end: number; // ms
-  moda: number;
-  moda_count: number;
+  min_value: number;
+  max_value: number;
+  start_time: number; // ms
+  end_time: number; // ms
+  mode: number;
+  mode_count: number;
   time_spent: number; //ms
   standard_deviation: number;
   lost_quotes: number;
-  quotes_amount: number;
+  quotes_count: number;
 };
 
 export type DbStat = Stat & {

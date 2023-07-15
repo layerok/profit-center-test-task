@@ -13,17 +13,17 @@ test("should compute right statistics", () => {
     },
   ];
   const record = computeStatsFromQuotes(quotes);
-  expect(record.max).toBe(444);
-  expect(record.moda).toBe(233);
-  expect(record.min).toBe(233);
+  expect(record.max_value).toBe(444);
+  expect(record.mode).toBe(233);
+  expect(record.mode_count).toBe(1);
+  expect(record.min_value).toBe(233);
   expect(record.avg).toBe(338.5);
   expect(record.lost_quotes).toBe(8);
   expect(record.standard_deviation).toBe(149.19953083036154);
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
-  expect(record.end).toBeGreaterThanOrEqual(record.start);
-  expect(record.moda_count).toBe(1);
-  expect(record.quotes_amount).toBe(2);
+  expect(record.end_time).toBeGreaterThanOrEqual(record.start_time);
+  expect(record.quotes_count).toBe(2);
 });
 
 test("should compute right statistics 2", () => {
@@ -50,17 +50,17 @@ test("should compute right statistics 2", () => {
     },
   ];
   const record = computeStatsFromQuotes(quotes);
-  expect(record.max).toBe(2000);
-  expect(record.moda).toBe(233);
-  expect(record.min).toBe(101);
+  expect(record.max_value).toBe(2000);
+  expect(record.mode).toBe(233);
+  expect(record.mode_count).toBe(2);
+  expect(record.min_value).toBe(101);
   expect(record.avg).toBe(602.2);
   expect(record.lost_quotes).toBe(16);
   expect(record.standard_deviation).toBe(790.9947534592123);
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
-  expect(record.end).toBeGreaterThanOrEqual(record.start);
-  expect(record.moda_count).toBe(2);
-  expect(record.quotes_amount).toBe(5);
+  expect(record.end_time).toBeGreaterThanOrEqual(record.start_time);
+  expect(record.quotes_count).toBe(5);
 });
 
 test("should compute right statistics 3", () => {
@@ -91,15 +91,15 @@ test("should compute right statistics 3", () => {
     },
   ];
   const record = computeStatsFromQuotes(quotes);
-  expect(record.max).toBe(5003);
-  expect(record.moda).toBe(1);
-  expect(record.min).toBe(-5032);
+  expect(record.max_value).toBe(5003);
+  expect(record.mode).toBe(1);
+  expect(record.mode_count).toBe(2);
+  expect(record.min_value).toBe(-5032);
   expect(record.avg).toBe(739.8333333333334);
   expect(record.lost_quotes).toBe(1);
   expect(record.standard_deviation).toBe(3377.5580774676055);
   expect(record.time_spent).toBeLessThan(1000); // 1 second
   expect(record.time_spent).toBeGreaterThanOrEqual(0);
-  expect(record.end).toBeGreaterThanOrEqual(record.start);
-  expect(record.moda_count).toBe(2);
-  expect(record.quotes_amount).toBe(6);
+  expect(record.end_time).toBeGreaterThanOrEqual(record.start_time);
+  expect(record.quotes_count).toBe(6);
 });

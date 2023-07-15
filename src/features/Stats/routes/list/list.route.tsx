@@ -40,7 +40,7 @@ export const StatsRoute = () => {
           <S.Row key={record.id}>
             <S.ID>#{record.id}</S.ID>
             <S.Date>
-              {format(new Date(+record.start), "dd/MM/yyyy hh:mm:ss")}
+              {format(new Date(+record.start_time), "dd/MM/yyyy hh:mm:ss")}
             </S.Date>
             <S.Action>
               <Link

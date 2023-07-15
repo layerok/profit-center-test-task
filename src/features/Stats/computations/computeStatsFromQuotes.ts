@@ -5,10 +5,10 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
     throw Error("provide at least 2 quotes to compute stats");
   }
 
-  let sum = 0;
-  let min = +Infinity;
-  let max = -Infinity;
-  let modaMap: Record<number, number> = {};
+  let valueSum = 0;
+  let minValue = +Infinity;
+  let maxValue = -Infinity;
+  let valueCountMap: Record<number, number> = {};
   let lostQuotes = 0;
 
   const startTime = Date.now();
@@ -23,36 +23,37 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
       }
     }
 
-    sum += quote.value;
+    valueSum += quote.value;
 
-    if (min > quote.value) {
-      min = quote.value;
+    if (minValue > quote.value) {
+      minValue = quote.value;
     }
 
-    if (max < quote.value) {
-      max = quote.value;
+    if (maxValue < quote.value) {
+      maxValue = quote.value;
     }
 
-    if (modaMap[quote.value]) {
-      modaMap[quote.value]++;
+    if (valueCountMap[quote.value]) {
+      valueCountMap[quote.value]++;
     } else {
-      modaMap[quote.value] = 1;
+      valueCountMap[quote.value] = 1;
     }
   }
 
-  const avg = sum / quotes.length;
+  const avg = valueSum / quotes.length;
+
   let sum2 = 0;
-  let biggestModaCount = modaMap[quotes[0].value];
-  let quoteWithBiggestModa: Quote = quotes[0];
+  let mostFrequentValue = quotes[0].value;
+  let mostFrequentValueCount = valueCountMap[quotes[0].value];
 
   for (let i = 0; i < quotes.length; i++) {
     const quote = quotes[i];
 
     sum2 += Math.pow(quote.value - avg, 2);
 
-    if (modaMap[quote.value] > biggestModaCount) {
-      biggestModaCount = modaMap[quote.value];
-      quoteWithBiggestModa = quote;
+    if (valueCountMap[quote.value] > mostFrequentValue) {
+      mostFrequentValue = quote.value;
+      mostFrequentValueCount = valueCountMap[quote.value];
     }
   }
 
@@ -62,15 +63,15 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
 
   return {
     avg,
-    min,
-    max,
-    start: startTime,
-    end: endTime,
+    min_value: minValue,
+    max_value: maxValue,
+    start_time: startTime,
+    end_time: endTime,
     time_spent: endTime - startTime,
     standard_deviation: standartDeviation,
     lost_quotes: lostQuotes,
-    moda: quoteWithBiggestModa.value,
-    quotes_amount: quotes.length,
-    moda_count: biggestModaCount,
+    mode: mostFrequentValue,
+    quotes_count: quotes.length,
+    mode_count: mostFrequentValueCount,
   };
 }

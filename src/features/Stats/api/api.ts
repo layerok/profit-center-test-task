@@ -15,16 +15,19 @@ export const getAllStats = async ({
 export const addStat = async (record: Stat) => {
   const formData = new FormData();
   formData.append("avg", String(record.avg));
-  formData.append("min", String(record.min));
-  formData.append("max", String(record.max));
-  formData.append("start", String(record.start));
-  formData.append("moda", String(record.moda));
-  formData.append("moda_count", String(record.moda_count));
-  formData.append("end", String(record.end));
+  formData.append("min_value", String(record.min_value));
+  formData.append("max_value", String(record.max_value));
+  formData.append("start_time", String(record.start_time));
+  formData.append("mode", String(record.mode));
+  formData.append(
+    "mode_count",
+    String(record.mode_count)
+  );
+  formData.append("end_time", String(record.end_time));
   formData.append("time_spent", String(record.time_spent));
   formData.append("standard_deviation", String(record.standard_deviation));
   formData.append("lost_quotes", String(record.lost_quotes));
-  formData.append("quotes_amount", String(record.quotes_amount));
+  formData.append("quotes_count", String(record.quotes_count));
   return fetch(`${appConfig.apiBaseUrl}/add_stat.php`, {
     method: "POST",
     body: formData,

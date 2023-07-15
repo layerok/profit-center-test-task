@@ -39,11 +39,15 @@ export const StatRoute = () => {
       >
         <S.Prop>
           <S.Label>Начало вычислений</S.Label>
-          <S.Value>{format(new Date(Number(stat.start)), "hh:mm:ss")}</S.Value>
+          <S.Value>
+            {format(new Date(Number(stat.start_time)), "hh:mm:ss")}
+          </S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Конец вычислений</S.Label>
-          <S.Value>{format(new Date(Number(stat.end)), "hh:mm:ss")}</S.Value>
+          <S.Value>
+            {format(new Date(Number(stat.end_time)), "hh:mm:ss")}
+          </S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Время потраченно</S.Label>
@@ -55,8 +59,8 @@ export const StatRoute = () => {
         </S.Prop>
         <S.Prop>
           <S.Label>Кол-во котировок</S.Label>
-          <S.Value title={String(stat.quotes_amount)}>
-            {stat.quotes_amount} шт.
+          <S.Value title={String(stat.quotes_count)}>
+            {stat.quotes_count} шт.
           </S.Value>
         </S.Prop>
       </S.Row>
@@ -72,11 +76,11 @@ export const StatRoute = () => {
         </S.Prop>
         <S.Prop>
           <S.Label>Мінімальне значення</S.Label>
-          <S.Value title={String(stat.min)}>{stat.min}</S.Value>
+          <S.Value title={String(stat.min_value)}>{stat.min_value}</S.Value>
         </S.Prop>
         <S.Prop>
           <S.Label>Максимальне значення</S.Label>
-          <S.Value title={String(stat.max)}>{stat.max}</S.Value>
+          <S.Value title={String(stat.max_value)}>{stat.max_value}</S.Value>
         </S.Prop>
       </S.Row>
       <S.Row
@@ -92,8 +96,8 @@ export const StatRoute = () => {
         </S.Prop>
         <S.Prop>
           <S.Label>Мода</S.Label>
-          <S.Value title={String(stat.moda)}>
-            {stat.moda} ({stat.moda_count}x)
+          <S.Value title={String(stat.mode)}>
+            {stat.mode} ({stat.mode_count}x)
           </S.Value>
         </S.Prop>
       </S.Row>
