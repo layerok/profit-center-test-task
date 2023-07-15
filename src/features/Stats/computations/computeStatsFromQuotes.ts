@@ -17,6 +17,8 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
     const quote = quotes[i];
 
     if (i !== 0) {
+      // here I assume provided quotes to be sorted by id
+      // I it is not the case, then lostQuotes will be incorrect
       const prevQuote = quotes[i - 1];
       if (prevQuote.id + 1 !== quote.id) {
         lostQuotes += quote.id - (prevQuote.id + 1);
@@ -42,7 +44,6 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
 
   const avg = valueSum / quotes.length;
 
-  
   let mostFrequentValue = quotes[0].value;
   let mostFrequentValueCount = valueCountMap[quotes[0].value];
 
