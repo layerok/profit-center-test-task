@@ -1,8 +1,15 @@
-import { Stat } from "./../types";
+import { Stat } from "../types";
 
-export function computeStatsFromQuotes(values: number[]): Stat {
+export function computeStats(values: number[]): {
+  avg: number;
+  min_value: number;
+  max_value: number;
+  standard_deviation: number;
+  mode: number;
+  mode_count: number;
+} {
   if (values.length < 2) {
-    throw Error("provide at least 2 quotes to compute stats");
+    throw Error("provide at least 2 values to compute stats");
   }
 
   let valueSum = 0;
@@ -57,7 +64,6 @@ export function computeStatsFromQuotes(values: number[]): Stat {
     max_value: maxValue,
     standard_deviation: standartDeviation,
     mode: mostFrequentValue,
-    quotes_count: values.length,
     mode_count: mostFrequentValueCount,
   };
 }

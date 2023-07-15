@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Quote } from "../Stats/types";
+import { Quote, Stat } from "../Stats/types";
 
 class DebugStore {
   constructor() {
@@ -29,6 +29,20 @@ class DebugStore {
 
   addLostQuotes(amount: number) {
     this.lostQuotes += amount;
+  }
+
+  onQuoteReceived(incomingQuote: Quote) {
+    this.incrementTotalQuotesReceived();
+    if (this.lastQuoteId !== null) {
+      const lostQuotes = incomingQuote.id - this.lastQuoteId - 1;
+      this.addLostQuotes(lostQuotes);
+    }
+
+    this.setLastQuoteId(incomingQuote.id);
+  }
+
+  onStatCreated(stat: Stat) {
+    this.incrementStatsComputedCount();
   }
 }
 

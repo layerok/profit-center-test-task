@@ -4,12 +4,10 @@ import { useAppStore } from "../../app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
-import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { Quote } from "../../../Stats/types";
 import { useDebugStore } from "../../debug.store";
-import { runInAction } from "mobx";
 import { useStatsStore } from "../../../Stats/stats.store";
 
 export const HomeRoute = observer(() => {
@@ -23,20 +21,14 @@ export const HomeRoute = observer(() => {
 
   useEffect(() => {
     const unbind = appStore.emitter.on("quoteReceived", (incomingQuote) => {
-      debugStore.incrementTotalQuotesReceived();
-      if (debugStore.lastQuoteId !== null) {
-        const lost = incomingQuote.id - debugStore.lastQuoteId - 1;
-        debugStore.addLostQuotes(lost);
-      }
-
-      debugStore.setLastQuoteId(incomingQuote.id);
+      debugStore.onQuoteReceived(incomingQuote);
     });
     return () => unbind();
   }, []);
 
   useEffect(() => {
     const unbind = statsStore.emitter.on("statCreated", (stat) => {
-      debugStore.incrementStatsComputedCount();
+      debugStore.onStatCreated(stat);
     });
 
     return () => unbind();
@@ -46,64 +38,26 @@ export const HomeRoute = observer(() => {
     const unbind = appStore.emitter.on(
       "quoteReceived",
       (incomingQuote: Quote) => {
-        if (statsStore.lastQuoteId !== null) {
-          const lostCount = incomingQuote.id - statsStore.lastQuoteId - 1;
-          statsStore.addLostQuotes(lostCount);
-        }
-        statsStore.setLastQuoteId(incomingQuote.id);
-        statsStore.incrementFreshQuotes();
-        statsStore.addQuote(incomingQuote);
-
-        if (statsStore.freshQuotes === statsStore.step) {
-          const startTime = Date.now();
-          const result = computeStatsFromQuotes(statsStore.quoteValues);
-          const endTime = Date.now();
-          statsStore.emitter.emit("statCreated", result);
-          runInAction(() => {
-            statsStore.freshQuotes = 0;
-          });
-
-          statMutation.mutate({
-            ...result,
-            start_time: startTime,
-            end_time: endTime,
-            time_spent: endTime - startTime,
-            lost_quotes: statsStore.lostQuotes,
-          });
-        }
+        statsStore.onQuoteReceived(incomingQuote);
       }
     );
 
-    return () => {
-      unbind();
-    };
+    return () => unbind();
   }, []);
+
+  useEffect(() => {
+    const unbind = statsStore.emitter.on("statCreated", (stat) => {
+      statMutation.mutate(stat);
+    });
+
+    return () => unbind();
+  });
 
   const showStats = () => {
     if (statsStore.quoteValues.length > 2) {
-      const startTime = Date.now();
-      const result = computeStatsFromQuotes(statsStore.quoteValues);
-      const endTime = Date.now();
-
-      statsStore.emitter.emit("statCreated", result);
-
-      statMutation.mutate({
-        ...result,
-        start_time: startTime,
-        end_time: endTime,
-        time_spent: endTime - startTime,
-        lost_quotes: statsStore.lostQuotes,
-      });
+      statsStore.createStat(statsStore.quoteValues);
     }
     navigate(statsRoutePaths.list);
-  };
-
-  const startOrStop = () => {
-    if (appStore.isIdling) {
-      appStore.start();
-    } else {
-      appStore.stop();
-    }
   };
 
   return (
@@ -134,7 +88,13 @@ export const HomeRoute = observer(() => {
                 appStore.isStarting ||
                 appStore.isStopping
               }
-              onClick={startOrStop}
+              onClick={() => {
+                if (appStore.isIdling) {
+                  appStore.start();
+                } else {
+                  appStore.stop();
+                }
+              }}
             >
               {appStore.isIdling ? "Start" : ""}
               {appStore.isStarting ? "starting..." : ""}
