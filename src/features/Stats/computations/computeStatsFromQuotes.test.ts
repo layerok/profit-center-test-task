@@ -103,3 +103,17 @@ test("should compute right stats 3", () => {
   expect(record.end_time).toBeGreaterThanOrEqual(record.start_time);
   expect(record.quotes_count).toBe(6);
 });
+
+test("should compute stats less than 1 second for 50 millions quotes", () => {
+  const quotes = [];
+  for (let i = 0; i < 50_000_000; i++) {
+    quotes.push({
+      id: i + 1,
+      value: Math.ceil(Math.random() * 5000),
+    });
+  }
+  const record = computeStatsFromQuotes(quotes);
+  console.log(record)
+
+  expect(record.time_spent).toBeLessThanOrEqual(1000); // 1 second
+});
