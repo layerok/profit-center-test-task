@@ -1,25 +1,24 @@
-import { Stat } from "../../../Stats/types";
-import { addStat } from "../../../Stats/api/api";
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "../../app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { computeStatsFromQuotes } from "../../../Stats/computations/computeStatsFromQuotes";
 import { useAddStat } from "../../../Stats/mutations";
+import { toJS } from "mobx";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
 
   const navigate = useNavigate();
 
-  const statMutation = useAddStat(); 
+  const statMutation = useAddStat();
 
   const showStats = () => {
     if (appStore.quotes.length > 2) {
-      const record = computeStatsFromQuotes(appStore.quotes);
+      // use toJS to convert ObservableArray to plain array, so calculations are faster
+      const record = computeStatsFromQuotes(toJS(appStore.quotes));
       appStore.addStat(record);
       statMutation.mutate(record);
     }

@@ -1,7 +1,7 @@
 import { computeStatsFromQuotes } from "./computeStatsFromQuotes";
 import { Quote } from "../types";
 
-test("should compute right statistics", () => {
+test("should compute right stats", () => {
   const quotes: Quote[] = [
     {
       id: 0,
@@ -26,7 +26,7 @@ test("should compute right statistics", () => {
   expect(record.quotes_count).toBe(2);
 });
 
-test("should compute right statistics 2", () => {
+test("should compute right stats 2", () => {
   const quotes: Quote[] = [
     {
       id: 1,
@@ -63,7 +63,7 @@ test("should compute right statistics 2", () => {
   expect(record.quotes_count).toBe(5);
 });
 
-test("should compute right statistics 3", () => {
+test("should compute right stats 3", () => {
   const quotes: Quote[] = [
     {
       id: 1,

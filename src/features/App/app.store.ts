@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { appConfig } from "../../config/app.config";
 import { computeStatsFromQuotes } from "../Stats/computations/computeStatsFromQuotes";
 import { Quote, Stat } from "../Stats/types";
@@ -47,7 +47,7 @@ class AppStore {
         this.addQuote(quote);
 
         if (this.newlyReceivedQuotes === this.quotesLimit) {
-          const record = computeStatsFromQuotes(this.quotes);
+          const record = computeStatsFromQuotes(toJS(this.quotes));
           onComputeStat?.(record);
           this.addStat(record);
         }
