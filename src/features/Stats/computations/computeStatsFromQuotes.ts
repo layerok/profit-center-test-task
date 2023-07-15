@@ -1,7 +1,7 @@
-import { Quote, Stat } from "./../types";
+import { Stat } from "./../types";
 
-export function computeStatsFromQuotes(quotes: Quote[]): Stat {
-  if (quotes.length < 2) {
+export function computeStatsFromQuotes(values: number[]): Stat {
+  if (values.length < 2) {
     throw Error("provide at least 2 quotes to compute stats");
   }
 
@@ -10,46 +10,46 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
   let maxValue = -Infinity;
   let valueCountMap: Record<number, number> = {};
 
-  for (let i = 0; i < quotes.length; i++) {
-    const quote = quotes[i];
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i];
 
-    valueSum += quote.value;
+    valueSum += value;
 
-    if (minValue > quote.value) {
-      minValue = quote.value;
+    if (minValue > value) {
+      minValue = value;
     }
 
-    if (maxValue < quote.value) {
-      maxValue = quote.value;
+    if (maxValue < value) {
+      maxValue = value;
     }
 
-    if (valueCountMap[quote.value]) {
-      valueCountMap[quote.value]++;
+    if (valueCountMap[value]) {
+      valueCountMap[value]++;
     } else {
-      valueCountMap[quote.value] = 1;
+      valueCountMap[value] = 1;
     }
   }
 
-  const avg = valueSum / quotes.length;
+  const avg = valueSum / values.length;
 
-  let mostFrequentValue = quotes[0].value;
-  let mostFrequentValueCount = valueCountMap[quotes[0].value];
+  let mostFrequentValue = values[0];
+  let mostFrequentValueCount = valueCountMap[values[0]];
 
   let sum2 = 0;
 
-  for (let i = 0; i < quotes.length; i++) {
-    const quote = quotes[i];
-    const diff = quote.value - avg;
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i];
+    const diff = value - avg;
 
     sum2 += diff * diff;
 
-    if (valueCountMap[quote.value] > mostFrequentValueCount) {
-      mostFrequentValue = quote.value;
-      mostFrequentValueCount = valueCountMap[quote.value];
+    if (valueCountMap[value] > mostFrequentValueCount) {
+      mostFrequentValue = value;
+      mostFrequentValueCount = valueCountMap[value];
     }
   }
 
-  const standartDeviation = Math.sqrt(sum2 / (quotes.length - 1));
+  const standartDeviation = Math.sqrt(sum2 / (values.length - 1));
 
   return {
     avg,
@@ -57,7 +57,7 @@ export function computeStatsFromQuotes(quotes: Quote[]): Stat {
     max_value: maxValue,
     standard_deviation: standartDeviation,
     mode: mostFrequentValue,
-    quotes_count: quotes.length,
+    quotes_count: values.length,
     mode_count: mostFrequentValueCount,
   };
 }

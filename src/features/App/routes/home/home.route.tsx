@@ -8,7 +8,6 @@ import { computeStatsFromQuotes } from "../../../Stats/computations/computeStats
 import { useAddStat } from "../../../Stats/mutations";
 import { profile } from "../../../Stats/utils";
 import { useRef } from "react";
-import { Quote } from "../../../Stats/types";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -16,12 +15,12 @@ export const HomeRoute = observer(() => {
   const navigate = useNavigate();
 
   const statMutation = useAddStat();
-  const quotesRef = useRef<Quote[]>([]);
+  const quoteValuesRef = useRef<number[]>([]);
 
   const showStats = () => {
-    if (quotesRef.current.length > 2) {
+    if (quoteValuesRef.current.length > 2) {
       const profileResult = profile(() => {
-        return computeStatsFromQuotes(quotesRef.current);
+        return computeStatsFromQuotes(quoteValuesRef.current);
       });
       appStore.incrementStatsComputedCount();
       statMutation.mutate({
@@ -63,12 +62,12 @@ export const HomeRoute = observer(() => {
                 if (appStore.websocketState === WebSocket.CLOSED) {
                   appStore.connectWebSocket({
                     onQuoteRecieved: (quote) => {
-                      quotesRef.current.push(quote);
+                      quoteValuesRef.current.push(quote.value);
                       if (
                         appStore.newlyReceivedQuotes === appStore.quotesLimit
                       ) {
                         const profileResult = profile(() => {
-                          return computeStatsFromQuotes(quotesRef.current);
+                          return computeStatsFromQuotes(quoteValuesRef.current);
                         });
 
                         appStore.incrementStatsComputedCount();

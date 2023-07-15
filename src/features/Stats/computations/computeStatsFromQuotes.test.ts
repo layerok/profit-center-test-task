@@ -1,20 +1,10 @@
 import { computeStatsFromQuotes } from "./computeStatsFromQuotes";
-import { Quote } from "../types";
 import { profile } from "../utils";
 
 test("should compute right stats", () => {
-  const quotes: Quote[] = [
-    {
-      id: 0,
-      value: 233,
-    },
-    {
-      id: 9,
-      value: 444,
-    },
-  ];
+  const values = [233, 444];
   const startTime = Date.now();
-  const record = computeStatsFromQuotes(quotes);
+  const record = computeStatsFromQuotes(values);
 
   const endTime = Date.now();
 
@@ -33,30 +23,9 @@ test("should compute right stats", () => {
 });
 
 test("should compute right stats 2", () => {
-  const quotes: Quote[] = [
-    {
-      id: 1,
-      value: 233,
-    },
-    {
-      id: 2,
-      value: 101,
-    },
-    {
-      id: 4,
-      value: 444,
-    },
-    {
-      id: 5,
-      value: 2000,
-    },
-    {
-      id: 21,
-      value: 233,
-    },
-  ];
+  const values = [233, 101, 444, 2000, 233];
   const startTime = Date.now();
-  const record = computeStatsFromQuotes(quotes);
+  const record = computeStatsFromQuotes(values);
   const endTime = Date.now();
 
   const timeSpent = endTime - startTime;
@@ -73,34 +42,9 @@ test("should compute right stats 2", () => {
 });
 
 test("should compute right stats 3", () => {
-  const quotes: Quote[] = [
-    {
-      id: 1,
-      value: 1,
-    },
-    {
-      id: 2,
-      value: -5032,
-    },
-    {
-      id: 4,
-      value: 1,
-    },
-    {
-      id: 5,
-      value: 5003,
-    },
-    {
-      id: 6,
-      value: 2233,
-    },
-    {
-      id: 7,
-      value: 2233,
-    },
-  ];
+  const values = [1, -5032, 1, 5003, 2233, 2233];
   const startTime = Date.now();
-  const record = computeStatsFromQuotes(quotes);
+  const record = computeStatsFromQuotes(values);
   const endTime = Date.now();
 
   const timeSpent = endTime - startTime;
@@ -116,19 +60,14 @@ test("should compute right stats 3", () => {
 });
 
 test("should compute stats for less than 1 second for 50 millions quotes", () => {
-  const quotes: Quote[] = [];
   const values: number[] = [];
   for (let i = 0; i < 50_000_000; i++) {
     const value = Math.ceil(Math.random() * 5000);
-    quotes.push({
-      id: i + 1,
-      value,
-    });
     values.push(value);
   }
 
   const info = profile(() => {
-    return computeStatsFromQuotes(quotes);
+    return computeStatsFromQuotes(values);
   }, "computeStatsFromQuotes");
 
   expect(info.timeSpent).toBeLessThanOrEqual(1000); // 1 second
