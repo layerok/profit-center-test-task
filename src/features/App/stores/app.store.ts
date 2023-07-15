@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import { appConfig } from "../../config/app.config";
-import { Quote } from "../Stats/types";
+import { appConfig } from "../../../config/app.config";
+import { Quote } from "../../Stats/types";
 import { createNanoEvents, Emitter } from "nanoevents";
 
 type Events = {

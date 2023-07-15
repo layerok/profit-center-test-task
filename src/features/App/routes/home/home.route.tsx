@@ -1,13 +1,13 @@
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAppStore } from "../../app.store";
+import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { Quote } from "../../../Stats/types";
-import { useDebugStore } from "../../debug.store";
+import { useDebugStore } from "../../stores/debug.store";
 import { useStatsStore } from "../../../Stats/stats.store";
 
 export const HomeRoute = observer(() => {

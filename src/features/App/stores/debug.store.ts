@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Quote, Stat } from "../Stats/types";
+import { Quote, Stat } from "../../Stats/types";
 
 class DebugStore {
   constructor() {
