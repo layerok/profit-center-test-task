@@ -4,7 +4,7 @@ const Container = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  padding: 5px;
+  padding: 5px 20px;
   color: white;
   background: rgba(28, 28, 28, 0.8);
   min-width: 180px;
@@ -22,7 +22,7 @@ const Stat = styled.div`
 `;
 
 const Label = styled.div`
-  width: 100px;
+  width: 220px;
   
 `;
 

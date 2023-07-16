@@ -23,6 +23,10 @@ export const DebugPanel = observer(() => {
           <S.Label>Last quote id: </S.Label>
           <S.Value> {debugStore.lastQuoteId}</S.Value>
         </S.Stat>
+        <S.Stat>
+          <S.Label>Seconds passed from first quote: </S.Label>
+          <S.Value> {debugStore.secondsPassedFromFirstQuote}</S.Value>
+        </S.Stat>
       </S.Stats>
     </S.Container>
   );

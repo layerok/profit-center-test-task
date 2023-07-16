@@ -8,7 +8,11 @@ import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { Quote } from "../../../Stats/types";
 import { useDebugStore } from "../../stores/debug.store";
-import { useStatsStore } from "../../../Stats/stats.store";
+import {
+  QuotesStepper,
+  SecondsStepper,
+  useStatsStore,
+} from "../../../Stats/stats.store";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -53,6 +57,19 @@ export const HomeRoute = observer(() => {
     return () => unbind();
   });
 
+  const steppers = [
+    {
+      key: "quotes",
+      title: "котировки",
+      resolveStepper: () => new QuotesStepper(100, 2),
+    },
+    {
+      key: "seconds",
+      title: "секунды",
+      resolveStepper: () => new SecondsStepper(10, 2),
+    },
+  ];
+
   return (
     <S.Container>
       <main>
@@ -62,22 +79,43 @@ export const HomeRoute = observer(() => {
             <S.Input
               type="number"
               min="2"
-              defaultValue={statsStore.step}
-              placeholder="Кол-во котировок"
+              value={statsStore.stepper.getStep()}
+              placeholder="Введите шаг"
               onChange={(event) => {
-                statsStore.setStep(+event.currentTarget.value);
+                statsStore.stepper.setStep(+event.currentTarget.value);
               }}
             />
-            {statsStore.step < 2 && (
+            <S.StepTypeSelect
+              disabled={!appStore.isIdling}
+              onChange={(e) => {
+                const stepper = steppers.find(
+                  (stepper) => e.currentTarget.value == stepper.key
+                );
+
+                if (stepper) {
+                  statsStore.setStepper(stepper.resolveStepper())
+                }
+              }}
+            >
+              {steppers.map((stepper, i) => (
+                <option key={stepper.key} value={stepper.key}>
+                  {stepper.title}
+                </option>
+              ))}
+            </S.StepTypeSelect>
+            {statsStore.stepper.getStep() <
+              statsStore.stepper.getMinimumStep() && (
               <S.ValidationMsg>
-                Котировок должно быть не меньше двух
+                Шаг должен быть не меньше {statsStore.stepper.getMinimumStep()}
               </S.ValidationMsg>
             )}
           </S.InputContainer>
+
           <S.ButtonGroup>
             <S.PrimaryButton
               disabled={
-                statsStore.step < 2 ||
+                statsStore.stepper.getStep() <
+                  statsStore.stepper.getMinimumStep() ||
                 appStore.isStarting ||
                 appStore.isStopping
               }

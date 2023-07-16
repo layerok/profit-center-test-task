@@ -10,6 +10,8 @@ class DebugStore {
   lastQuoteId: number | null = null;
   statsComputedCount = 0;
   lostQuotes = 0;
+  firstQuoteReceivedTimestamp: number | null = null;
+  secondsPassedFromFirstQuote = 0;
 
   incrementTotalQuotesReceived() {
     this.totalQuotesReceived++;
@@ -32,6 +34,12 @@ class DebugStore {
   }
 
   onQuoteReceived(incomingQuote: Quote) {
+    if (this.totalQuotesReceived === 0) {
+      this.firstQuoteReceivedTimestamp = Date.now();
+    }
+    this.secondsPassedFromFirstQuote =
+      (Date.now() - this.firstQuoteReceivedTimestamp!) / 1000;
+    
     this.incrementTotalQuotesReceived();
     if (this.lastQuoteId !== null) {
       const lostQuotes = incomingQuote.id - this.lastQuoteId - 1;

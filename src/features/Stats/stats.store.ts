@@ -1,4 +1,10 @@
-import { makeAutoObservable } from "mobx";
+import {
+  action,
+  computed,
+  makeAutoObservable,
+  makeObservable,
+  observable,
+} from "mobx";
 import { Quote, Stat } from "./types";
 import { createNanoEvents, Emitter } from "nanoevents";
 import { computeStats } from "./computations/computeStats";
@@ -14,18 +20,15 @@ class StatsStore {
       emitter: false,
     });
     this.emitter = createNanoEvents<Events>();
+    this.stepper = new QuotesStepper(100, 2);
   }
   emitter: Emitter<Events>;
 
   lastQuoteId: number | null = null;
-  freshQuotes = 0;
-  step = 100;
   lostQuotes = 0;
   quoteValues: number[] = [];
 
-  incrementFreshQuotes() {
-    this.freshQuotes++;
-  }
+  stepper: Stepper;
 
   addQuote(quote: Quote) {
     this.quoteValues.push(quote.value);
@@ -39,8 +42,8 @@ class StatsStore {
     this.lostQuotes = count;
   }
 
-  setStep(step: number) {
-    this.step = step;
+  setStepper(stepper: Stepper) {
+    this.stepper = stepper;
   }
 
   addLostQuotes(amount: number) {
@@ -53,13 +56,13 @@ class StatsStore {
       this.addLostQuotes(lostQuotes);
     }
     this.setLastQuoteId(incomingQuote.id);
-    this.incrementFreshQuotes();
+
     this.addQuote(incomingQuote);
 
-    if (this.freshQuotes === this.step) {
-      this.createStat(this.quoteValues);
-
-      this.freshQuotes = 0;
+    this.stepper.onQuoteReceived(incomingQuote);
+    if (this.stepper.isStepReached()) {
+      const stat = this.createStat(this.quoteValues);
+      this.stepper.onStatCreated(stat);
     }
   }
 
@@ -78,6 +81,75 @@ class StatsStore {
     };
 
     this.emitter.emit("statCreated", stat);
+    return stat;
+  }
+}
+
+class Stepper {
+  step: number = 0;
+  minimumStep: number = 0;
+  constructor(step: number, minimumStep: number) {
+    this.step = step;
+    this.minimumStep = minimumStep;
+    makeObservable(this, {
+      step: observable,
+      minimumStep: observable,
+      setStep: action,
+      onQuoteReceived: action,
+      onStatCreated: action,
+    });
+  }
+  onQuoteReceived(quote: Quote) {}
+  onStatCreated(stat: Stat) {}
+  isStepReached() {
+    return false;
+  }
+  setStep(step: number) {
+    this.step = step;
+  }
+
+  getStep() {
+    return this.step;
+  }
+
+  getMinimumStep() {
+    return this.minimumStep;
+  }
+}
+
+export class SecondsStepper extends Stepper {
+  secondsAfterLastStatCreated = 0;
+  lastStatCreatedTimestamp: number | null = null;
+
+  onQuoteReceived(quote: Quote) {
+    if (!this.lastStatCreatedTimestamp) {
+      this.lastStatCreatedTimestamp = Date.now();
+    }
+    this.secondsAfterLastStatCreated =
+      (Date.now() - this.lastStatCreatedTimestamp) / 1000;
+  }
+  onStatCreated(stat: Stat) {
+    this.lastStatCreatedTimestamp = Date.now();
+
+    this.secondsAfterLastStatCreated = 0;
+  }
+
+  isStepReached() {
+    return this.secondsAfterLastStatCreated >= this.step;
+  }
+}
+
+export class QuotesStepper extends Stepper {
+  quotesAfterLastStatCreated = 0;
+
+  onQuoteReceived(quote: Quote) {
+    this.quotesAfterLastStatCreated++;
+  }
+  onStatCreated(stat: Stat) {
+    this.quotesAfterLastStatCreated = 0;
+  }
+  isStepReached() {
+    return this.quotesAfterLastStatCreated === this.step;
   }
 }
 

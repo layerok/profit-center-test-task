@@ -12,9 +12,16 @@ const Container = styled.div`
 const Input = styled.input`
   border: 1px solid black;
   height: 46px;
-  width: 100%;
   padding: 0 13px;
   font-size: 20px;
+  flex-grow:1;
+`;
+
+const StepTypeSelect = styled.select`
+  border-radius: 0;
+  margin-left: -1px;
+  width: 84px;
+  height: 100%;
 `;
 
 const PrimaryButton = styled.button`
@@ -42,10 +49,9 @@ const SecondaryButton = styled.button`
   cursor: pointer;
   color: black;
   &:hover {
-    background: rgba(0,0,0,.06);
+    background: rgba(0, 0, 0, 0.06);
   }
 `;
-
 
 const ControlsContainer = styled.div`
   display: flex;
@@ -65,7 +71,9 @@ const ValidationMsg = styled.div`
 
 const InputContainer = styled.div`
   position: relative;
-`
+  display: flex;
+  height: 46px;
+`;
 
 const ButtonGroup = styled.div`
   display: flex;
@@ -81,5 +89,6 @@ export {
   ControlsContainer,
   ValidationMsg,
   InputContainer,
-  ButtonGroup
+  ButtonGroup,
+  StepTypeSelect,
 };
