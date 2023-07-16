@@ -19,6 +19,5 @@ export function profile<R>(cb: () => R, name = 'profile'): {
     endTime,
     timeSpent,
   };
-  console.log(name, info);
   return info;
 }
