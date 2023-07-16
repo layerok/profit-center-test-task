@@ -77,8 +77,9 @@ export const HomeRoute = observer(() => {
         <S.ControlsContainer>
           <S.InputContainer>
             <S.Input
+              disabled={!appStore.isIdling}
               type="number"
-              min="2"
+              min={statsStore.stepper.getMinimumStep()}
               value={statsStore.stepper.getStep()}
               placeholder="Введите шаг"
               onChange={(event) => {
@@ -93,7 +94,7 @@ export const HomeRoute = observer(() => {
                 );
 
                 if (stepper) {
-                  statsStore.setStepper(stepper.resolveStepper())
+                  statsStore.setStepper(stepper.resolveStepper());
                 }
               }}
             >
