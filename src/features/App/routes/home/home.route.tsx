@@ -6,9 +6,7 @@ import { observer } from "mobx-react-lite";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { useDebugStore } from "../../stores/debug.store";
-import {
-  useStatsStore,
-} from "../../../Stats/stats.store";
+import { useStatsStore } from "../../../Stats/stats.store";
 import { Stepper } from "../../components/Stepper/Stepper";
 import { StartButton } from "../../components/StartButton/StartButton";
 import { StatsButton } from "../../components/StatsButton/StatsButton";

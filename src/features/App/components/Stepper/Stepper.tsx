@@ -37,7 +37,7 @@ export const Stepper = observer(() => {
 
   const handleChangeStepType = (e: ChangeEvent<HTMLSelectElement>) => {
     const stepper = steppers.find(
-      (stepper) => e.currentTarget.value == stepper.key
+      (stepper) => e.currentTarget.value === stepper.key
     );
 
     if (stepper) {
