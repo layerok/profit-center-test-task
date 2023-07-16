@@ -63,12 +63,6 @@ class StatsStore {
     this.addQuote(incomingQuote);
 
     this.stepper.onQuoteReceived(incomingQuote);
-    if (this.stepper.isStepReached()) {
-      if (this.quoteValues.length > 1) {
-        const stat = this.createStat(this.quoteValues);
-        this.stepper.onStatCreated(stat);
-      }
-    }
   }
 
   createStat(values: number[]) {
@@ -115,17 +109,10 @@ class Stepper {
       minimumStep: observable,
       setStep: action,
       onQuoteReceived: action,
-      onStatCreated: action,
       store: false,
     });
   }
   onQuoteReceived(quote: Quote) {}
-
-  onStatCreated(stat: Omit<Stat, "id">) {}
-
-  isStepReached() {
-    return false;
-  }
 
   setStep(step: number) {
     this.step = step;
@@ -150,10 +137,17 @@ export class SecondsStepper extends Stepper {
     }
     this.secondsPassedAfterLastStatCreated =
       (Date.now() - this.lastStatCreatedTimestamp) / 1000;
-  }
-  onStatCreated(stat: Stat) {
-    this.lastStatCreatedTimestamp = Date.now();
 
+    if (this.isStepReached()) {
+      if (this.store.quoteValues.length > 1) {
+        this.store.createStat(this.store.quoteValues);
+        this.reset();
+      }
+    }
+  }
+
+  reset() {
+    this.lastStatCreatedTimestamp = Date.now();
     this.secondsPassedAfterLastStatCreated = 0;
   }
 
@@ -167,10 +161,19 @@ export class QuotesStepper extends Stepper {
 
   onQuoteReceived(quote: Quote) {
     this.quotesReceivedAfterLastStatCreated++;
+
+    if (this.isStepReached()) {
+      if (this.store.quoteValues.length > 1) {
+        this.store.createStat(this.store.quoteValues);
+        this.reset();
+      }
+    }
   }
-  onStatCreated(stat: Stat) {
+
+  reset() {
     this.quotesReceivedAfterLastStatCreated = 0;
   }
+
   isStepReached() {
     return this.quotesReceivedAfterLastStatCreated === this.step;
   }
