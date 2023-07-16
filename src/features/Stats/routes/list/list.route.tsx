@@ -4,28 +4,56 @@ import { ReactComponent as CloseSvg } from "../../assets/close.svg";
 import * as S from "./list.route.style";
 import { statsRoutePaths } from "../../route.paths";
 import { appRoutePaths } from "../../../App/route.paths";
-import { useStatsQuery } from "../../queries";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import React from "react";
+import React, { useEffect } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getAllStats } from "../../api/api";
+import { useInView } from "react-intersection-observer";
+
+const STATS_PER_PAGE = 25;
 
 export const StatsRoute = () => {
   const navigate = useNavigate();
+
+  const parentRef = React.useRef<HTMLDivElement>(null);
 
   const goHome = () => {
     navigate(appRoutePaths.home);
   };
 
-  // todo: implement infinite list
-  const limit = 102312312;
+  const fetchStats = async ({ pageParam = 0 }) => {
+    return getAllStats({
+      offset: pageParam * STATS_PER_PAGE,
+      limit: STATS_PER_PAGE,
+    });
+  };
 
-  const { data: stats, isLoading } = useStatsQuery({
-    limit,
+  const { ref, inView } = useInView();
+
+  const {
+    data: stats,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useInfiniteQuery(["infinite-stats"], fetchStats, {
+    getNextPageParam: (lastPage, pages) => {
+      if (pages.length * STATS_PER_PAGE >= lastPage.meta.total) {
+        return undefined;
+      }
+      return pages.length;
+    },
   });
 
-  const parentRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
+
+  const items = (stats?.pages || []).map((page) => page.records).flat();
 
   const rowVirtualizer = useVirtualizer({
-    count: stats?.records.length || 0,
+    count: items.length || 0,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 25,
     overscan: 5,
@@ -45,45 +73,43 @@ export const StatsRoute = () => {
         <CloseSvg />
       </S.CloseSvgContainer>
       <S.Title>Статистика</S.Title>
-      {!stats.records.length ? (
-        <div>Данных нет</div>
-      ) : (
-        <S.ListContainer ref={parentRef}>
-          <S.List
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-              <S.Row
-                style={{
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-                key={virtualRow.index}
-              >
-                <S.ID>#{stats.records[virtualRow.index].id}</S.ID>
-                <S.Date>
-                  {format(
-                    new Date(+stats.records[virtualRow.index].start_time),
-                    "dd/MM/yyyy hh:mm:ss"
+
+      <S.ListContainer ref={parentRef}>
+        <S.List
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+          }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+            <S.Row
+              style={{
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+              key={virtualRow.index}
+            >
+              <S.ID>#{items[virtualRow.index].id}</S.ID>
+              <S.Date>
+                {format(
+                  new Date(+items[virtualRow.index].start_time),
+                  "dd/MM/yyyy hh:mm:ss"
+                )}
+              </S.Date>
+              <S.Action>
+                <Link
+                  to={statsRoutePaths.detail.replace(
+                    ":id",
+                    String(items[virtualRow.index].id)
                   )}
-                </S.Date>
-                <S.Action>
-                  <Link
-                    to={statsRoutePaths.detail.replace(
-                      ":id",
-                      String(stats.records[virtualRow.index].id)
-                    )}
-                  >
-                    View
-                  </Link>
-                </S.Action>
-              </S.Row>
-            ))}
-          </S.List>
-        </S.ListContainer>
-      )}
+                >
+                  View
+                </Link>
+              </S.Action>
+            </S.Row>
+          ))}
+        </S.List>
+        <div ref={ref}>{hasNextPage && "грузим"}</div>
+      </S.ListContainer>
     </div>
   );
 };
