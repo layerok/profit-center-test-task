@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { media } from "../../../../common/media";
 
 const Container = styled.div`
   position: absolute;
@@ -9,6 +10,9 @@ const Container = styled.div`
   background: rgba(28, 28, 28, 0.8);
   min-width: 180px;
   padding-bottom: 10px;
+  ${media.lessThan("mobile")`
+    width: 100%;
+  `}
 `;
 
 const Stats = styled.div`
@@ -23,11 +27,18 @@ const Stat = styled.div`
 
 const Label = styled.div`
   width: 220px;
-  
 `;
 
 const Value = styled.div`
   margin-left: 2px;
 `;
 
-export { Container, Stats, Label, Value, Stat };
+const HideButton = styled.div`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+  cursor: pointer;
+`;
+
+export { Container, Stats, Label, Value, Stat, HideButton };

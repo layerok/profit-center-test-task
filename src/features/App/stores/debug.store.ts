@@ -8,12 +8,25 @@ class DebugStore {
     makeAutoObservable(this);
   }
 
+  panelHidden = true;
   totalQuotesReceived = 0;
   lastQuoteId: number | null = null;
   statsComputedCount = 0;
   lostQuotes = 0;
   firstQuoteReceivedTimestamp: number | null = null;
   secondsPassedFromFirstQuote = 0;
+
+  hideDebugPanel() {
+    this.panelHidden = true;
+  }
+
+  showDebugPanel() {
+    this.panelHidden = false;
+  }
+
+  toggleDebugPanel() {
+    this.panelHidden = !this.panelHidden;
+  }
 
   incrementTotalQuotesReceived() {
     this.totalQuotesReceived++;

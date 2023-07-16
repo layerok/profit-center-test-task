@@ -20,6 +20,7 @@ const Input = styled.input`
   border: 1px solid black;
   height: 46px;
   padding: 0 13px;
+  width: 100%;
   font-size: 20px;
   flex-grow: 1;
   &:disabled {
@@ -31,7 +32,6 @@ const Input = styled.input`
 const StepTypeSelect = styled.select`
   border-radius: 0;
   margin-left: -1px;
-  width: 84px;
   height: 100%;
   padding-left: 8px;
   padding-right: 8px;

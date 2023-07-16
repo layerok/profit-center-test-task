@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { media } from "../../../../common/media";
 
 const Container = styled.div`
   background-color: white;
@@ -10,19 +11,28 @@ const Container = styled.div`
 `;
 
 const Inner = styled.div`
-  display: flex;
-  flex-direction: column;
   width: 400px;
+  ${media.lessThan("tablet")`
+    width: 300px;
+  `}
 `;
 
-const ButtonGroup = styled.div`
+const Container2 = styled.div`
   display: flex;
   margin-top: 14px;
   justify-content: space-between;
+  ${media.lessThan("tablet")`
+    flex-direction: column;
+  `}
 `;
 
-export {
-  Container,
-  Inner,
-  ButtonGroup,
-};
+const DebugPanelTrigger = styled.div`
+  margin-top: 100px;
+  position: fixed;
+  bottom: 50px;
+  width: 30px;
+  right: 50px;
+  cursor: pointer;
+`;
+
+export { Container, Inner, Container2, DebugPanelTrigger };

@@ -4,6 +4,9 @@ import * as S from "./DebugPanel.style";
 
 export const DebugPanel = observer(() => {
   const debugStore = useDebugStore();
+  if (debugStore.panelHidden) {
+    return null;
+  }
   return (
     <S.Container>
       <S.Stats>
@@ -32,6 +35,13 @@ export const DebugPanel = observer(() => {
           <S.Value> {debugStore.speed} quotes/second</S.Value>
         </S.Stat>
       </S.Stats>
+      <S.HideButton
+        onClick={() => {
+          debugStore.hideDebugPanel();
+        }}
+      >
+        [X]
+      </S.HideButton>
     </S.Container>
   );
 });
