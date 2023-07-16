@@ -36,3 +36,7 @@ export const LayoutRoute = () => {
 };
 
 export const Component = LayoutRoute;
+
+Object.assign(Component, {
+  displayName: "LazyLayoutRoute",
+});

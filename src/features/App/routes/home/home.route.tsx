@@ -55,3 +55,7 @@ export const HomeRoute = observer(() => {
 });
 
 export const Component = HomeRoute;
+
+Object.assign(Component, {
+  displayName: "LazyHomeRoute",
+});

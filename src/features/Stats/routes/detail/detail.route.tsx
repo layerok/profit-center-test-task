@@ -106,3 +106,7 @@ export const StatRoute = () => {
 };
 
 export const Component = StatRoute;
+
+Object.assign(Component, {
+  displayName: 'LazyStatRoute'
+})
