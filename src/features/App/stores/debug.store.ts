@@ -14,7 +14,6 @@ class DebugStore {
   lostQuotes = 0;
   firstQuoteReceivedTimestamp: number | null = null;
   secondsPassedFromFirstQuote = 0;
-  speed = 0;
 
   incrementTotalQuotesReceived() {
     this.totalQuotesReceived++;
@@ -36,16 +35,21 @@ class DebugStore {
     this.lostQuotes += amount;
   }
 
+  get speed() {
+    if (this.secondsPassedFromFirstQuote === 0) {
+      return 0;
+    }
+    return Math.round(
+      this.totalQuotesReceived / this.secondsPassedFromFirstQuote
+    );
+  }
+
   onQuoteReceived(incomingQuote: Quote) {
     if (this.totalQuotesReceived === 0) {
       this.firstQuoteReceivedTimestamp = Date.now();
     }
     this.secondsPassedFromFirstQuote = Math.round(
       (Date.now() - this.firstQuoteReceivedTimestamp!) / 1000
-    );
-
-    this.speed = Math.round(
-      this.totalQuotesReceived / this.secondsPassedFromFirstQuote
     );
 
     this.incrementTotalQuotesReceived();
