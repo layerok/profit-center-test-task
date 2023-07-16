@@ -10,6 +10,7 @@ import { useStatsStore } from "../../../Stats/stats.store";
 import { Stepper } from "../../components/Stepper/Stepper";
 import { StartButton } from "../../components/StartButton/StartButton";
 import { StatsButton } from "../../components/StatsButton/StatsButton";
+import { ReactComponent as DebugIcon } from "../../assets/debug.svg";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -40,11 +41,20 @@ export const HomeRoute = observer(() => {
       <main>
         <DebugPanel />
         <S.Inner>
-          <Stepper />
-          <S.ButtonGroup>
-            <StartButton/>
-            <StatsButton/>
-          </S.ButtonGroup>
+          <div>
+            <Stepper />
+            <S.Container2>
+              <StartButton />
+              <StatsButton />
+            </S.Container2>
+          </div>
+          <S.DebugPanelTrigger
+            onClick={() => {
+              debugStore.toggleDebugPanel();
+            }}
+          >
+            <DebugIcon />
+          </S.DebugPanelTrigger>
         </S.Inner>
       </main>
       <Outlet />
