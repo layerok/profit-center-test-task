@@ -10,7 +10,7 @@ import { createNanoEvents, Emitter } from "nanoevents";
 import { computeStats } from "./computations/computeStats";
 
 type Events = {
-  statCreated: (stat: Stat) => void;
+  statCreated: (stat: Omit<Stat, "id">) => void;
 };
 
 class StatsStore {
@@ -74,7 +74,12 @@ class StatsStore {
     const endTime = Date.now();
 
     const stat = {
-      ...result,
+      avg: result.avg,
+      min_value: result.minValue,
+      max_value: result.maxValue,
+      standard_deviation: result.standardDeviation,
+      mode: result.mode,
+      mode_count: result.modeCount,
       end_time: endTime,
       start_time: startTime,
       lost_quotes: this.lostQuotes,
@@ -90,6 +95,7 @@ class StatsStore {
 class Stepper {
   step: number = 0;
   minimumStep: number = 0;
+
   constructor(step: number, minimumStep: number) {
     this.step = step;
     this.minimumStep = minimumStep;
@@ -102,10 +108,13 @@ class Stepper {
     });
   }
   onQuoteReceived(quote: Quote) {}
-  onStatCreated(stat: Stat) {}
+
+  onStatCreated(stat: Omit<Stat, "id">) {}
+
   isStepReached() {
     return false;
   }
+
   setStep(step: number) {
     this.step = step;
   }

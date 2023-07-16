@@ -55,7 +55,7 @@ class DebugStore {
     this.setLastQuoteId(incomingQuote.id);
   }
 
-  onStatCreated(stat: Stat) {
+  onStatCreated(stat: Omit<Stat, "id">) {
     this.incrementStatsComputedCount();
   }
 }

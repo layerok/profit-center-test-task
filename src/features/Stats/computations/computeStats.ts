@@ -2,11 +2,11 @@ import { Stat } from "../types";
 
 export function computeStats(values: number[]): {
   avg: number;
-  min_value: number;
-  max_value: number;
-  standard_deviation: number;
+  minValue: number;
+  maxValue: number;
+  standardDeviation: number;
   mode: number;
-  mode_count: number;
+  modeCount: number;
 } {
   if (values.length < 2) {
     throw Error("provide at least 2 values to compute stats");
@@ -56,14 +56,14 @@ export function computeStats(values: number[]): {
     }
   }
 
-  const standartDeviation = Math.sqrt(sum2 / (values.length - 1));
+  const standardDeviation = Math.sqrt(sum2 / (values.length - 1));
 
   return {
     avg,
-    min_value: minValue,
-    max_value: maxValue,
-    standard_deviation: standartDeviation,
+    minValue,
+    maxValue,
+    standardDeviation,
     mode: mostFrequentValue,
-    mode_count: mostFrequentValueCount,
+    modeCount: mostFrequentValueCount,
   };
 }

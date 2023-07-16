@@ -4,6 +4,7 @@ export type Quote = {
 };
 
 export type Stat = {
+  id: number;
   avg: number;
   min_value: number;
   max_value: number;
@@ -17,8 +18,4 @@ export type Stat = {
   lost_quotes: number;
 };
 
-export type DbStat = Stat & {
-  id: number;
-
-};
 

@@ -1,7 +1,7 @@
-import { DbStat } from "../types";
+import { Stat } from "../types";
 
 export type IGetStatsRes = {
-  records: DbStat[];
+  records: Stat[];
   meta: {
     total: number;
     limit: number;

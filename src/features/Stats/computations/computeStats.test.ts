@@ -10,12 +10,12 @@ test("should compute right stats", () => {
 
   const timeSpent = endTime - startTime;
 
-  expect(record.max_value).toBe(444);
+  expect(record.maxValue).toBe(444);
   expect(record.mode).toBe(233);
-  expect(record.mode_count).toBe(1);
-  expect(record.min_value).toBe(233);
+  expect(record.modeCount).toBe(1);
+  expect(record.minValue).toBe(233);
   expect(record.avg).toBe(338.5);
-  expect(record.standard_deviation).toBe(149.19953083036154);
+  expect(record.standardDeviation).toBe(149.19953083036154);
   expect(values.length).toBe(2);
 
   expect(timeSpent).toBeLessThan(1000); // 1 second
@@ -30,12 +30,12 @@ test("should compute right stats 2", () => {
 
   const timeSpent = endTime - startTime;
 
-  expect(record.max_value).toBe(2000);
+  expect(record.maxValue).toBe(2000);
   expect(record.mode).toBe(233);
-  expect(record.mode_count).toBe(2);
-  expect(record.min_value).toBe(101);
+  expect(record.modeCount).toBe(2);
+  expect(record.minValue).toBe(101);
   expect(record.avg).toBe(602.2);
-  expect(record.standard_deviation).toBe(790.9947534592123);
+  expect(record.standardDeviation).toBe(790.9947534592123);
   expect(timeSpent).toBeLessThan(1000); // 1 second
   expect(timeSpent).toBeGreaterThanOrEqual(0);
   expect(values.length).toBe(5);
@@ -48,12 +48,12 @@ test("should compute right stats 3", () => {
   const endTime = Date.now();
 
   const timeSpent = endTime - startTime;
-  expect(record.max_value).toBe(5003);
+  expect(record.maxValue).toBe(5003);
   expect(record.mode).toBe(1);
-  expect(record.mode_count).toBe(2);
-  expect(record.min_value).toBe(-5032);
+  expect(record.modeCount).toBe(2);
+  expect(record.minValue).toBe(-5032);
   expect(record.avg).toBe(739.8333333333334);
-  expect(record.standard_deviation).toBe(3377.5580774676055);
+  expect(record.standardDeviation).toBe(3377.5580774676055);
   expect(timeSpent).toBeLessThan(1000); // 1 second
   expect(timeSpent).toBeGreaterThanOrEqual(0);
   expect(values.length).toBe(6);
