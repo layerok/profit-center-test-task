@@ -25,7 +25,11 @@ export const DebugPanel = observer(() => {
         </S.Stat>
         <S.Stat>
           <S.Label>Seconds passed from first quote: </S.Label>
-          <S.Value> {debugStore.secondsPassedFromFirstQuote}</S.Value>
+          <S.Value> {debugStore.secondsPassedFromFirstQuote} seconds</S.Value>
+        </S.Stat>
+        <S.Stat>
+          <S.Label>Speed: </S.Label>
+          <S.Value> {debugStore.speed} quotes/second</S.Value>
         </S.Stat>
       </S.Stats>
     </S.Container>
