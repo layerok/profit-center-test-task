@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import styled from "styled-components";
+import { media } from "../../../../common/media";
 
 const Button = styled.button`
   height: 45px;
@@ -15,8 +16,9 @@ const Button = styled.button`
     cursor: not-allowed;
     opacity: 0.7;
   }
+  ${media.lessThan("tablet")`
+    width: 100%;
+  `}
 `;
 
-export {
-    Button
-}
+export { Button };
