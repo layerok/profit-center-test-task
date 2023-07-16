@@ -108,7 +108,7 @@ export const StatsRoute = () => {
             </S.Row>
           ))}
         </S.List>
-        <div ref={ref}>{hasNextPage && "грузим"}</div>
+        <div ref={ref}>{hasNextPage && "грузим..."}</div>
       </S.ListContainer>
     </div>
   );
