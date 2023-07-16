@@ -61,8 +61,10 @@ class StatsStore {
 
     this.stepper.onQuoteReceived(incomingQuote);
     if (this.stepper.isStepReached()) {
-      const stat = this.createStat(this.quoteValues);
-      this.stepper.onStatCreated(stat);
+      if (this.quoteValues.length > 1) {
+        const stat = this.createStat(this.quoteValues);
+        this.stepper.onStatCreated(stat);
+      }
     }
   }
 
