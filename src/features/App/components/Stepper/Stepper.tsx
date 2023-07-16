@@ -76,7 +76,7 @@ export const Stepper = observer(() => {
       </S.StepTypeSelect>
       {statsStore.stepper.getStep() < statsStore.stepper.getMinimumStep() && (
         <S.ErrorMsg>
-          Шаг не должен быть не меньше {statsStore.stepper.getMinimumStep()}
+          Шаг должен быть не меньше {statsStore.stepper.getMinimumStep()}
         </S.ErrorMsg>
       )}
     </S.Stepper>
