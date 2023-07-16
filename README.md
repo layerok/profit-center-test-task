@@ -6,6 +6,8 @@
 
 2. Create a `.env` file in the root directory and copy contents of `env.example` into it
 
+3. Run `yarn start`
+
 ### Environment variables
 
 ```
