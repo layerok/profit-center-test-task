@@ -62,12 +62,20 @@ export const HomeRoute = observer(() => {
     {
       key: "quotes",
       title: "котировки",
-      resolveStepper: () => new QuotesStepper(100, 2),
+      resolveStepper: () =>
+        new QuotesStepper(statsStore, {
+          step: 100,
+          min: 2,
+        }),
     },
     {
       key: "seconds",
       title: "секунды",
-      resolveStepper: () => new SecondsStepper(10, 2),
+      resolveStepper: () =>
+        new SecondsStepper(statsStore, {
+          step: 10,
+          min: 1,
+        }),
     },
   ];
 

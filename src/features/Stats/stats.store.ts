@@ -20,7 +20,10 @@ class StatsStore {
       emitter: false,
     });
     this.emitter = createNanoEvents<Events>();
-    this.stepper = new QuotesStepper(100, 2);
+    this.stepper = new QuotesStepper(this, {
+      step: 100,
+      min: 2,
+    });
   }
   emitter: Emitter<Events>;
 
@@ -95,16 +98,25 @@ class StatsStore {
 class Stepper {
   step: number = 0;
   minimumStep: number = 0;
+  store: StatsStore;
 
-  constructor(step: number, minimumStep: number) {
-    this.step = step;
-    this.minimumStep = minimumStep;
+  constructor(
+    store: StatsStore,
+    options: {
+      step: number;
+      min: number;
+    }
+  ) {
+    this.store = store;
+    this.step = options.step;
+    this.minimumStep = options.min;
     makeObservable(this, {
       step: observable,
       minimumStep: observable,
       setStep: action,
       onQuoteReceived: action,
       onStatCreated: action,
+      store: false,
     });
   }
   onQuoteReceived(quote: Quote) {}
@@ -129,38 +141,38 @@ class Stepper {
 }
 
 export class SecondsStepper extends Stepper {
-  secondsAfterLastStatCreated = 0;
+  secondsPassedAfterLastStatCreated = 0;
   lastStatCreatedTimestamp: number | null = null;
 
   onQuoteReceived(quote: Quote) {
     if (!this.lastStatCreatedTimestamp) {
       this.lastStatCreatedTimestamp = Date.now();
     }
-    this.secondsAfterLastStatCreated =
+    this.secondsPassedAfterLastStatCreated =
       (Date.now() - this.lastStatCreatedTimestamp) / 1000;
   }
   onStatCreated(stat: Stat) {
     this.lastStatCreatedTimestamp = Date.now();
 
-    this.secondsAfterLastStatCreated = 0;
+    this.secondsPassedAfterLastStatCreated = 0;
   }
 
   isStepReached() {
-    return this.secondsAfterLastStatCreated >= this.step;
+    return this.secondsPassedAfterLastStatCreated >= this.step;
   }
 }
 
 export class QuotesStepper extends Stepper {
-  quotesAfterLastStatCreated = 0;
+  quotesReceivedAfterLastStatCreated = 0;
 
   onQuoteReceived(quote: Quote) {
-    this.quotesAfterLastStatCreated++;
+    this.quotesReceivedAfterLastStatCreated++;
   }
   onStatCreated(stat: Stat) {
-    this.quotesAfterLastStatCreated = 0;
+    this.quotesReceivedAfterLastStatCreated = 0;
   }
   isStepReached() {
-    return this.quotesAfterLastStatCreated === this.step;
+    return this.quotesReceivedAfterLastStatCreated === this.step;
   }
 }
 
