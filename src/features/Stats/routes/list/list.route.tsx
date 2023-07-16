@@ -74,42 +74,48 @@ export const StatsRoute = () => {
       </S.CloseSvgContainer>
       <S.Title>Статистика</S.Title>
 
-      <S.ListContainer ref={parentRef}>
-        <S.List
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-            <S.Row
+      {items.length === 0 ? (
+        "Нет данных"
+      ) : (
+        <>
+          <S.ListContainer ref={parentRef}>
+            <S.List
               style={{
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
+                height: `${rowVirtualizer.getTotalSize()}px`,
               }}
-              key={virtualRow.index}
             >
-              <S.ID>#{items[virtualRow.index].id}</S.ID>
-              <S.Date>
-                {format(
-                  new Date(+items[virtualRow.index].start_time),
-                  "dd/MM/yyyy hh:mm:ss"
-                )}
-              </S.Date>
-              <S.Action>
-                <Link
-                  to={statsRoutePaths.detail.replace(
-                    ":id",
-                    String(items[virtualRow.index].id)
-                  )}
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+                <S.Row
+                  style={{
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  key={virtualRow.index}
                 >
-                  View
-                </Link>
-              </S.Action>
-            </S.Row>
-          ))}
-        </S.List>
-        <div ref={ref}>{hasNextPage && "грузим..."}</div>
-      </S.ListContainer>
+                  <S.ID>#{items[virtualRow.index].id}</S.ID>
+                  <S.Date>
+                    {format(
+                      new Date(+items[virtualRow.index].start_time),
+                      "dd/MM/yyyy hh:mm:ss"
+                    )}
+                  </S.Date>
+                  <S.Action>
+                    <Link
+                      to={statsRoutePaths.detail.replace(
+                        ":id",
+                        String(items[virtualRow.index].id)
+                      )}
+                    >
+                      View
+                    </Link>
+                  </S.Action>
+                </S.Row>
+              ))}
+            </S.List>
+          </S.ListContainer>
+          <div ref={ref}>{hasNextPage && "грузим..."}</div>
+        </>
+      )}
     </div>
   );
 };
