@@ -8,6 +8,7 @@ export const useAddStat = () => {
     mutationFn: addStat,
     onSettled: () => {
       queryClient.invalidateQueries(statsQueryKeys.lists());
+      queryClient.invalidateQueries(statsQueryKeys.infiniteList());
     },
   });
 };

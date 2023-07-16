@@ -7,4 +7,5 @@ export const statsQueryKeys = {
   ],
   details: () => [...statsQueryKeys.all, "detail"] as const,
   detail: (id: number) => [...statsQueryKeys.details(), id],
+  infiniteList: () => [...statsQueryKeys.all, "infinite-list"] as const,
 };

@@ -9,6 +9,7 @@ import React, { useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getAllStats } from "../../api/api";
 import { useInView } from "react-intersection-observer";
+import { statsQueryKeys } from "../../query-keys";
 
 const STATS_PER_PAGE = 25;
 
@@ -35,7 +36,7 @@ export const StatsRoute = () => {
     hasNextPage,
     fetchNextPage,
     isLoading,
-  } = useInfiniteQuery(["infinite-stats"], fetchStats, {
+  } = useInfiniteQuery(statsQueryKeys.infiniteList(), fetchStats, {
     getNextPageParam: (lastPage, pages) => {
       if (pages.length * STATS_PER_PAGE >= lastPage.meta.total) {
         return undefined;
@@ -112,8 +113,8 @@ export const StatsRoute = () => {
                 </S.Row>
               ))}
             </S.List>
+            <div ref={ref}>{hasNextPage && "грузим..."}</div>
           </S.ListContainer>
-          <div ref={ref}>{hasNextPage && "грузим..."}</div>
         </>
       )}
     </div>
