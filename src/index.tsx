@@ -6,6 +6,8 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
 import { router } from "./router";
+import { Provider as MobXProvider } from "mobx-react";
+import { stores } from "./stores";
 
 console.log("env", process.env);
 
@@ -15,7 +17,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <MobXProvider {...stores}>
+        <RouterProvider router={router} />
+      </MobXProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

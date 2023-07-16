@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.0.0",
     "date-fns": "^2.30.0",
     "mobx": "^6.9.1",
+    "mobx-react": "^9.0.0",
     "mobx-react-lite": "^4.0.3",
     "nanoevents": "^8.0.0",
     "react": "^18.2.0",

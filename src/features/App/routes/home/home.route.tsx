@@ -79,7 +79,7 @@ export const HomeRoute = observer(() => {
     },
   ];
 
-  const handleStart = () => {
+  const startApp = () => {
     if (appStore.isIdling) {
       appStore.start();
     } else {
@@ -87,7 +87,7 @@ export const HomeRoute = observer(() => {
     }
   };
 
-  const handleStats = () => {
+  const viewStats = () => {
     if (statsStore.quoteValues.length > 2) {
       statsStore.createStat(statsStore.quoteValues);
     }
@@ -109,7 +109,7 @@ export const HomeRoute = observer(() => {
   };
 
   const handleChangeStep = (event: ChangeEvent<HTMLInputElement>) => {
-    statsStore.stepper.setStep(+event.currentTarget.value);
+    statsStore.stepper.setStep(Number(event.currentTarget.value));
   };
 
   return (
@@ -154,14 +154,14 @@ export const HomeRoute = observer(() => {
                 appStore.isStarting ||
                 appStore.isStopping
               }
-              onClick={handleStart}
+              onClick={startApp}
             >
               {appStore.isIdling ? "Start" : ""}
               {appStore.isStarting ? "starting..." : ""}
               {appStore.isStarted ? "Stop" : ""}
               {appStore.isStopping ? "stopping..." : ""}
             </S.PrimaryButton>
-            <S.SecondaryButton onClick={handleStats}>
+            <S.SecondaryButton onClick={viewStats}>
               Статистика
             </S.SecondaryButton>
           </S.ButtonGroup>

@@ -2,6 +2,8 @@ import { makeAutoObservable } from "mobx";
 import { appConfig } from "../../../config/app.config";
 import { Quote } from "../../Stats/types";
 import { createNanoEvents, Emitter } from "nanoevents";
+import { useContext } from "react";
+import { MobXProviderContext } from "mobx-react";
 
 type Events = {
   quoteReceived: (quote: Quote) => void;
@@ -82,6 +84,7 @@ class AppStore {
 
 export const appStore = new AppStore();
 
-export const useAppStore = () => {
-  return appStore;
+export const useAppStore = (): AppStore => {
+  const ctx = useContext(MobXProviderContext);
+  return ctx.appStore;
 };

@@ -1,6 +1,5 @@
 import {
   action,
-  computed,
   makeAutoObservable,
   makeObservable,
   observable,
@@ -8,6 +7,8 @@ import {
 import { Quote, Stat } from "./types";
 import { createNanoEvents, Emitter } from "nanoevents";
 import { computeStats } from "./computations/computeStats";
+import { useContext } from "react";
+import { MobXProviderContext } from "mobx-react";
 
 type Events = {
   statCreated: (stat: Omit<Stat, "id">) => void;
@@ -181,6 +182,7 @@ export class QuotesStepper extends Stepper {
 
 export const statsStore = new StatsStore();
 
-export const useStatsStore = () => {
-  return statsStore;
+export const useStatsStore = (): StatsStore => {
+    const ctx = useContext(MobXProviderContext);
+    return ctx.statsStore;
 };
