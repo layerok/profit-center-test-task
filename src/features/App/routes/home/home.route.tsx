@@ -5,7 +5,7 @@ import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { useAddStat } from "../../../Stats/mutations";
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import { Quote } from "../../../Stats/types";
 import { useDebugStore } from "../../stores/debug.store";
 import {
@@ -22,6 +22,7 @@ export const HomeRoute = observer(() => {
   const navigate = useNavigate();
 
   const statMutation = useAddStat();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const unbind = appStore.emitter.on("quoteReceived", (incomingQuote) => {
@@ -70,6 +71,39 @@ export const HomeRoute = observer(() => {
     },
   ];
 
+  const handleStart = () => {
+    if (appStore.isIdling) {
+      appStore.start();
+    } else {
+      appStore.stop();
+    }
+  };
+
+  const handleStats = () => {
+    if (statsStore.quoteValues.length > 2) {
+      statsStore.createStat(statsStore.quoteValues);
+    }
+    navigate(statsRoutePaths.list);
+  };
+
+  const handleChangeStepType = (e: ChangeEvent<HTMLSelectElement>) => {
+    const stepper = steppers.find(
+      (stepper) => e.currentTarget.value == stepper.key
+    );
+
+    if (stepper) {
+      const newStepper = stepper.resolveStepper();
+      statsStore.setStepper(newStepper);
+      if (inputRef.current) {
+        inputRef.current.value = String(newStepper.getStep());
+      }
+    }
+  };
+
+  const handleChangeStep = (event: ChangeEvent<HTMLInputElement>) => {
+    statsStore.stepper.setStep(+event.currentTarget.value);
+  };
+
   return (
     <S.Container>
       <main>
@@ -77,26 +111,17 @@ export const HomeRoute = observer(() => {
         <S.ControlsContainer>
           <S.InputContainer>
             <S.Input
+              ref={inputRef}
               disabled={!appStore.isIdling}
               type="number"
               min={statsStore.stepper.getMinimumStep()}
-              value={statsStore.stepper.getStep()}
+              defaultValue={statsStore.stepper.getStep()}
               placeholder="Введите шаг"
-              onChange={(event) => {
-                statsStore.stepper.setStep(+event.currentTarget.value);
-              }}
+              onChange={handleChangeStep}
             />
             <S.StepTypeSelect
               disabled={!appStore.isIdling}
-              onChange={(e) => {
-                const stepper = steppers.find(
-                  (stepper) => e.currentTarget.value == stepper.key
-                );
-
-                if (stepper) {
-                  statsStore.setStepper(stepper.resolveStepper());
-                }
-              }}
+              onChange={handleChangeStepType}
             >
               {steppers.map((stepper, i) => (
                 <option key={stepper.key} value={stepper.key}>
@@ -107,7 +132,8 @@ export const HomeRoute = observer(() => {
             {statsStore.stepper.getStep() <
               statsStore.stepper.getMinimumStep() && (
               <S.ValidationMsg>
-                Шаг должен быть не меньше {statsStore.stepper.getMinimumStep()}
+                Шаг не должен быть не меньше{" "}
+                {statsStore.stepper.getMinimumStep()}
               </S.ValidationMsg>
             )}
           </S.InputContainer>
@@ -120,27 +146,14 @@ export const HomeRoute = observer(() => {
                 appStore.isStarting ||
                 appStore.isStopping
               }
-              onClick={() => {
-                if (appStore.isIdling) {
-                  appStore.start();
-                } else {
-                  appStore.stop();
-                }
-              }}
+              onClick={handleStart}
             >
               {appStore.isIdling ? "Start" : ""}
               {appStore.isStarting ? "starting..." : ""}
               {appStore.isStarted ? "Stop" : ""}
               {appStore.isStopping ? "stopping..." : ""}
             </S.PrimaryButton>
-            <S.SecondaryButton
-              onClick={() => {
-                if (statsStore.quoteValues.length > 2) {
-                  statsStore.createStat(statsStore.quoteValues);
-                }
-                navigate(statsRoutePaths.list);
-              }}
-            >
+            <S.SecondaryButton onClick={handleStats}>
               Статистика
             </S.SecondaryButton>
           </S.ButtonGroup>
