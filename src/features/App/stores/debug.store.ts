@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { useContext } from "react";
 import { Quote, Stat } from "../../Stats/types";
-import { MobXProviderContext, Provider } from "mobx-react";
+import { MobXProviderContext } from "mobx-react";
 
 class DebugStore {
   constructor() {
