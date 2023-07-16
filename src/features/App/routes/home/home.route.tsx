@@ -1,32 +1,29 @@
 import * as S from "./home.style";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
-import { statsRoutePaths } from "../../../Stats/route.paths";
 import { useAddStat } from "../../../Stats/mutations";
-import { ChangeEvent, useEffect, useRef } from "react";
-import { Quote } from "../../../Stats/types";
+import { useEffect } from "react";
 import { useDebugStore } from "../../stores/debug.store";
 import {
-  QuotesStepper,
-  SecondsStepper,
   useStatsStore,
 } from "../../../Stats/stats.store";
+import { Stepper } from "../../components/Stepper/Stepper";
+import { StartButton } from "../../components/StartButton/StartButton";
+import { StatsButton } from "../../components/StatsButton/StatsButton";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
   const debugStore = useDebugStore();
   const statsStore = useStatsStore();
 
-  const navigate = useNavigate();
-
-  const statMutation = useAddStat();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const addStatMutation = useAddStat();
 
   useEffect(() => {
     const unbind = appStore.emitter.on("quoteReceived", (incomingQuote) => {
       debugStore.onQuoteReceived(incomingQuote);
+      statsStore.onQuoteReceived(incomingQuote);
     });
     return () => unbind();
   }, []);
@@ -34,138 +31,23 @@ export const HomeRoute = observer(() => {
   useEffect(() => {
     const unbind = statsStore.emitter.on("statCreated", (stat) => {
       debugStore.onStatCreated(stat);
+      addStatMutation.mutate(stat);
     });
 
     return () => unbind();
   }, []);
-
-  useEffect(() => {
-    const unbind = appStore.emitter.on(
-      "quoteReceived",
-      (incomingQuote: Quote) => {
-        statsStore.onQuoteReceived(incomingQuote);
-      }
-    );
-
-    return () => unbind();
-  }, []);
-
-  useEffect(() => {
-    const unbind = statsStore.emitter.on("statCreated", (stat) => {
-      statMutation.mutate(stat);
-    });
-
-    return () => unbind();
-  });
-
-  const steppers = [
-    {
-      key: "quotes",
-      title: "котировки",
-      resolveStepper: () =>
-        new QuotesStepper(statsStore, {
-          step: 100,
-          min: 2,
-        }),
-    },
-    {
-      key: "seconds",
-      title: "секунды",
-      resolveStepper: () =>
-        new SecondsStepper(statsStore, {
-          step: 10,
-          min: 1,
-        }),
-    },
-  ];
-
-  const startApp = () => {
-    if (appStore.isIdling) {
-      appStore.start();
-    } else {
-      appStore.stop();
-    }
-  };
-
-  const viewStats = () => {
-    if (statsStore.quoteValues.length > 2) {
-      statsStore.createStat(statsStore.quoteValues);
-    }
-    navigate(statsRoutePaths.list);
-  };
-
-  const handleChangeStepType = (e: ChangeEvent<HTMLSelectElement>) => {
-    const stepper = steppers.find(
-      (stepper) => e.currentTarget.value == stepper.key
-    );
-
-    if (stepper) {
-      const newStepper = stepper.resolveStepper();
-      statsStore.setStepper(newStepper);
-      if (inputRef.current) {
-        inputRef.current.value = String(newStepper.getStep());
-      }
-    }
-  };
-
-  const handleChangeStep = (event: ChangeEvent<HTMLInputElement>) => {
-    statsStore.stepper.setStep(Number(event.currentTarget.value));
-  };
 
   return (
     <S.Container>
       <main>
         <DebugPanel />
-        <S.ControlsContainer>
-          <S.InputContainer>
-            <S.Input
-              ref={inputRef}
-              disabled={!appStore.isIdling}
-              type="number"
-              min={statsStore.stepper.getMinimumStep()}
-              defaultValue={statsStore.stepper.getStep()}
-              placeholder="Введите шаг"
-              onChange={handleChangeStep}
-            />
-            <S.StepTypeSelect
-              disabled={!appStore.isIdling}
-              onChange={handleChangeStepType}
-            >
-              {steppers.map((stepper, i) => (
-                <option key={stepper.key} value={stepper.key}>
-                  {stepper.title}
-                </option>
-              ))}
-            </S.StepTypeSelect>
-            {statsStore.stepper.getStep() <
-              statsStore.stepper.getMinimumStep() && (
-              <S.ValidationMsg>
-                Шаг не должен быть не меньше{" "}
-                {statsStore.stepper.getMinimumStep()}
-              </S.ValidationMsg>
-            )}
-          </S.InputContainer>
-
+        <S.Inner>
+          <Stepper />
           <S.ButtonGroup>
-            <S.PrimaryButton
-              disabled={
-                statsStore.stepper.getStep() <
-                  statsStore.stepper.getMinimumStep() ||
-                appStore.isStarting ||
-                appStore.isStopping
-              }
-              onClick={startApp}
-            >
-              {appStore.isIdling ? "Start" : ""}
-              {appStore.isStarting ? "starting..." : ""}
-              {appStore.isStarted ? "Stop" : ""}
-              {appStore.isStopping ? "stopping..." : ""}
-            </S.PrimaryButton>
-            <S.SecondaryButton onClick={viewStats}>
-              Статистика
-            </S.SecondaryButton>
+            <StartButton/>
+            <StatsButton/>
           </S.ButtonGroup>
-        </S.ControlsContainer>
+        </S.Inner>
       </main>
       <Outlet />
     </S.Container>

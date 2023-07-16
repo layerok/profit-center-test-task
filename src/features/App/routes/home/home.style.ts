@@ -9,77 +9,10 @@ const Container = styled.div`
   position: relative;
 `;
 
-const Input = styled.input`
-  border: 1px solid black;
-  height: 46px;
-  padding: 0 13px;
-  font-size: 20px;
-  flex-grow:1;
-  &:disabled {
-    border: 1px solid rgba(118, 118, 118, 0.3);
-    opacity: 0.7;
-  }
-`;
-
-const StepTypeSelect = styled.select`
-  border-radius: 0;
-  margin-left: -1px;
-  width: 84px;
-  height: 100%;
-  padding-left: 8px;
-  padding-right: 8px;
-  width: 100px;
-`;
-
-const PrimaryButton = styled.button`
-  height: 45px;
-  width: 190px;
-  color: white;
-  background-color: black;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.7;
-  }
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-`;
-
-const SecondaryButton = styled.button`
-  background-color: transparent;
-  border: none;
-  height: 45px;
-  width: 190px;
-  cursor: pointer;
-  color: black;
-  &:hover {
-    background: rgba(0, 0, 0, 0.06);
-  }
-`;
-
-const ControlsContainer = styled.div`
+const Inner = styled.div`
   display: flex;
   flex-direction: column;
   width: 400px;
-`;
-
-const ValidationMsg = styled.div`
-  background: red;
-  color: white;
-  position: absolute;
-  bottom: 100%;
-  right: 0;
-  font-size: 10px;
-  padding: 4px;
-`;
-
-const InputContainer = styled.div`
-  position: relative;
-  display: flex;
-  height: 46px;
 `;
 
 const ButtonGroup = styled.div`
@@ -90,12 +23,6 @@ const ButtonGroup = styled.div`
 
 export {
   Container,
-  Input,
-  PrimaryButton,
-  SecondaryButton,
-  ControlsContainer,
-  ValidationMsg,
-  InputContainer,
+  Inner,
   ButtonGroup,
-  StepTypeSelect,
 };
