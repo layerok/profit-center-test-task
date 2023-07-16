@@ -15,6 +15,10 @@ const Input = styled.input`
   padding: 0 13px;
   font-size: 20px;
   flex-grow:1;
+  &:disabled {
+    border: 1px solid rgba(118, 118, 118, 0.3);
+    opacity: 0.7;
+  }
 `;
 
 const StepTypeSelect = styled.select`
@@ -22,6 +26,9 @@ const StepTypeSelect = styled.select`
   margin-left: -1px;
   width: 84px;
   height: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
+  width: 100px;
 `;
 
 const PrimaryButton = styled.button`
