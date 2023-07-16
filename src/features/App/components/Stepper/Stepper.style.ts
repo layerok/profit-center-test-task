@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const ErrorMsg = styled.div`
   background: red;
@@ -35,12 +35,8 @@ const StepTypeSelect = styled.select`
   height: 100%;
   padding-left: 8px;
   padding-right: 8px;
-  width: 100px;
+  width: 120px;
+  flex-shrink: 0;
 `;
 
-export {
-    ErrorMsg,
-    Stepper,
-    StepTypeSelect,
-    Input
-}
+export { ErrorMsg, Stepper, StepTypeSelect, Input };
