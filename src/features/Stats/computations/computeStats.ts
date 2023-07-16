@@ -1,5 +1,3 @@
-import { Stat } from "../types";
-
 export function computeStats(values: number[]): {
   avg: number;
   minValue: number;
