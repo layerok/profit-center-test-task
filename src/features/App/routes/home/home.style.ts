@@ -26,13 +26,4 @@ const Container2 = styled.div`
   `}
 `;
 
-const DebugPanelTrigger = styled.div`
-  margin-top: 100px;
-  position: fixed;
-  bottom: 50px;
-  width: 30px;
-  right: 50px;
-  cursor: pointer;
-`;
-
-export { Container, Inner, Container2, DebugPanelTrigger };
+export { Container, Inner, Container2 };

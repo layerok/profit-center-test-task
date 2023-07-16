@@ -41,4 +41,13 @@ const HideButton = styled.div`
   cursor: pointer;
 `;
 
-export { Container, Stats, Label, Value, Stat, HideButton };
+const Trigger = styled.div`
+  margin-top: 100px;
+  position: fixed;
+  bottom: 50px;
+  width: 30px;
+  right: 50px;
+  cursor: pointer;
+`;
+
+export { Container, Stats, Label, Value, Stat, HideButton, Trigger };

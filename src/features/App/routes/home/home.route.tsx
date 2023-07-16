@@ -10,7 +10,6 @@ import { useStatsStore } from "../../../Stats/stats.store";
 import { Stepper } from "../../components/Stepper/Stepper";
 import { StartButton } from "../../components/StartButton/StartButton";
 import { StatsButton } from "../../components/StatsButton/StatsButton";
-import { ReactComponent as DebugIcon } from "../../assets/debug.svg";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -48,13 +47,6 @@ export const HomeRoute = observer(() => {
               <StatsButton />
             </S.Container2>
           </div>
-          <S.DebugPanelTrigger
-            onClick={() => {
-              debugStore.toggleDebugPanel();
-            }}
-          >
-            <DebugIcon />
-          </S.DebugPanelTrigger>
         </S.Inner>
       </main>
       <Outlet />
