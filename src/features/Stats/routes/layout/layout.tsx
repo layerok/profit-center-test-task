@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 import { appRoutePaths } from "../../../App/route.paths";
+import * as S from './layout.style'
 
 export const LayoutRoute = () => {
   const navigate = useNavigate();
@@ -20,17 +21,18 @@ export const LayoutRoute = () => {
           position: "fixed",
         },
         content: {
-          width: 520,
-          height: 359,
           border: "none",
-          padding: 20,
           background: "white",
           borderRadius: 0,
           position: "relative",
+          padding: 0,
+          inset: 0
         },
       }}
     >
-      <Outlet />
+      <S.Container>
+        <Outlet />
+      </S.Container>
     </ReactModal>
   );
 };
