@@ -70,7 +70,7 @@ class StatsStore {
     this.minValue = firstQuote.value;
   }
 
-  onQuoteReceived(incomingQuote: IQuote) {
+  addQuote(incomingQuote: IQuote) {
     if (this.totalQuotesCount === 0) {
       this.onFirstQuote(incomingQuote);
     }
@@ -139,11 +139,7 @@ class StatsStore {
     return stat;
   }
 
-  onAppStopped() {
-    this.resetStats();
-  }
-
-  resetStats() {
+  reset() {
     this.totalQuotesCount = 0;
     this.avg = null;
     this.minValue = null;

@@ -21,15 +21,14 @@ export const HomeRoute = observer(() => {
 
   useEffect(() => {
     const unbind = appStore.on("quoteReceived", (incomingQuote) => {
-      debugStore.onQuoteReceived(incomingQuote);
-      statsStore.onQuoteReceived(incomingQuote);
+      statsStore.addQuote(incomingQuote);
     });
     return () => unbind();
   }, []);
 
   useEffect(() => {
     const unbind = statsStore.on("statCreated", (stat) => {
-      debugStore.onStatCreated(stat);
+      debugStore.incrementReportsCreatedCount();
       addStatMutation.mutate(stat);
     });
 
@@ -38,8 +37,8 @@ export const HomeRoute = observer(() => {
 
   useEffect(() => {
     const unbind = appStore.on("appStopped", () => {
-      statsStore.onAppStopped();
-      debugStore.onAppStopped();
+      statsStore.reset();
+      debugStore.reset();
     });
 
     return () => unbind();

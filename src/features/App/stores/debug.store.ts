@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
 import { useContext } from "react";
-import { IQuote, IStat } from "../../Stats/types";
 import { MobXProviderContext } from "mobx-react";
 
 class DebugStore {
@@ -9,7 +8,7 @@ class DebugStore {
   }
 
   panelHidden = true;
-  reportsCreated = 0;
+  reportsCreatedCount = 0;
 
   hideDebugPanel() {
     this.panelHidden = true;
@@ -23,26 +22,22 @@ class DebugStore {
     this.panelHidden = !this.panelHidden;
   }
 
-  incrementStatsComputedCount() {
-    this.reportsCreated++;
+  incrementReportsCreatedCount() {
+    this.reportsCreatedCount++;
   }
 
-  onQuoteReceived(incomingQuote: IQuote) {
-
+  setReportsCreatedCount(count: number) {
+    this.reportsCreatedCount = count;
   }
 
-  onStatCreated(stat: Omit<IStat, "id">) {
-    this.incrementStatsComputedCount();
-  }
-
-  onAppStopped() {
-    this.reportsCreated = 0;
+  reset() {
+    this.reportsCreatedCount = 0;
   }
 }
 
 export const debugStore = new DebugStore();
 
 export const useDebugStore = (): DebugStore => {
-    const ctx = useContext(MobXProviderContext);
-    return ctx.debugStore;
+  const ctx = useContext(MobXProviderContext);
+  return ctx.debugStore;
 };

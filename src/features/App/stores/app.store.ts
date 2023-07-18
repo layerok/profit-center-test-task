@@ -25,7 +25,7 @@ class AppStore {
     makeAutoObservable<AppStore, "emitter">(this, {
       emitter: false,
       emit: false,
-      on: false
+      on: false,
     });
     this.emitter = createNanoEvents<IEvents>();
   }
