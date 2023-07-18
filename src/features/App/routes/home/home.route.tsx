@@ -35,6 +35,15 @@ export const HomeRoute = observer(() => {
     return () => unbind();
   }, []);
 
+  useEffect(() => {
+    const unbind = appStore.emitter.on("appStopped", () => {
+      statsStore.onAppStopped();
+      debugStore.onAppStopped();
+    })
+
+    return () => unbind();
+  }, [])
+
   return (
     <S.Container>
       <main>

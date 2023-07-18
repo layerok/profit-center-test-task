@@ -96,7 +96,7 @@ export const StatsRoute = () => {
                   <S.ID>#{items[virtualRow.index].id}</S.ID>
                   <S.Date>
                     {format(
-                      new Date(+items[virtualRow.index].start_time),
+                      new Date(+items[virtualRow.index].end_time),
                       "dd/MM/yyyy hh:mm:ss"
                     )}
                   </S.Date>

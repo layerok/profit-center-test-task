@@ -8,10 +8,10 @@ class DebugStore {
     makeAutoObservable(this);
   }
 
-  panelHidden = true;
+  panelHidden = false;
   totalQuotesReceived = 0;
   lastQuoteId: number | null = null;
-  statsComputedCount = 0;
+  reportsCreated = 0;
   lostQuotes = 0;
   firstQuoteReceivedTimestamp: number | null = null;
   secondsPassedFromFirstQuote = 0;
@@ -33,7 +33,7 @@ class DebugStore {
   }
 
   incrementStatsComputedCount() {
-    this.statsComputedCount++;
+    this.reportsCreated++;
   }
 
   setLastQuoteId(id: number) {
@@ -76,6 +76,15 @@ class DebugStore {
 
   onStatCreated(stat: Omit<Stat, "id">) {
     this.incrementStatsComputedCount();
+  }
+
+  onAppStopped() {
+    this.totalQuotesReceived = 0;
+    this.lostQuotes = 0;
+    this.lastQuoteId = null;
+    this.firstQuoteReceivedTimestamp = null;
+    this.reportsCreated = 0;
+    this.secondsPassedFromFirstQuote = 0;
   }
 }
 

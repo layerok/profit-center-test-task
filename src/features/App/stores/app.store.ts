@@ -7,6 +7,10 @@ import { MobXProviderContext } from "mobx-react";
 
 type Events = {
   quoteReceived: (quote: Quote) => void;
+  appStopped: () => void;
+  appStarted: () => void;
+  appStopping: () => void;
+  appStarting: () => void;
 };
 
 enum AppStateEnum {
@@ -49,6 +53,7 @@ class AppStore {
 
   start() {
     if (this.isIdling) {
+      this.emitter.emit("appStarting");
       this.state = AppStateEnum.Starting;
       this.ws = new WebSocket(appConfig.wsUrl);
 
@@ -57,12 +62,15 @@ class AppStore {
         this.emitter.emit("quoteReceived", incomingQuote);
       };
       const onFail = () => {
+        this.emitter.emit("appStopping");
         this.setState(AppStateEnum.Stopping);
       };
       const onClose = () => {
+        this.emitter.emit("appStopped");
         this.setState(AppStateEnum.Idling);
       };
       const onOpen = (ev: Event) => {
+        this.emitter.emit("appStarted");
         this.setState(AppStateEnum.Started);
       };
 
@@ -75,6 +83,7 @@ class AppStore {
 
   stop() {
     if (!this.isStopping && !this.isIdling) {
+      this.emitter.emit("appStopping");
       this.state = AppStateEnum.Stopping;
       this.ws?.close(1000);
       this.ws = null;

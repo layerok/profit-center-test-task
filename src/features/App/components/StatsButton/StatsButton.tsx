@@ -9,8 +9,8 @@ export const StatsButton = observer(() => {
   const navigate = useNavigate();
 
   const viewStats = () => {
-    if (statsStore.quoteValues.length > 2) {
-      statsStore.createStat(statsStore.quoteValues);
+    if (statsStore.totalQuotesCount > 2) {
+      statsStore.createStat();
     }
     navigate(statsRoutePaths.list);
   };

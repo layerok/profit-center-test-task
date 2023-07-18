@@ -20,7 +20,7 @@ export const Stepper = observer(() => {
       title: "котировки",
       resolveStepper: () =>
         new QuotesStepper(statsStore, {
-          step: 100,
+          step: 10000,
           min: 2,
         }),
     },
