@@ -21,7 +21,7 @@ export const HomeRoute = observer(() => {
 
   useEffect(() => {
     const unbind = appStore.on("quoteReceived", (incomingQuote) => {
-      statsStore.addQuote(incomingQuote);
+      statsStore.compute(incomingQuote);
     });
     return () => unbind();
   }, []);

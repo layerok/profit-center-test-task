@@ -45,10 +45,6 @@ class StatsStore {
 
   stepper: Stepper;
 
-  setStepper(stepper: Stepper) {
-    this.stepper = stepper;
-  }
-
   get time() {
     if (this.startTime != null) {
       return mobxUtils.now() - this.startTime;
@@ -63,16 +59,16 @@ class StatsStore {
     return 0;
   }
 
-  onFirstQuote(firstQuote: IQuote) {
-    this.startTime = Date.now();
-    this.avg = firstQuote.value;
-    this.maxValue = firstQuote.value;
-    this.minValue = firstQuote.value;
+  setStepper(stepper: Stepper) {
+    this.stepper = stepper;
   }
 
-  addQuote(incomingQuote: IQuote) {
+  compute(incomingQuote: IQuote) {
     if (this.totalQuotesCount === 0) {
-      this.onFirstQuote(incomingQuote);
+      this.startTime = Date.now();
+      this.avg = incomingQuote.value;
+      this.maxValue = incomingQuote.value;
+      this.minValue = incomingQuote.value;
     }
 
     const computationStartTime = Date.now();
@@ -115,7 +111,7 @@ class StatsStore {
 
     this.timeSpent += computationEndTime - computationStartTime;
 
-    this.stepper.onQuoteReceived(incomingQuote);
+    this.stepper.check(incomingQuote);
   }
 
   createStat() {
@@ -180,7 +176,7 @@ class Stepper {
       step: observable,
       setStep: action,
       minStep: observable,
-      onQuoteReceived: action,
+      check: action,
       store: false,
     });
   }
@@ -189,14 +185,14 @@ class Stepper {
     this.step = step;
   }
 
-  onQuoteReceived(quote: IQuote) {}
+  check(quote: IQuote) {}
 }
 
 export class SecondsStepper extends Stepper {
   private secondsPassedAfterLastStatCreated = 0;
   private lastStatCreatedTimestamp: number | null = null;
 
-  onQuoteReceived(quote: IQuote) {
+  check(quote: IQuote) {
     if (!this.lastStatCreatedTimestamp) {
       this.lastStatCreatedTimestamp = Date.now();
     }
