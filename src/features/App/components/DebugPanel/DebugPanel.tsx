@@ -25,7 +25,7 @@ export const DebugPanel = observer(() => {
             <S.Stat>
               <S.Label>Speed: </S.Label>
               <S.Value>
-                {Math.round(statsStore.speed / 1000)} quotes/second
+                {Math.round(statsStore.speed)} quotes/second
               </S.Value>
             </S.Stat>
             <S.Stat>

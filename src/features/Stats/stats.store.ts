@@ -57,8 +57,9 @@ class StatsStore {
   }
 
   get speed() {
-    if (this.time != 0) {
-      return this.totalQuotesCount / this.time;
+    if (this.time !== 0) {
+      console.log(this.time, this.totalQuotesCount);
+      return this.totalQuotesCount / (this.time / 1000);
     }
     return 0;
   }
