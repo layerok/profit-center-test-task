@@ -5,10 +5,10 @@ const Container = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  padding: 5px 20px;
+  padding: 5px 10px;
   color: white;
   background: rgba(28, 28, 28, 0.8);
-  min-width: 180px;
+  min-width: 320px;
   padding-bottom: 10px;
   ${media.lessThan("mobile")`
     width: 100%;
@@ -26,7 +26,7 @@ const Stat = styled.div`
 `;
 
 const Label = styled.div`
-  width: 220px;
+  width: 150px;
 `;
 
 const Value = styled.div`
