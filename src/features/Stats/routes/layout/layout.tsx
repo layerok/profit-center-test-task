@@ -22,11 +22,13 @@ export const LayoutRoute = () => {
         },
         content: {
           border: "none",
-          background: "white",
           borderRadius: 0,
           position: "relative",
           padding: 0,
-          inset: 0
+          inset: 0,
+          background: 'transparent',
+          display: 'grid',
+          justifyItems: 'center'
         },
       }}
     >
