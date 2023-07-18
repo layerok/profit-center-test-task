@@ -113,7 +113,7 @@ class StatsStore {
 
     const computationEndTime = Date.now();
 
-    this.timeSpent = computationEndTime - computationStartTime;
+    this.timeSpent += computationEndTime - computationStartTime;
 
     this.stepper.onQuoteReceived(incomingQuote);
   }

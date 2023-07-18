@@ -3,6 +3,7 @@ import { media } from "../../../../common/media";
 
 const Container = styled.div`
   position: absolute;
+  z-index: 5;
   top: 0;
   left: 0;
   padding: 5px 10px;

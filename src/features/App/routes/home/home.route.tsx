@@ -39,15 +39,14 @@ export const HomeRoute = observer(() => {
     const unbind = appStore.emitter.on("appStopped", () => {
       statsStore.onAppStopped();
       debugStore.onAppStopped();
-    })
+    });
 
     return () => unbind();
-  }, [])
+  }, []);
 
   return (
     <S.Container>
       <main>
-        <DebugPanel />
         <S.Inner>
           <div>
             <Stepper />
@@ -57,6 +56,7 @@ export const HomeRoute = observer(() => {
             </S.Container2>
           </div>
         </S.Inner>
+        <DebugPanel />
       </main>
       <Outlet />
     </S.Container>

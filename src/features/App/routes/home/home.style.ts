@@ -12,6 +12,8 @@ const Container = styled.div`
 
 const Inner = styled.div`
   width: 400px;
+  position: relative;
+  z-index: 2;
   ${media.lessThan("tablet")`
     width: 300px;
   `}

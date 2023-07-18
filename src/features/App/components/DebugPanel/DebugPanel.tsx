@@ -39,7 +39,7 @@ export const DebugPanel = observer(() => {
 
             <S.Stat>
               <S.Label>Time spent on computations: </S.Label>
-              <S.Value>{statsStore.timeSpent} (seconds)</S.Value>
+              <S.Value>{statsStore.timeSpent / 1000} (seconds)</S.Value>
             </S.Stat>
 
             <S.Stat>

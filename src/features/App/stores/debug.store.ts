@@ -8,7 +8,7 @@ class DebugStore {
     makeAutoObservable(this);
   }
 
-  panelHidden = false;
+  panelHidden = true;
   reportsCreated = 0;
 
   hideDebugPanel() {
