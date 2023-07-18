@@ -4,7 +4,7 @@ import {
   QuotesStepper,
   SecondsStepper,
   useStatsStore,
-} from "../../../Stats/stats.store";
+} from "../../../Stats/stores/stats.store";
 import { useAppStore } from "../../stores/app.store";
 import * as S from "./Stepper.style";
 
@@ -44,7 +44,7 @@ export const Stepper = observer(() => {
       const newStepper = stepper.resolveStepper();
       statsStore.setStepper(newStepper);
       if (inputRef.current) {
-        inputRef.current.value = String(newStepper.getStep());
+        inputRef.current.value = String(newStepper.step);
       }
     }
   };
@@ -59,8 +59,8 @@ export const Stepper = observer(() => {
         ref={inputRef}
         disabled={!appStore.isIdling}
         type="number"
-        min={statsStore.stepper.getMinimumStep()}
-        defaultValue={statsStore.stepper.getStep()}
+        min={statsStore.stepper.minStep}
+        defaultValue={statsStore.stepper.step}
         placeholder="Введите шаг"
         onChange={handleChangeStep}
       />
@@ -74,9 +74,9 @@ export const Stepper = observer(() => {
           </option>
         ))}
       </S.StepTypeSelect>
-      {statsStore.stepper.getStep() < statsStore.stepper.getMinimumStep() && (
+      {statsStore.stepper.step < statsStore.stepper.minStep && (
         <S.ErrorMsg>
-          Шаг должен быть не меньше {statsStore.stepper.getMinimumStep()}
+          Шаг должен быть не меньше {statsStore.stepper.minStep}
         </S.ErrorMsg>
       )}
     </S.Stepper>

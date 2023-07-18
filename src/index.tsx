@@ -8,6 +8,7 @@ import { queryClient } from "./queryClient";
 import { router } from "./router";
 import { Provider as MobXProvider } from "mobx-react";
 import { stores } from "./stores";
+import { appConfig, AppConfigContext } from "./config/app.config";
 
 console.log("env", process.env);
 
@@ -16,11 +17,13 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <MobXProvider {...stores}>
-        <RouterProvider router={router} />
-      </MobXProvider>
-    </QueryClientProvider>
+    <AppConfigContext.Provider value={appConfig}>
+      <QueryClientProvider client={queryClient}>
+        <MobXProvider {...stores}>
+          <RouterProvider router={router} />
+        </MobXProvider>
+      </QueryClientProvider>
+    </AppConfigContext.Provider>
   </React.StrictMode>
 );
 

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllStats, getStat } from "./api/api";
 import { IGetStatsRes } from "./api/api.types";
 import { statsQueryKeys } from "./query-keys";
-import { Stat } from "./types";
+import { IStat } from "./types";
 
 export const useStatsQuery = ({
   limit = 25,
@@ -26,7 +26,7 @@ export const useStatsQuery = ({
 };
 
 export const useStatQuery = (id: number) => {
-    return useQuery<Stat>({
+    return useQuery<IStat>({
       queryKey: statsQueryKeys.detail(id),
       queryFn: () => {
         return getStat(id);

@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { useContext } from "react";
-import { Quote, Stat } from "../../Stats/types";
+import { IQuote, IStat } from "../../Stats/types";
 import { MobXProviderContext } from "mobx-react";
 
 class DebugStore {
@@ -23,16 +23,15 @@ class DebugStore {
     this.panelHidden = !this.panelHidden;
   }
 
-
   incrementStatsComputedCount() {
     this.reportsCreated++;
   }
 
-  onQuoteReceived(incomingQuote: Quote) {
+  onQuoteReceived(incomingQuote: IQuote) {
 
   }
 
-  onStatCreated(stat: Omit<Stat, "id">) {
+  onStatCreated(stat: Omit<IStat, "id">) {
     this.incrementStatsComputedCount();
   }
 

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useDebugStore } from "../../stores/debug.store";
 import * as S from "./DebugPanel.style";
 import { ReactComponent as DebugIcon } from "../../assets/debug.svg";
-import { useStatsStore } from "../../../Stats/stats.store";
+import { useStatsStore } from "../../../Stats/stores/stats.store";
 import { format } from "date-fns";
 
 export const DebugPanel = observer(() => {
@@ -24,9 +24,7 @@ export const DebugPanel = observer(() => {
             </S.Stat>
             <S.Stat>
               <S.Label>Speed: </S.Label>
-              <S.Value>
-                {Math.round(statsStore.speed)} quotes/second
-              </S.Value>
+              <S.Value>{Math.round(statsStore.speed)} quotes/second</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Reports created: </S.Label>

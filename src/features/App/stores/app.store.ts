@@ -1,12 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import { appConfig } from "../../../config/app.config";
-import { Quote } from "../../Stats/types";
+import { IQuote } from "../../Stats/types";
 import { createNanoEvents, Emitter } from "nanoevents";
 import { useContext } from "react";
 import { MobXProviderContext } from "mobx-react";
 
-type Events = {
-  quoteReceived: (quote: Quote) => void;
+type IEvents = {
+  quoteReceived: (quote: IQuote) => void;
   appStopped: () => void;
   appStarted: () => void;
   appStopping: () => void;
@@ -22,12 +22,14 @@ enum AppStateEnum {
 
 class AppStore {
   constructor() {
-    makeAutoObservable(this, {
+    makeAutoObservable<AppStore, "emitter">(this, {
       emitter: false,
+      emit: false,
+      on: false
     });
-    this.emitter = createNanoEvents<Events>();
+    this.emitter = createNanoEvents<IEvents>();
   }
-  emitter: Emitter<Events>;
+  private emitter: Emitter<IEvents>;
   ws: WebSocket | null = null;
   state: AppStateEnum = AppStateEnum.Idling;
 
@@ -58,7 +60,7 @@ class AppStore {
       this.ws = new WebSocket(appConfig.wsUrl);
 
       const onMessage = (ev: MessageEvent<string>) => {
-        const incomingQuote = JSON.parse(ev.data) as Quote;
+        const incomingQuote = JSON.parse(ev.data) as IQuote;
         this.emitter.emit("quoteReceived", incomingQuote);
       };
       const onFail = () => {
@@ -88,6 +90,14 @@ class AppStore {
       this.ws?.close(1000);
       this.ws = null;
     }
+  }
+
+  emit<E extends keyof IEvents>(event: E, ...args: Parameters<IEvents[E]>) {
+    return this.emitter.emit(event, ...args);
+  }
+
+  on<E extends keyof IEvents>(event: E, callback: IEvents[E]) {
+    return this.emitter.on(event, callback);
   }
 }
 

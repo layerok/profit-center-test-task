@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
 import { statsRoutePaths } from "../../../Stats/route.paths";
-import { useStatsStore } from "../../../Stats/stats.store";
+import { useStatsStore } from "../../../Stats/stores/stats.store";
 import * as S from "./StatsButton.style";
 
 export const StatsButton = observer(() => {

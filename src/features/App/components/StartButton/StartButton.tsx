@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useStatsStore } from "../../../Stats/stats.store";
+import { useStatsStore } from "../../../Stats/stores/stats.store";
 import { useAppStore } from "../../stores/app.store";
 import * as S from "./StartButton.style";
 
@@ -17,7 +17,7 @@ export const StartButton = observer(() => {
   return (
     <S.Button
       disabled={
-        statsStore.stepper.getStep() < statsStore.stepper.getMinimumStep() ||
+        statsStore.stepper.step < statsStore.stepper.minStep ||
         appStore.isStarting ||
         appStore.isStopping
       }

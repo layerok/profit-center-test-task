@@ -1,9 +1,9 @@
-export type Quote = {
+export type IQuote = {
   id: number;
   value: number;
 };
 
-export type Stat = {
+export type IStat = {
   id: number;
   avg: number;
   min_value: number;

@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { useDebugStore } from "../../stores/debug.store";
-import { useStatsStore } from "../../../Stats/stats.store";
+import { useStatsStore } from "../../../Stats/stores/stats.store";
 import { Stepper } from "../../components/Stepper/Stepper";
 import { StartButton } from "../../components/StartButton/StartButton";
 import { StatsButton } from "../../components/StatsButton/StatsButton";
@@ -19,7 +19,7 @@ export const HomeRoute = observer(() => {
   const addStatMutation = useAddStat();
 
   useEffect(() => {
-    const unbind = appStore.emitter.on("quoteReceived", (incomingQuote) => {
+    const unbind = appStore.on("quoteReceived", (incomingQuote) => {
       debugStore.onQuoteReceived(incomingQuote);
       statsStore.onQuoteReceived(incomingQuote);
     });
@@ -27,7 +27,7 @@ export const HomeRoute = observer(() => {
   }, []);
 
   useEffect(() => {
-    const unbind = statsStore.emitter.on("statCreated", (stat) => {
+    const unbind = statsStore.on("statCreated", (stat) => {
       debugStore.onStatCreated(stat);
       addStatMutation.mutate(stat);
     });
@@ -36,7 +36,7 @@ export const HomeRoute = observer(() => {
   }, []);
 
   useEffect(() => {
-    const unbind = appStore.emitter.on("appStopped", () => {
+    const unbind = appStore.on("appStopped", () => {
       statsStore.onAppStopped();
       debugStore.onAppStopped();
     });

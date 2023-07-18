@@ -1,7 +1,7 @@
-import { Stat } from "../types";
+import { IStat } from "../types";
 
 export type IGetStatsRes = {
-  records: Stat[];
+  records: IStat[];
   meta: {
     total: number;
     limit: number;
@@ -13,3 +13,7 @@ export type IGetStatsReq = {
   limit?: number;
   offset?: number;
 };
+
+export type IAddStatRes = {}
+
+export type IGetStatRes = IStat;

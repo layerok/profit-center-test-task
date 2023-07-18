@@ -1,12 +1,12 @@
 import { action, makeAutoObservable, makeObservable, observable } from "mobx";
-import { Quote, Stat } from "./types";
+import { IQuote, IStat } from "../types";
 import { createNanoEvents, Emitter } from "nanoevents";
 import { useContext } from "react";
 import { MobXProviderContext } from "mobx-react";
 import * as mobxUtils from "mobx-utils";
 
-type Events = {
-  statCreated: (stat: Omit<Stat, "id">) => void;
+type IEvents = {
+  statCreated: (stat: Omit<IStat, "id">) => void;
 };
 
 class StatsStore {
@@ -15,13 +15,13 @@ class StatsStore {
       emitter: false,
       modeMap: false,
     });
-    this.emitter = createNanoEvents<Events>();
+    this.emitter = createNanoEvents<IEvents>();
     this.stepper = new QuotesStepper(this, {
       step: 10000,
       min: 2,
     });
   }
-  emitter: Emitter<Events>;
+  readonly emitter: Emitter<IEvents>;
 
   totalQuotesCount = 0;
 
@@ -63,14 +63,14 @@ class StatsStore {
     return 0;
   }
 
-  onFirstQuote(firstQuote: Quote) {
+  onFirstQuote(firstQuote: IQuote) {
     this.startTime = Date.now();
     this.avg = firstQuote.value;
     this.maxValue = firstQuote.value;
     this.minValue = firstQuote.value;
   }
 
-  onQuoteReceived(incomingQuote: Quote) {
+  onQuoteReceived(incomingQuote: IQuote) {
     if (this.totalQuotesCount === 0) {
       this.onFirstQuote(incomingQuote);
     }
@@ -158,51 +158,49 @@ class StatsStore {
     this.temp = 0;
     this.lastQuoteId = null;
   }
+
+  emit<E extends keyof IEvents>(event: E, ...args: Parameters<IEvents[E]>) {
+    return this.emitter.emit(event, ...args);
+  }
+
+  on<E extends keyof IEvents>(event: E, callback: IEvents[E]) {
+    return this.emitter.on(event, callback);
+  }
 }
+
+type IStepperOptions = {
+  step: number;
+  min: number;
+};
 
 class Stepper {
   step: number = 0;
-  minimumStep: number = 0;
-  store: StatsStore;
+  minStep: number = 0;
 
-  constructor(
-    store: StatsStore,
-    options: {
-      step: number;
-      min: number;
-    }
-  ) {
-    this.store = store;
+  constructor(protected readonly store: StatsStore, options: IStepperOptions) {
     this.step = options.step;
-    this.minimumStep = options.min;
-    makeObservable(this, {
+    this.minStep = options.min;
+    makeObservable<Stepper, "store">(this, {
       step: observable,
-      minimumStep: observable,
       setStep: action,
+      minStep: observable,
       onQuoteReceived: action,
       store: false,
     });
   }
-  onQuoteReceived(quote: Quote) {}
 
   setStep(step: number) {
     this.step = step;
   }
 
-  getStep() {
-    return this.step;
-  }
-
-  getMinimumStep() {
-    return this.minimumStep;
-  }
+  onQuoteReceived(quote: IQuote) {}
 }
 
 export class SecondsStepper extends Stepper {
-  secondsPassedAfterLastStatCreated = 0;
-  lastStatCreatedTimestamp: number | null = null;
+  private secondsPassedAfterLastStatCreated = 0;
+  private lastStatCreatedTimestamp: number | null = null;
 
-  onQuoteReceived(quote: Quote) {
+  onQuoteReceived(quote: IQuote) {
     if (!this.lastStatCreatedTimestamp) {
       this.lastStatCreatedTimestamp = Date.now();
     }
@@ -228,9 +226,9 @@ export class SecondsStepper extends Stepper {
 }
 
 export class QuotesStepper extends Stepper {
-  quotesReceivedAfterLastStatCreated = 0;
+  private quotesReceivedAfterLastStatCreated = 0;
 
-  onQuoteReceived(quote: Quote) {
+  onQuoteReceived(quote: IQuote) {
     this.quotesReceivedAfterLastStatCreated++;
 
     if (this.isStepReached()) {
