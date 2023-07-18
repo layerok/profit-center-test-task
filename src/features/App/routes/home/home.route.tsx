@@ -50,10 +50,10 @@ export const HomeRoute = observer(() => {
         <S.Inner>
           <div>
             <Stepper />
-            <S.Container2>
+            <S.ButtonContainer>
               <StartButton />
               <StatsButton />
-            </S.Container2>
+            </S.ButtonContainer>
           </div>
         </S.Inner>
         <DebugPanel />

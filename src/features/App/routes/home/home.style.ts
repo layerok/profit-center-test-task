@@ -19,7 +19,7 @@ const Inner = styled.div`
   `}
 `;
 
-const Container2 = styled.div`
+const ButtonContainer = styled.div`
   display: flex;
   margin-top: 14px;
   justify-content: space-between;
@@ -28,4 +28,4 @@ const Container2 = styled.div`
   `}
 `;
 
-export { Container, Inner, Container2 };
+export { Container, Inner, ButtonContainer };
