@@ -1,5 +1,5 @@
 import * as S from "./home.style";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { observer } from "mobx-react-lite";
@@ -8,8 +8,9 @@ import { useEffect } from "react";
 import { useDebugStore } from "../../stores/debug.store";
 import { useStatsStore } from "../../../Stats/stores/stats.store";
 import { Stepper } from "../../components/Stepper/Stepper";
-import { StartButton } from "../../components/StartButton/StartButton";
-import { StatsButton } from "../../components/StatsButton/StatsButton";
+import { statsRoutePaths } from "../../../Stats/route.paths";
+import { PrimaryButton } from "../../../../common/components/PrimaryButton/PrimaryButton";
+import { SecondaryButton } from "../../../../common/components/SecondaryButton/SecondaryButton";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
@@ -44,6 +45,23 @@ export const HomeRoute = observer(() => {
     return () => unbind();
   }, []);
 
+  const navigate = useNavigate();
+
+  const viewStats = () => {
+    if (statsStore.totalQuotesCount > 2) {
+      statsStore.createStat();
+    }
+    navigate(statsRoutePaths.list);
+  };
+
+  const startApp = () => {
+    if (appStore.isIdling) {
+      appStore.start();
+    } else {
+      appStore.stop();
+    }
+  };
+
   return (
     <S.Container>
       <main>
@@ -51,8 +69,27 @@ export const HomeRoute = observer(() => {
           <div>
             <Stepper />
             <S.ButtonContainer>
-              <StartButton />
-              <StatsButton />
+              <S.StartButton>
+                <PrimaryButton
+                  disabled={
+                    statsStore.stepper.step < statsStore.stepper.minStep ||
+                    appStore.isStarting ||
+                    appStore.isStopping
+                  }
+                  onClick={startApp}
+                >
+                  {appStore.isIdling ? "Start" : ""}
+                  {appStore.isStarting ? "starting..." : ""}
+                  {appStore.isStarted ? "Stop" : ""}
+                  {appStore.isStopping ? "stopping..." : ""}
+                </PrimaryButton>
+              </S.StartButton>
+
+              <S.StatsButton>
+                <SecondaryButton onClick={viewStats}>
+                  Статистика
+                </SecondaryButton>
+              </S.StatsButton>
             </S.ButtonContainer>
           </div>
         </S.Inner>

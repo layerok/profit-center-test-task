@@ -28,4 +28,22 @@ const ButtonContainer = styled.div`
   `}
 `;
 
-export { Container, Inner, ButtonContainer };
+const StatsButton = styled.div`
+  width: 190px;
+
+  ${media.lessThan("tablet")`
+    width: 100%;
+    margin-top: 14px;
+  `}
+`;
+
+const StartButton = styled.div`
+  width: 190px;
+
+  ${media.lessThan("tablet")`
+    width: 100%;
+    margin-top: 14px;
+  `}
+`;
+
+export { Container, Inner, ButtonContainer, StatsButton, StartButton };
