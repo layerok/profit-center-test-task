@@ -2,7 +2,7 @@ import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
-import { observer, useLocalObservable } from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { useDebugStore } from "../../stores/debug.store";
@@ -25,13 +25,12 @@ export const HomeRoute = observer(() => {
   useEffect(() => {
     const unbind = appStore.on("quoteReceived", (incomingQuote) => {
       const stat = statsStore.compute(incomingQuote);
-      const needToCreate = stepperStore.stepper.check(incomingQuote);
-      console.log('is need to create', needToCreate)
+      const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);
 
-      if (needToCreate) {
+      if (isTimeToSaveStat) {
         if (statsStore.totalQuotesCount > 1) {
-          debugStore.incrementReportsCreatedCount();
           addStatMutation.mutate(stat);
+          debugStore.incrementReportsCreatedCount();
           stepperStore.stepper.reset();
         }
       }
