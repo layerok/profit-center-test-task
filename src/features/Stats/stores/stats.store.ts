@@ -1,27 +1,15 @@
-import { action, makeAutoObservable, makeObservable, observable } from "mobx";
-import { IQuote, IStat } from "../types";
-import { createNanoEvents, Emitter } from "nanoevents";
+import { makeAutoObservable } from "mobx";
+import { IQuote } from "../types";
 import { useContext } from "react";
 import { MobXProviderContext } from "mobx-react";
 import * as mobxUtils from "mobx-utils";
 
-type IEvents = {
-  statCreated: (stat: Omit<IStat, "id">) => void;
-};
-
 class StatsStore {
   constructor() {
     makeAutoObservable(this, {
-      emitter: false,
       modeMap: false,
     });
-    this.emitter = createNanoEvents<IEvents>();
-    this.stepper = new QuotesStepper(this, {
-      step: 10000,
-      min: 2,
-    });
   }
-  readonly emitter: Emitter<IEvents>;
 
   totalQuotesCount = 0;
 
@@ -31,6 +19,9 @@ class StatsStore {
   minValue: number | null = null;
   maxValue: number | null = null;
   avg: number | null = null;
+
+  oddValues: number = 0;
+  evenValues: number = 0;
 
   modeMap: Record<number, number> = {};
   mode: number | null = null;
@@ -42,8 +33,6 @@ class StatsStore {
   startTime: number | null = null;
   endTime: number | null = null;
   timeSpent = 0;
-
-  stepper: Stepper;
 
   get time() {
     if (this.startTime != null) {
@@ -57,10 +46,6 @@ class StatsStore {
       return this.totalQuotesCount / (this.time / 1000);
     }
     return 0;
-  }
-
-  setStepper(stepper: Stepper) {
-    this.stepper = stepper;
   }
 
   compute(incomingQuote: IQuote) {
@@ -88,6 +73,12 @@ class StatsStore {
       this.maxValue = incomingQuote.value;
     }
 
+    if (incomingQuote.value % 2 === 0) {
+      this.evenValues++;
+    } else {
+      this.oddValues++;
+    }
+
     let count = this.modeMap[incomingQuote.value] || 0;
     this.modeMap[incomingQuote.value] = ++count;
 
@@ -111,13 +102,9 @@ class StatsStore {
 
     this.timeSpent += computationEndTime - computationStartTime;
 
-    this.stepper.check(incomingQuote);
-  }
-
-  createStat() {
     this.endTime = Date.now();
 
-    const stat = {
+    return {
       avg: this.avg!,
       min_value: this.minValue!,
       max_value: this.maxValue!,
@@ -128,11 +115,10 @@ class StatsStore {
       start_time: this.startTime!,
       lost_quotes: this.lostQuotes,
       time_spent: this.timeSpent,
+      odd_values: 2,
+      even_values: 2,
       quotes_count: this.totalQuotesCount,
     };
-
-    this.emitter.emit("statCreated", stat);
-    return stat;
   }
 
   reset() {
@@ -149,96 +135,11 @@ class StatsStore {
     this.standardDeviation = null;
     this.temp = 0;
     this.lastQuoteId = null;
-  }
-
-  emit<E extends keyof IEvents>(event: E, ...args: Parameters<IEvents[E]>) {
-    return this.emitter.emit(event, ...args);
-  }
-
-  on<E extends keyof IEvents>(event: E, callback: IEvents[E]) {
-    return this.emitter.on(event, callback);
+    this.evenValues = 0;
+    this.oddValues = 0;
   }
 }
 
-type IStepperOptions = {
-  step: number;
-  min: number;
-};
-
-class Stepper {
-  step: number = 0;
-  minStep: number = 0;
-
-  constructor(protected readonly store: StatsStore, options: IStepperOptions) {
-    this.step = options.step;
-    this.minStep = options.min;
-    makeObservable<Stepper, "store">(this, {
-      step: observable,
-      setStep: action,
-      minStep: observable,
-      check: action,
-      store: false,
-    });
-  }
-
-  setStep(step: number) {
-    this.step = step;
-  }
-
-  check(quote: IQuote) {}
-}
-
-export class SecondsStepper extends Stepper {
-  private secondsPassedAfterLastStatCreated = 0;
-  private lastStatCreatedTimestamp: number | null = null;
-
-  check(quote: IQuote) {
-    if (!this.lastStatCreatedTimestamp) {
-      this.lastStatCreatedTimestamp = Date.now();
-    }
-    this.secondsPassedAfterLastStatCreated =
-      (Date.now() - this.lastStatCreatedTimestamp) / 1000;
-
-    if (this.isStepReached()) {
-      if (this.store.totalQuotesCount > 1) {
-        this.store.createStat();
-        this.reset();
-      }
-    }
-  }
-
-  reset() {
-    this.lastStatCreatedTimestamp = Date.now();
-    this.secondsPassedAfterLastStatCreated = 0;
-  }
-
-  isStepReached() {
-    return this.secondsPassedAfterLastStatCreated >= this.step;
-  }
-}
-
-export class QuotesStepper extends Stepper {
-  private quotesReceivedAfterLastStatCreated = 0;
-
-  onQuoteReceived(quote: IQuote) {
-    this.quotesReceivedAfterLastStatCreated++;
-
-    if (this.isStepReached()) {
-      if (this.store.totalQuotesCount > 1) {
-        this.store.createStat();
-        this.reset();
-      }
-    }
-  }
-
-  reset() {
-    this.quotesReceivedAfterLastStatCreated = 0;
-  }
-
-  isStepReached() {
-    return this.quotesReceivedAfterLastStatCreated === this.step;
-  }
-}
 
 export const statsStore = new StatsStore();
 

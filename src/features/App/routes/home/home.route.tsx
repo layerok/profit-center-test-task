@@ -2,7 +2,7 @@ import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
-import { observer } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect } from "react";
 import { useDebugStore } from "../../stores/debug.store";
@@ -11,27 +11,31 @@ import { Stepper } from "../../components/Stepper/Stepper";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { PrimaryButton } from "../../../../common/components/PrimaryButton/PrimaryButton";
 import { SecondaryButton } from "../../../../common/components/SecondaryButton/SecondaryButton";
+import { IStat } from "../../../Stats/types";
+import { useStepperStore } from "../../stores/stepper.store";
 
 export const HomeRoute = observer(() => {
   const appStore = useAppStore();
   const debugStore = useDebugStore();
   const statsStore = useStatsStore();
+  const stepperStore = useStepperStore();
 
   const addStatMutation = useAddStat();
 
   useEffect(() => {
     const unbind = appStore.on("quoteReceived", (incomingQuote) => {
-      statsStore.compute(incomingQuote);
-    });
-    return () => unbind();
-  }, []);
+      const stat = statsStore.compute(incomingQuote);
+      const needToCreate = stepperStore.stepper.check(incomingQuote);
+      console.log('is need to create', needToCreate)
 
-  useEffect(() => {
-    const unbind = statsStore.on("statCreated", (stat) => {
-      debugStore.incrementReportsCreatedCount();
-      addStatMutation.mutate(stat);
+      if (needToCreate) {
+        if (statsStore.totalQuotesCount > 1) {
+          debugStore.incrementReportsCreatedCount();
+          addStatMutation.mutate(stat);
+          stepperStore.stepper.reset();
+        }
+      }
     });
-
     return () => unbind();
   }, []);
 
@@ -48,7 +52,23 @@ export const HomeRoute = observer(() => {
 
   const viewStats = () => {
     if (statsStore.totalQuotesCount > 2) {
-      statsStore.createStat();
+      const stat = {
+        avg: statsStore.avg!,
+        min_value: statsStore.minValue!,
+        max_value: statsStore.maxValue!,
+        standard_deviation: statsStore.standardDeviation!,
+        mode: statsStore.mode!,
+        mode_count: statsStore.modeCount,
+        end_time: statsStore.endTime,
+        start_time: statsStore.startTime!,
+        lost_quotes: statsStore.lostQuotes,
+        time_spent: statsStore.timeSpent,
+        odd_values: 2,
+        even_values: 2,
+        quotes_count: statsStore.totalQuotesCount,
+      } as IStat;
+      debugStore.incrementReportsCreatedCount();
+      addStatMutation.mutate(stat);
     }
     navigate(statsRoutePaths.list);
   };
@@ -71,7 +91,7 @@ export const HomeRoute = observer(() => {
               <S.StartButton>
                 <PrimaryButton
                   disabled={
-                    statsStore.stepper.step < statsStore.stepper.minStep ||
+                    stepperStore.stepper.step < stepperStore.stepper.minStep ||
                     appStore.isStarting ||
                     appStore.isStopping
                   }

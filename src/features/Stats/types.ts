@@ -16,6 +16,8 @@ export type IStat = {
   end_time: number; // ms
   time_spent: number; //ms
   lost_quotes: number;
+  odd_values: number;
+  even_values: number;
 };
 
 

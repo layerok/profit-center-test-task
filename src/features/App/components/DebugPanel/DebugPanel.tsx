@@ -28,7 +28,15 @@ export const DebugPanel = observer(() => {
             </S.Stat>
             <S.Stat>
               <S.Label>Reports created: </S.Label>
-              <S.Value> {debugStore.reportsCreated}</S.Value>
+              <S.Value> {debugStore.reportsCreatedCount}</S.Value>
+            </S.Stat>
+            <S.Stat>
+              <S.Label>Even values: </S.Label>
+              <S.Value> {statsStore.evenValues}</S.Value>
+            </S.Stat>
+            <S.Stat>
+              <S.Label>Odd values: </S.Label>
+              <S.Value> {statsStore.oddValues}</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Lost quotes: </S.Label>
