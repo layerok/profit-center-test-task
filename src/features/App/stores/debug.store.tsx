@@ -47,8 +47,9 @@ export const DebugProvider = ({ children }: { children: ReactElement }) => {
   const showDebugPanel = useCallback(() => {
     setPanelHidden(false);
   }, []);
+  
   const hideDebugPanel = useCallback(() => {
-    setPanelHidden(false);
+    setPanelHidden(true);
   }, []);
 
   const toggleDebugPanel = useCallback(() => {
