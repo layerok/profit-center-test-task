@@ -23,7 +23,7 @@ export const HomeRoute = observer(() => {
   useEffect(() => {
     const unbind = appStore.on("appStarted", () => {
       const time = Date.now();
-      statsStore.timer.setStartTime(time);
+      statsStore.setStartTime(time);
       debugStore.setStartTime(time);
     });
     return () => unbind();

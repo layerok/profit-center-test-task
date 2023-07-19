@@ -11,7 +11,6 @@ import { EvenValuesCalculator } from "../calculators/evenValues";
 import { ModeCalculator } from "../calculators/mode";
 import { StandardDeviationCalculator } from "../calculators/standardDeviation";
 import { LostQuotesCalculator } from "../calculators/lostQuotes";
-import { Timer } from "../timer";
 
 class StatsStore {
   constructor() {
@@ -24,11 +23,10 @@ class StatsStore {
     this.standardDeviationCalculator = new StandardDeviationCalculator();
     this.modeCalculator = new ModeCalculator();
     this.lostQuotesCalculator = new LostQuotesCalculator();
-
-    this.timer = new Timer();
   }
 
-  timer: Timer;
+  startTime: number | null = null;
+  endTime: number | null = null;
 
   totalQuotesCount = 0;
 
@@ -43,9 +41,9 @@ class StatsStore {
 
   lastStat: null | Omit<IStat, "id"> = null;
 
-  recalculate(incomingQuote: IQuote): Omit<IStat, 'id'> {
-    if (this.timer.startTime === null) {
-      this.timer.startTime = Date.now();
+  recalculate(incomingQuote: IQuote): Omit<IStat, "id"> {
+    if (this.startTime === null) {
+      this.startTime = Date.now();
     }
     this.totalQuotesCount++;
 
@@ -66,7 +64,7 @@ class StatsStore {
 
     const computationEndTime = Date.now();
 
-    this.timer.endTime = Date.now();
+    this.endTime = Date.now();
 
     return {
       avg: avg,
@@ -79,14 +77,14 @@ class StatsStore {
       odd_values: oddValues,
       even_values: evenValues,
 
-      end_time: this.timer.endTime,
-      start_time: this.timer.startTime,
+      end_time: this.endTime,
+      start_time: this.startTime,
       time_spent: computationEndTime - computationStartTime,
       quotes_count: this.totalQuotesCount,
     };
   }
 
-  setLastStat(stat: Omit<IStat, 'id'>) {
+  setLastStat(stat: Omit<IStat, "id">) {
     this.lastStat = stat;
   }
 
@@ -100,10 +98,18 @@ class StatsStore {
     this.evenValuesCalculator.reset();
     this.oddValuesCalculator.reset();
 
-    this.timer.startTime = null;
-    this.timer.endTime = null;
+    this.startTime = null;
+    this.endTime = null;
     this.totalQuotesCount = 0;
     this.lastStat = null;
+  }
+
+  setStartTime(time: number) {
+    this.startTime = time;
+  }
+
+  setEndTime(time: number) {
+    this.endTime = time;
   }
 }
 
