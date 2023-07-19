@@ -11,7 +11,6 @@ import { Stepper } from "../../components/Stepper/Stepper";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { PrimaryButton } from "../../../../common/components/PrimaryButton/PrimaryButton";
 import { SecondaryButton } from "../../../../common/components/SecondaryButton/SecondaryButton";
-import { IStat } from "../../../Stats/types";
 import { useStepperStore } from "../../stores/stepper.store";
 
 export const HomeRoute = observer(() => {
@@ -19,20 +18,24 @@ export const HomeRoute = observer(() => {
   const debugStore = useDebugStore();
   const statsStore = useStatsStore();
   const stepperStore = useStepperStore();
-
   const addStatMutation = useAddStat();
 
   useEffect(() => {
-    const unbind = appStore.on("quoteReceived", (incomingQuote) => {
-      const stat = statsStore.compute(incomingQuote);
-      const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);
+    const unbind = appStore.on("appStarted", () => {
+      statsStore.setStartTime(Date.now());
+    });
+    return () => unbind();
+  }, []);
 
+  useEffect(() => {
+    const unbind = appStore.on("quoteReceived", (incomingQuote) => {
+      const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);
+      const stat = statsStore.compute(incomingQuote);
+      debugStore.setLastStat(stat);
       if (isTimeToSaveStat) {
-        if (statsStore.totalQuotesCount > 1) {
-          addStatMutation.mutate(stat);
-          debugStore.incrementReportsCreatedCount();
-          stepperStore.stepper.reset();
-        }
+        addStatMutation.mutate(stat);
+        debugStore.incrementReportsCreatedCount();
+        stepperStore.stepper.reset();
       }
     });
     return () => unbind();
@@ -50,22 +53,8 @@ export const HomeRoute = observer(() => {
   const navigate = useNavigate();
 
   const viewStats = () => {
-    if (statsStore.totalQuotesCount > 2) {
-      const stat = {
-        avg: statsStore.avg!,
-        min_value: statsStore.minValue!,
-        max_value: statsStore.maxValue!,
-        standard_deviation: statsStore.standardDeviation!,
-        mode: statsStore.mode!,
-        mode_count: statsStore.modeCount,
-        end_time: statsStore.endTime,
-        start_time: statsStore.startTime!,
-        lost_quotes: statsStore.lostQuotes,
-        time_spent: statsStore.timeSpent,
-        odd_values: 2,
-        even_values: 2,
-        quotes_count: statsStore.totalQuotesCount,
-      } as IStat;
+    const stat = statsStore.lastStat;
+    if (stat) {
       debugStore.incrementReportsCreatedCount();
       addStatMutation.mutate(stat);
     }

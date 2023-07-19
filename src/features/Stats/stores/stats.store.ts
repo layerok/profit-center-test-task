@@ -1,72 +1,72 @@
 import { makeAutoObservable } from "mobx";
-import { IQuote } from "../types";
+import { IQuote, IStat } from "../types";
 import { useContext } from "react";
 import { MobXProviderContext } from "mobx-react";
-import * as mobxUtils from "mobx-utils";
-import { findAvg } from "../../App/computations/findAvg";
-import { findMaxValue } from "../../App/computations/findMaxValue";
-import { findMinValue } from "../../App/computations/findMinValue";
-import { findOddValues } from "../../App/computations/findOddValues";
-import { findEvenValues } from "../../App/computations/findEvenValues";
-import { findMode, getLastModeCount } from "../../App/computations/findMode";
-import { findStandardDeviation } from "../../App/computations/findStandardDeviation";
-import { findLostQuotes } from "../../App/computations/findLostQuotes";
+
+import { recalculateAvg, resetAvg } from "../../App/computations/avg";
+import {
+  recalculateMaxValue,
+  resetMaxValue,
+} from "../../App/computations/maxValue";
+import {
+  recalculateMinValue,
+  resetMinValue,
+} from "../../App/computations/minValue";
+import {
+  recalculateOddValues,
+  resetOddValues,
+} from "../../App/computations/oddValues";
+import {
+  recalculateEvenValues,
+  resetEvenValues,
+} from "../../App/computations/evenValues";
+import {
+  recalculateMode,
+  getModeCount,
+  resetMode,
+} from "../../App/computations/mode";
+import {
+  recalculateStandardDeviation,
+  resetStandardDeviation,
+} from "../../App/computations/standardDeviation";
+import {
+  recalculateLostQuotes,
+  resetLastLostQuotes,
+} from "../../App/computations/lostQuotes";
 
 class StatsStore {
   constructor() {
     makeAutoObservable(this);
   }
 
-  totalQuotesCount = 0;
-  lastQuoteId: number | null = null;
-
-  lostQuotes = 0;
-  minValue: number | null = null;
-  maxValue: number | null = null;
-  avg: number | null = null;
-  oddValues: number = 0;
-  evenValues: number = 0;
-  mode: number | null = null;
-  modeCount: number = 0;
-  standardDeviation: number | null = null;
-
   startTime: number | null = null;
   endTime: number | null = null;
   timeSpent = 0;
+  totalQuotesCount = 0;
 
-  get time() {
-    if (this.startTime != null) {
-      return mobxUtils.now() - this.startTime;
-    }
-    return 0;
-  }
+  lastStat: null | Omit<IStat, "id"> = null;
 
-  get speed() {
-    if (this.time !== 0) {
-      return this.totalQuotesCount / (this.time / 1000);
-    }
-    return 0;
+  setStartTime(time: number) {
+    this.startTime = time;
   }
 
   compute(incomingQuote: IQuote) {
     if (this.startTime === null) {
       this.startTime = Date.now();
     }
-
     this.totalQuotesCount++;
-    this.lastQuoteId = incomingQuote.id;
 
     const computationStartTime = Date.now();
 
-    this.avg = findAvg(incomingQuote.value);
-    this.maxValue = findMaxValue(incomingQuote.value);
-    this.minValue = findMinValue(incomingQuote.value);
-    this.oddValues = findOddValues(incomingQuote.value);
-    this.evenValues = findEvenValues(incomingQuote.value);
-    this.mode = findMode(incomingQuote.value);
-    this.modeCount = getLastModeCount();
-    this.standardDeviation = findStandardDeviation(incomingQuote.value);
-    this.lostQuotes = findLostQuotes(incomingQuote.id);
+    const avg = recalculateAvg(incomingQuote.value);
+    const maxValue = recalculateMaxValue(incomingQuote.value);
+    const minValue = recalculateMinValue(incomingQuote.value);
+    const oddValues = recalculateOddValues(incomingQuote.value);
+    const evenValues = recalculateEvenValues(incomingQuote.value);
+    const mode = recalculateMode(incomingQuote.value);
+    const modeCount = getModeCount();
+    const standardDeviation = recalculateStandardDeviation(incomingQuote.value);
+    const lostQuotes = recalculateLostQuotes(incomingQuote.id);
 
     const computationEndTime = Date.now();
 
@@ -74,38 +74,40 @@ class StatsStore {
 
     this.endTime = Date.now();
 
-    return {
-      avg: this.avg,
-      min_value: this.minValue,
-      max_value: this.maxValue,
-      standard_deviation: this.standardDeviation,
-      mode: this.mode,
-      mode_count: this.modeCount,
+    this.lastStat = {
+      avg: avg,
+      min_value: minValue,
+      max_value: maxValue,
+      standard_deviation: standardDeviation!,
+      mode: mode,
+      mode_count: modeCount,
       end_time: this.endTime,
       start_time: this.startTime,
-      lost_quotes: this.lostQuotes,
+      lost_quotes: lostQuotes,
       time_spent: this.timeSpent,
-      odd_values: this.oddValues,
-      even_values: this.evenValues,
+      odd_values: oddValues,
+      even_values: evenValues,
       quotes_count: this.totalQuotesCount,
     };
+
+    return this.lastStat;
   }
 
   reset() {
-    this.totalQuotesCount = 0;
-    this.avg = null;
-    this.minValue = null;
-    this.maxValue = null;
-    this.mode = null;
-    this.modeCount = 0;
+    resetAvg();
+    resetMinValue();
+    resetMaxValue();
+    resetMode();
+    resetLastLostQuotes();
+    resetStandardDeviation();
+    resetEvenValues();
+    resetOddValues();
+    resetLastLostQuotes();
+
     this.startTime = null;
     this.endTime = null;
-    this.lostQuotes = 0;
     this.timeSpent = 0;
-    this.standardDeviation = null;
-    this.lastQuoteId = null;
-    this.evenValues = 0;
-    this.oddValues = 0;
+    this.totalQuotesCount = 0;
   }
 }
 

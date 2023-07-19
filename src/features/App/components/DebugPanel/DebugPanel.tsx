@@ -2,12 +2,10 @@ import { observer } from "mobx-react-lite";
 import { useDebugStore } from "../../stores/debug.store";
 import * as S from "./DebugPanel.style";
 import { ReactComponent as DebugIcon } from "../../assets/debug.svg";
-import { useStatsStore } from "../../../Stats/stores/stats.store";
 import { format } from "date-fns";
 
 export const DebugPanel = observer(() => {
   const debugStore = useDebugStore();
-  const statsStore = useStatsStore();
 
   return (
     <>
@@ -16,15 +14,15 @@ export const DebugPanel = observer(() => {
           <S.Stats>
             <S.Stat>
               <S.Label>Total quotes: </S.Label>
-              <S.Value>{statsStore.totalQuotesCount} </S.Value>
+              <S.Value>{debugStore.totalQuotesCount} </S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Time: </S.Label>
-              <S.Value>{Math.round(statsStore.time / 1000)} seconds</S.Value>
+              <S.Value>{Math.round(debugStore.time / 1000)} seconds</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Speed: </S.Label>
-              <S.Value>{Math.round(statsStore.speed)} quotes/second</S.Value>
+              <S.Value>{Math.round(debugStore.speed)} quotes/second</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Reports created: </S.Label>
@@ -32,52 +30,62 @@ export const DebugPanel = observer(() => {
             </S.Stat>
             <S.Stat>
               <S.Label>Even values: </S.Label>
-              <S.Value> {statsStore.evenValues}</S.Value>
+              <S.Value> {debugStore.lastStat?.even_values}</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Odd values: </S.Label>
-              <S.Value> {statsStore.oddValues}</S.Value>
+              <S.Value> {debugStore.lastStat?.odd_values}</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Lost quotes: </S.Label>
-              <S.Value> {statsStore.lostQuotes}</S.Value>
+              <S.Value> {debugStore.lastStat?.lost_quotes}</S.Value>
             </S.Stat>
 
             <S.Stat>
               <S.Label>Time spent on computations: </S.Label>
-              <S.Value>{statsStore.timeSpent / 1000} (seconds)</S.Value>
+              <S.Value>
+                {debugStore.lastStat === null
+                  ? "?"
+                  : debugStore.lastStat.time_spent / 1000}
+                (seconds)
+              </S.Value>
             </S.Stat>
 
             <S.Stat>
               <S.Label>Last quote id: </S.Label>
-              <S.Value> {statsStore.lastQuoteId || "?"}</S.Value>
+              <S.Value> {debugStore?.lastQuote?.id || "?"}</S.Value>
             </S.Stat>
 
             <S.Stat>
               <S.Label>Min value: </S.Label>
               <S.Value>
-                {statsStore.minValue === null ? "?" : statsStore.minValue}
+                {debugStore.lastStat === null
+                  ? "?"
+                  : debugStore.lastStat.min_value}
               </S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Max value: </S.Label>
               <S.Value>
-                {statsStore.maxValue === null ? "?" : statsStore.maxValue}
+                {debugStore.lastStat === null
+                  ? "?"
+                  : debugStore.lastStat.max_value}
               </S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Avg: </S.Label>
               <S.Value>
-                {statsStore.avg !== null ? statsStore.avg : "?"}
+                {debugStore.lastStat !== null ? debugStore.lastStat.avg : "?"}
               </S.Value>
             </S.Stat>
 
             <S.Stat>
               <S.Label>Mode: </S.Label>
               <S.Value>
-                {statsStore.mode !== null ? (
+                {debugStore.lastStat !== null ? (
                   <>
-                    {statsStore.mode} ({statsStore.modeCount}x)
+                    {debugStore.lastStat.mode} ({debugStore.lastStat.mode_count}
+                    x)
                   </>
                 ) : (
                   "?"
@@ -88,18 +96,18 @@ export const DebugPanel = observer(() => {
             <S.Stat>
               <S.Label>Standard deviation: </S.Label>
               <S.Value>
-                {statsStore.standardDeviation === null
+                {debugStore.lastStat === null
                   ? "?"
-                  : statsStore.standardDeviation}
+                  : debugStore.lastStat.standard_deviation}
               </S.Value>
             </S.Stat>
 
             <S.Stat>
               <S.Label>Start time: </S.Label>
               <S.Value>
-                {statsStore.startTime != null ? (
+                {debugStore.startTime != null ? (
                   <>
-                    {format(new Date(Number(statsStore.startTime)), "hh:mm:ss")}
+                    {format(new Date(Number(debugStore.startTime)), "hh:mm:ss")}
                   </>
                 ) : (
                   "?"
@@ -110,9 +118,12 @@ export const DebugPanel = observer(() => {
             <S.Stat>
               <S.Label>End time: </S.Label>
               <S.Value>
-                {statsStore.endTime != null ? (
+                {debugStore.lastStat != null ? (
                   <>
-                    {format(new Date(Number(statsStore.endTime)), "hh:mm:ss")}
+                    {format(
+                      new Date(Number(debugStore.lastStat.end_time)),
+                      "hh:mm:ss"
+                    )}
                   </>
                 ) : (
                   "?"

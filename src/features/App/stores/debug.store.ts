@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { useContext } from "react";
 import { MobXProviderContext } from "mobx-react";
+import * as mobxUtils from "mobx-utils";
+import { IQuote, IStat } from "../../Stats/types";
 
 class DebugStore {
   constructor() {
@@ -9,6 +11,10 @@ class DebugStore {
 
   panelHidden = true;
   reportsCreatedCount = 0;
+  startTime: null | number = null;
+  totalQuotesCount = 0;
+  lastQuote: null | IQuote = null;
+  lastStat: null | Omit<IStat, 'id'> = null;
 
   hideDebugPanel() {
     this.panelHidden = true;
@@ -32,6 +38,24 @@ class DebugStore {
 
   reset() {
     this.reportsCreatedCount = 0;
+  }
+
+  setLastStat(stat: Omit<IStat, "id">) {
+    this.lastStat = stat;
+  }
+
+  get time() {
+    if (this.startTime != null) {
+      return mobxUtils.now() - this.startTime;
+    }
+    return 0;
+  }
+
+  get speed() {
+    if (this.time !== 0) {
+      return this.totalQuotesCount / (this.time / 1000);
+    }
+    return 0;
   }
 }
 
