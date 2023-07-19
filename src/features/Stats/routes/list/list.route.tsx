@@ -12,6 +12,8 @@ import { useInView } from "react-intersection-observer";
 import { statsQueryKeys } from "../../query-keys";
 
 const STATS_PER_PAGE = 25;
+const ESTIMATE_LIST_ITEM_HEIGHT = 25;
+const LIST_OVERSCAN = 5;
 
 export const StatsRoute = () => {
   const navigate = useNavigate();
@@ -56,8 +58,8 @@ export const StatsRoute = () => {
   const rowVirtualizer = useVirtualizer({
     count: items.length || 0,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 25,
-    overscan: 5,
+    estimateSize: () => ESTIMATE_LIST_ITEM_HEIGHT,
+    overscan: LIST_OVERSCAN,
   });
 
   if (isLoading) {
@@ -80,17 +82,11 @@ export const StatsRoute = () => {
       ) : (
         <>
           <S.ListContainer ref={parentRef}>
-            <S.List
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-              }}
-            >
+            <S.List totalSize={rowVirtualizer.getTotalSize()}>
               {rowVirtualizer.getVirtualItems().map((virtualRow) => (
                 <S.Row
-                  style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
+                  start={virtualRow.start}
+                  size={virtualRow.size}
                   key={virtualRow.index}
                 >
                   <S.ID>#{items[virtualRow.index].id}</S.ID>

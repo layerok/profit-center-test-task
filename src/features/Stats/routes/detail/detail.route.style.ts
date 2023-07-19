@@ -22,8 +22,7 @@ const Label = styled.div`
 const Prop = styled.div`
   width: 103px;
   margin-right: 17px;
-
-`
+`;
 
 const Value = styled.div`
   font-size: 20px;
@@ -35,12 +34,33 @@ const Value = styled.div`
   white-space: nowrap;
 `;
 
-const Row = styled.div`
+const FirstRow = styled.div`
   display: flex;
-`
+  margin-top: 38px;
+`;
+
+const SecondRow = styled.div`
+  display: flex;
+  margin-top: 48px;
+`;
+
+const ThirdRow = styled.div`
+  display: flex;
+  margin-top: 27px;
+`;
 
 const BackButtonContainer = styled.div`
   cursor: pointer;
 `;
 
-export { Header, Title, Label, Value, Row, Prop, BackButtonContainer };
+export {
+  Header,
+  Title,
+  Label,
+  Value,
+  FirstRow,
+  Prop,
+  BackButtonContainer,
+  SecondRow,
+  ThirdRow,
+};

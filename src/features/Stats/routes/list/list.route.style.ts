@@ -18,16 +18,24 @@ const ListContainer = styled.div`
   height: 265px;
 `;
 
-const List = styled.div`
+const List = styled.div<{
+  totalSize: number;
+}>`
   position: relative;
+  height: ${(props) => props.totalSize}px;
 `;
 
-const Row = styled.div`
+const Row = styled.div<{
+  size: number;
+  start: number;
+}>`
   display: flex;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  height: ${(props) => props.size}px;
+  transform: translateY(${(props) => props.start}px);
 `;
 
 const ID = styled.div`

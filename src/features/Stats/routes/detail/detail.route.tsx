@@ -32,11 +32,7 @@ export const StatRoute = () => {
         </S.BackButtonContainer>
         <S.Title>Статистика #{params.id}</S.Title>
       </S.Header>
-      <S.Row
-        style={{
-          marginTop: 38,
-        }}
-      >
+      <S.FirstRow>
         <S.Prop>
           <S.Label>Начало вычислений</S.Label>
           <S.Value>
@@ -63,13 +59,9 @@ export const StatRoute = () => {
             {stat.quotes_count} шт.
           </S.Value>
         </S.Prop>
-      </S.Row>
+      </S.FirstRow>
 
-      <S.Row
-        style={{
-          marginTop: 48,
-        }}
-      >
+      <S.SecondRow>
         <S.Prop>
           <S.Label>Среднее ареф.</S.Label>
           <S.Value title={String(stat.avg)}>{stat.avg}</S.Value>
@@ -82,12 +74,8 @@ export const StatRoute = () => {
           <S.Label>Максимальное значение</S.Label>
           <S.Value title={String(stat.max_value)}>{stat.max_value}</S.Value>
         </S.Prop>
-      </S.Row>
-      <S.Row
-        style={{
-          marginTop: 27,
-        }}
-      >
+      </S.SecondRow>
+      <S.ThirdRow>
         <S.Prop>
           <S.Label>Стандартное отклонение</S.Label>
           <S.Value title={String(stat.standard_deviation)}>
@@ -100,7 +88,7 @@ export const StatRoute = () => {
             {stat.mode} ({stat.mode_count}x)
           </S.Value>
         </S.Prop>
-      </S.Row>
+      </S.ThirdRow>
     </>
   );
 };
@@ -108,5 +96,5 @@ export const StatRoute = () => {
 export const Component = StatRoute;
 
 Object.assign(Component, {
-  displayName: 'LazyStatRoute'
-})
+  displayName: "LazyStatRoute",
+});
