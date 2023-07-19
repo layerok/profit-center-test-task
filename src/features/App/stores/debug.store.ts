@@ -38,6 +38,10 @@ class DebugStore {
 
   reset() {
     this.reportsCreatedCount = 0;
+    this.startTime = null;
+    this.lastQuote = null;
+    this.lastStat = null;
+    this.totalQuotesCount = 0;
   }
 
   setLastStat(stat: Omit<IStat, "id">) {
