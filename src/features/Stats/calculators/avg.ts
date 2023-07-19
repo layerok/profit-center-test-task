@@ -2,7 +2,7 @@ export class AvgCalculator {
   sum = 0;
   quotesCount = 0;
   avg = 0;
-  recalculate(value: number) {
+  calculate(value: number) {
     this.quotesCount++;
     this.sum += value;
     this.avg = this.sum / this.quotesCount;
@@ -13,7 +13,7 @@ export class AvgCalculator {
     this.quotesCount = 0;
     this.avg = 0;
   }
-  get () {
+  get() {
     return this.avg;
-  };
+  }
 }

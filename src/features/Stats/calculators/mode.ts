@@ -3,7 +3,7 @@ export class ModeCalculator {
   maxCount = 0;
   mode = 0;
 
-  recalculate(value: number) {
+  calculate(value: number) {
     let count = this.modeMap[value] || 0;
     this.modeMap[value] = ++count;
 

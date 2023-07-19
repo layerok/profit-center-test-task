@@ -29,14 +29,5 @@ const Input = styled.input`
   }
 `;
 
-const StepTypeSelect = styled.select`
-  border-radius: 0;
-  margin-left: -1px;
-  height: 100%;
-  padding-left: 8px;
-  padding-right: 8px;
-  width: 120px;
-  flex-shrink: 0;
-`;
 
-export { ErrorMsg, Stepper, StepTypeSelect, Input };
+export { ErrorMsg, Stepper, Input };

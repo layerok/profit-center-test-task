@@ -6,9 +6,10 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queryClient";
 import { router } from "./router";
-import { Provider as MobXProvider } from "mobx-react";
-import { stores } from "./stores";
+
 import { appConfig, AppConfigContext } from "./config/app.config";
+import { AppProvider } from "./features/App/stores/app.store";
+import { DebugProvider } from "./features/App/stores/debug.store";
 
 console.log("env", process.env);
 
@@ -19,9 +20,11 @@ root.render(
   <React.StrictMode>
     <AppConfigContext.Provider value={appConfig}>
       <QueryClientProvider client={queryClient}>
-        <MobXProvider {...stores}>
-          <RouterProvider router={router} />
-        </MobXProvider>
+        <DebugProvider>
+          <AppProvider>
+            <RouterProvider router={router} />
+          </AppProvider>
+        </DebugProvider>
       </QueryClientProvider>
     </AppConfigContext.Provider>
   </React.StrictMode>

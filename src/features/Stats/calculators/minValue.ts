@@ -1,7 +1,6 @@
-
 export class MinValueCalculator {
   minValue = +Infinity;
-  recalculate(value: number) {
+  calculate(value: number) {
     if (value < this.minValue) {
       this.minValue = value;
     }

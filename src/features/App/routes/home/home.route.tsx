@@ -2,70 +2,122 @@ import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
-import { observer } from "mobx-react-lite";
 import { useAddStat } from "../../../Stats/mutations";
-import { useEffect } from "react";
-import { useDebugStore } from "../../stores/debug.store";
-import { useStatsStore } from "../../../Stats/stores/stats.store";
+import { useEffect, useRef, useState } from "react";
 import { Stepper } from "../../components/Stepper/Stepper";
 import { statsRoutePaths } from "../../../Stats/route.paths";
-import { PrimaryButton } from "../../../../common/components/PrimaryButton/PrimaryButton";
 import { SecondaryButton } from "../../../../common/components/SecondaryButton/SecondaryButton";
-import { useStepperStore } from "../../stores/stepper.store";
+import { IStat } from "../../../Stats/types";
+import {
+  useLostQuotesCounter,
+  useStatsCalculator,
+} from "../../../Stats/hooks/calculators";
+import { PrimaryButton } from "../../../../common/components/PrimaryButton/PrimaryButton";
 
-export const HomeRoute = observer(() => {
+const MIN_STEP = 2;
+const INITIAL_STEP = 10000;
+
+export const HomeRoute = () => {
   const appStore = useAppStore();
-  const debugStore = useDebugStore();
-  const statsStore = useStatsStore();
-  const stepperStore = useStepperStore();
   const addStatMutation = useAddStat();
+  const navigate = useNavigate();
+
+  const statsCalculator = useStatsCalculator();
+  const lostQuotesCounter = useLostQuotesCounter();
+
+  const startTime = useRef<null | number>(null);
+  const endTime = useRef<null | number>(null);
+  const totalQuotes = useRef(0);
+  const lastStat = useRef<null | Omit<IStat, "id">>(null);
+
+  const [step, setStep] = useState(INITIAL_STEP);
+  const progress = useRef(0);
 
   useEffect(() => {
     const unbind = appStore.on("appStarted", () => {
       const time = Date.now();
-      statsStore.setStartTime(time);
-      debugStore.setStartTime(time);
+      startTime.current = time;
     });
     return () => unbind();
   }, []);
 
   useEffect(() => {
     const unbind = appStore.on("quoteReceived", (incomingQuote) => {
-      debugStore.incrementTotalQuotesCount();
-      debugStore.setLastQuote(incomingQuote);
-
-      const stat = statsStore.recalculate(incomingQuote);
-      statsStore.setLastStat(stat);
-      debugStore.setLastStat(stat);
-
-      const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);
-
-      if (isTimeToSaveStat) {
-        addStatMutation.mutate(stat);
-        stepperStore.stepper.reset();
-
-        debugStore.incrementReportsCreatedCount();
+      if (!startTime.current) {
+        startTime.current = Date.now();
       }
+      totalQuotes.current++;
+      progress.current++;
+
+      lostQuotesCounter.check(incomingQuote);
+
+      const startComputationTime = Date.now();
+
+      const {
+        avg,
+        minValue,
+        maxValue,
+        mode,
+        modeCount,
+        evenValues,
+        oddValues,
+        standardDeviation,
+      } = statsCalculator.calculate(incomingQuote);
+
+      const endComputationTime = Date.now();
+
+      endTime.current = Date.now();
+
+      const stat: Omit<IStat, "id"> = {
+        avg,
+        min_value: minValue,
+        max_value: maxValue,
+        mode,
+        mode_count: modeCount,
+        even_values: evenValues,
+        odd_values: oddValues,
+        standard_deviation: standardDeviation || 0,
+        lost_quotes: lostQuotesCounter.get(),
+
+        time_spent: endComputationTime - startComputationTime,
+        start_time: startTime.current!,
+        end_time: endTime.current,
+        quotes_count: totalQuotes.current,
+      };
+
+      appStore.emit("statComputed", stat);
     });
     return () => unbind();
   }, []);
 
   useEffect(() => {
+    const unbind = appStore.on("statComputed", (stat: Omit<IStat, "id">) => {
+      lastStat.current = stat;
+      const isTimeToSaveStat = progress.current === step;
+
+      if (isTimeToSaveStat) {
+        appStore.emit("statSaved", lastStat.current);
+        addStatMutation.mutate(stat);
+        progress.current = 0;
+      }
+    });
+
+    return () => unbind();
+  }, [step]);
+
+  useEffect(() => {
     const unbind = appStore.on("appStopped", () => {
-      statsStore.reset();
-      debugStore.reset();
+      statsCalculator.reset();
+      progress.current = 0;
     });
 
     return () => unbind();
   }, []);
 
-  const navigate = useNavigate();
-
   const viewStats = () => {
-    const stat = statsStore.lastStat;
-    if (stat) {
-      debugStore.incrementReportsCreatedCount();
-      addStatMutation.mutate(stat);
+    if (lastStat.current) {
+      addStatMutation.mutate(lastStat.current);
+      appStore.emit("statSaved", lastStat.current);
     }
     navigate(statsRoutePaths.list);
   };
@@ -83,12 +135,20 @@ export const HomeRoute = observer(() => {
       <main>
         <S.Inner>
           <div>
-            <Stepper />
+            <Stepper
+              disabled={!appStore.isIdling}
+              minStep={MIN_STEP}
+              step={step}
+              onChange={(step) => {
+                setStep(step);
+              }}
+            />
+
             <S.ButtonContainer>
               <S.StartButton>
                 <PrimaryButton
                   disabled={
-                    stepperStore.stepper.step < stepperStore.stepper.minStep ||
+                    step < MIN_STEP ||
                     appStore.isStarting ||
                     appStore.isStopping
                   }
@@ -114,7 +174,7 @@ export const HomeRoute = observer(() => {
       <Outlet />
     </S.Container>
   );
-});
+};
 
 export const Component = HomeRoute;
 

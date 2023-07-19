@@ -1,11 +1,84 @@
-import { observer } from "mobx-react-lite";
 import { useDebugStore } from "../../stores/debug.store";
 import * as S from "./DebugPanel.style";
 import { ReactComponent as DebugIcon } from "../../assets/debug.svg";
 import { format } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { useAppStore } from "../../stores/app.store";
+import { IQuote, IStat } from "../../../Stats/types";
 
-export const DebugPanel = observer(() => {
+export const DebugPanel = () => {
   const debugStore = useDebugStore();
+  const appStore = useAppStore();
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const unbind = appStore.on("appStarted", () => {
+      debugStore.setStartTime(Date.now());
+    });
+    return () => unbind();
+  }, []);
+
+  useEffect(() => {
+    const unbind = appStore.on("appStopped", () => {
+      debugStore.reset();
+    });
+
+    return () => unbind();
+  }, []);
+
+  useEffect(() => {
+    const unbind = appStore.on("statSaved", () => {
+      debugStore.incrementReportsCreatedCount();
+    });
+
+    return () => unbind();
+  }, []);
+
+  useEffect(() => {
+    const unbind = appStore.on("statComputed", (stat: Omit<IStat, "id">) => {
+      debugStore.setLastStat(stat);
+    });
+
+    return () => unbind();
+  }, []);
+
+  useEffect(() => {
+    const unbind = appStore.on("quoteReceived", (quote: IQuote) => {
+      debugStore.incrementTotalQuotesCount();
+      debugStore.setLastQuote(quote);
+    });
+
+    return () => unbind();
+  }, []);
+
+  const time = useMemo(() => {
+    if (debugStore.startTime != null) {
+      return now - debugStore.startTime;
+    }
+    return 0;
+  }, [now, debugStore.startTime]);
+
+  const speed = useMemo(() => {
+    if (time !== 0) {
+      return debugStore.totalQuotesCount / (time / 1000);
+    }
+    return 0;
+  }, [time, debugStore.totalQuotesCount]);
+
+  useEffect(() => {
+    let rafId: number | null = null;
+    const tick = () => {
+      setNow(Date.now());
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -18,11 +91,11 @@ export const DebugPanel = observer(() => {
             </S.Stat>
             <S.Stat>
               <S.Label>Time: </S.Label>
-              <S.Value>{Math.round(debugStore.time / 1000)} seconds</S.Value>
+              <S.Value>{Math.round(time / 1000)} seconds</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Speed: </S.Label>
-              <S.Value>{Math.round(debugStore.speed)} quotes/second</S.Value>
+              <S.Value>{Math.round(speed)} quotes/second</S.Value>
             </S.Stat>
             <S.Stat>
               <S.Label>Reports created: </S.Label>
@@ -151,4 +224,4 @@ export const DebugPanel = observer(() => {
       </S.Trigger>
     </>
   );
-});
+};

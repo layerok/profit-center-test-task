@@ -6,7 +6,8 @@ import { MaxValueCalculator } from "../calculators/maxValue";
 import { StandardDeviationCalculator } from "../calculators/standardDeviation";
 import { EvenValuesCalculator } from "../calculators/evenValues";
 import { OddValuesCalculator } from "../calculators/oddValues";
-import { LostQuotesCalculator } from "../calculators/lostQuotes";
+import { LostQuotesCounter } from "../calculators/lostQuotes";
+import { StatsCalculator } from "../StatsCalculator";
 
 export const useAvgCalculator = () => {
   const ref = useRef(new AvgCalculator());
@@ -38,8 +39,8 @@ export const useEvenValuesCalculator = () => {
   return ref.current;
 };
 
-export const useLostQuotesCalculator = () => {
-  const ref = useRef(new LostQuotesCalculator());
+export const useLostQuotesCounter = () => {
+  const ref = useRef(new LostQuotesCounter());
   return ref.current;
 };
 
@@ -47,3 +48,8 @@ export const useOddValuesCalculator = () => {
   const ref = useRef(new OddValuesCalculator());
   return ref.current;
 };
+
+export const useStatsCalculator = () => {
+  const ref = useRef(new StatsCalculator());
+  return ref.current;
+}

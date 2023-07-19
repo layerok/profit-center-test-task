@@ -1,13 +1,14 @@
+import { IQuote } from "../types";
 
-export class LostQuotesCalculator {
+export class LostQuotesCounter {
   lastQuoteId: null | number = null;
   lostQuotes = 0;
-  recalculate(id: number) {
-     if (this.lastQuoteId !== null) {
-       this.lostQuotes += id - this.lastQuoteId - 1;
-     }
-     this.lastQuoteId = id;
-     return this.lostQuotes;
+  check(quote: IQuote) {
+    if (this.lastQuoteId !== null) {
+      this.lostQuotes += quote.id - this.lastQuoteId - 1;
+    }
+    this.lastQuoteId = quote.id;
+    return this.lostQuotes;
   }
   reset() {
     this.lastQuoteId = null;
@@ -17,4 +18,3 @@ export class LostQuotesCalculator {
     return this.lostQuotes;
   }
 }
-

@@ -1,7 +1,6 @@
-
 export class EvenValuesCalculator {
   evenValues = 0;
-  recalculate(value: number) {
+  calculate(value: number) {
     if (value % 2 === 0) {
       this.evenValues++;
     }
@@ -14,5 +13,3 @@ export class EvenValuesCalculator {
     return this.evenValues;
   }
 }
-
-

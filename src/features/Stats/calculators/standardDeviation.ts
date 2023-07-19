@@ -1,5 +1,3 @@
-
-
 export class StandardDeviationCalculator {
   sum = 0;
   avg = 0;
@@ -7,21 +5,21 @@ export class StandardDeviationCalculator {
 
   temp = 0;
   standardDeviation: null | number = null;
-  
-  recalculate(value: number) {
-      this.quotesCount++;
-      this.sum += value;
 
-      this.avg = this.sum / this.quotesCount;
+  calculate(value: number) {
+    this.quotesCount++;
+    this.sum += value;
 
-      const diff = value - this.avg;
+    this.avg = this.sum / this.quotesCount;
 
-      this.temp += diff * diff;
+    const diff = value - this.avg;
 
-      if (this.quotesCount > 1) {
-        this.standardDeviation = Math.sqrt(this.temp / (this.quotesCount - 1));
-      }
-      return this.standardDeviation;
+    this.temp += diff * diff;
+
+    if (this.quotesCount > 1) {
+      this.standardDeviation = Math.sqrt(this.temp / (this.quotesCount - 1));
+    }
+    return this.standardDeviation;
   }
   reset() {
     this.sum = 0;
