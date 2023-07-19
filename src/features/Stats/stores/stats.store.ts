@@ -27,8 +27,8 @@ class StatsStore {
 
   startTime: number | null = null;
   endTime: number | null = null;
-
   totalQuotesCount = 0;
+  lastStat: null | Omit<IStat, "id"> = null;
 
   avgCalculator: AvgCalculator;
   evenValuesCalculator: EvenValuesCalculator;
@@ -38,8 +38,6 @@ class StatsStore {
   standardDeviationCalculator: StandardDeviationCalculator;
   modeCalculator: ModeCalculator;
   lostQuotesCalculator: LostQuotesCalculator;
-
-  lastStat: null | Omit<IStat, "id"> = null;
 
   recalculate(incomingQuote: IQuote): Omit<IStat, "id"> {
     if (this.startTime === null) {
