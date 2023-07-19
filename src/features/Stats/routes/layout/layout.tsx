@@ -1,5 +1,4 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import ReactModal from "react-modal";
 import { appRoutePaths } from "../../../App/route.paths";
 import * as S from "./layout.style";
 

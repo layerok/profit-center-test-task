@@ -1,6 +1,6 @@
-export class EvenValuesCalculator {
+export class EvenValuesCounter {
   evenValues = 0;
-  calculate(value: number) {
+  count(value: number) {
     if (value % 2 === 0) {
       this.evenValues++;
     }

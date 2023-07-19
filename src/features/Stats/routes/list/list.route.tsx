@@ -77,41 +77,39 @@ export const StatsRoute = () => {
       </S.CloseSvgContainer>
       <S.Title>Статистика</S.Title>
 
-      {items.length === 0 ? (
-        "Нет данных"
-      ) : (
-        <>
-          <S.ListContainer ref={parentRef}>
-            <S.List totalSize={rowVirtualizer.getTotalSize()}>
-              {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-                <S.Row
-                  start={virtualRow.start}
-                  size={virtualRow.size}
-                  key={virtualRow.index}
-                >
-                  <S.ID>#{items[virtualRow.index].id}</S.ID>
-                  <S.Date>
-                    {format(
-                      new Date(+items[virtualRow.index].end_time),
-                      "dd/MM/yyyy hh:mm:ss"
+      {items.length === 0 && "Нет данных"}
+
+      {items.length !== 0 && (
+        <S.ListContainer ref={parentRef}>
+          <S.List totalSize={rowVirtualizer.getTotalSize()}>
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+              <S.Row
+                start={virtualRow.start}
+                size={virtualRow.size}
+                key={virtualRow.index}
+              >
+                <S.ID>#{items[virtualRow.index].id}</S.ID>
+                <S.Date>
+                  {format(
+                    new Date(+items[virtualRow.index].end_time),
+                    "dd/MM/yyyy hh:mm:ss"
+                  )}
+                </S.Date>
+                <S.Action>
+                  <Link
+                    to={statsRoutePaths.detail.replace(
+                      ":id",
+                      String(items[virtualRow.index].id)
                     )}
-                  </S.Date>
-                  <S.Action>
-                    <Link
-                      to={statsRoutePaths.detail.replace(
-                        ":id",
-                        String(items[virtualRow.index].id)
-                      )}
-                    >
-                      View
-                    </Link>
-                  </S.Action>
-                </S.Row>
-              ))}
-            </S.List>
-            <div ref={ref}>{hasNextPage && "грузим..."}</div>
-          </S.ListContainer>
-        </>
+                  >
+                    View
+                  </Link>
+                </S.Action>
+              </S.Row>
+            ))}
+          </S.List>
+          <div ref={ref}>{hasNextPage && "грузим..."}</div>
+        </S.ListContainer>
       )}
     </div>
   );

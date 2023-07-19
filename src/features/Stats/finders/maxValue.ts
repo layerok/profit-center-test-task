@@ -1,6 +1,6 @@
-export class MaxValueCalculator {
+export class MaxValueFinder {
   maxValue = -Infinity;
-  calculate(value: number) {
+  find(value: number) {
     if (value > this.maxValue) {
       this.maxValue = value;
     }

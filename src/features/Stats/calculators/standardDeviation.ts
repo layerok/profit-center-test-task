@@ -6,21 +6,23 @@ export class StandardDeviationCalculator {
   temp = 0;
   standardDeviation: null | number = null;
 
-  calculate(value: number) {
-    this.quotesCount++;
-    this.sum += value;
-
-    this.avg = this.sum / this.quotesCount;
-
-    const diff = value - this.avg;
-
-    this.temp += diff * diff;
-
+  calculate() {
     if (this.quotesCount > 1) {
       this.standardDeviation = Math.sqrt(this.temp / (this.quotesCount - 1));
     }
     return this.standardDeviation;
   }
+
+  add(value: number) {
+    this.quotesCount++;
+    this.sum += value;
+    this.avg = this.sum / this.quotesCount;
+    const diff = value - this.avg;
+
+    this.temp += diff * diff;
+    return this;
+  }
+
   reset() {
     this.sum = 0;
     this.avg = 0;

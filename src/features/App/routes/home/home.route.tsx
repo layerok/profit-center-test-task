@@ -8,11 +8,18 @@ import { Stepper } from "../../components/Stepper/Stepper";
 import { statsRoutePaths } from "../../../Stats/route.paths";
 import { SecondaryButton } from "../../../../common/components/SecondaryButton/SecondaryButton";
 import { IStat } from "../../../Stats/types";
-import {
-  useLostQuotesCounter,
-  useStatsCalculator,
-} from "../../../Stats/hooks/calculators";
 import { PrimaryButton } from "../../../../common/components/PrimaryButton/PrimaryButton";
+import {
+  useAvgCalculator,
+  useEvenValuesCounter,
+  useLostQuotesCounter,
+  useMaxValueFinder,
+  useMinValueFinder,
+  useModeFinder,
+  useModeCounter,
+  useOddValuesCounter,
+  useStandardDeviationCalculator,
+} from "../../../Stats/hooks";
 
 const MIN_STEP = 2;
 const INITIAL_STEP = 10000;
@@ -22,21 +29,28 @@ export const HomeRoute = () => {
   const addStatMutation = useAddStat();
   const navigate = useNavigate();
 
-  const statsCalculator = useStatsCalculator();
+  const avgCalculator = useAvgCalculator();
+  const minValueFinder = useMinValueFinder();
+  const maxValueFinder = useMaxValueFinder();
+  const modeFinder = useModeFinder();
+  const standardDeviationCalculator = useStandardDeviationCalculator();
+
+  const evenValuesCounter = useEvenValuesCounter();
+  const oddValuesCounter = useOddValuesCounter();
   const lostQuotesCounter = useLostQuotesCounter();
+  const modeCounter = useModeCounter();
 
   const startTime = useRef<null | number>(null);
   const endTime = useRef<null | number>(null);
   const totalQuotes = useRef(0);
-  const lastStat = useRef<null | Omit<IStat, "id">>(null);
+  const lastComputedStat = useRef<null | Omit<IStat, "id">>(null);
 
   const [step, setStep] = useState(INITIAL_STEP);
   const progress = useRef(0);
 
   useEffect(() => {
     const unbind = appStore.on("appStarted", () => {
-      const time = Date.now();
-      startTime.current = time;
+      startTime.current = Date.now();
     });
     return () => unbind();
   }, []);
@@ -51,33 +65,37 @@ export const HomeRoute = () => {
 
       const startComputationTime = Date.now();
 
-      lostQuotesCounter.check(incomingQuote);
+      const computed = {
+        minValue: minValueFinder.find(incomingQuote.value),
+        maxValue: maxValueFinder.find(incomingQuote.value),
+        mode: modeFinder.find(incomingQuote.value),
 
-      const {
-        avg,
-        minValue,
-        maxValue,
-        mode,
-        modeCount,
-        evenValues,
-        oddValues,
-        standardDeviation,
-      } = statsCalculator.calculate(incomingQuote);
+        avg: avgCalculator.add(incomingQuote.value).calculate(),
+        standardDeviation: standardDeviationCalculator
+          .add(incomingQuote.value)
+          .calculate(),
+
+        modeCount: modeCounter.count(incomingQuote.value),
+        evenValuesCount: evenValuesCounter.count(incomingQuote.value),
+        oddValuesCount: oddValuesCounter.count(incomingQuote.value),
+        lostQuotesCount: lostQuotesCounter.count(incomingQuote),
+      };
 
       const endComputationTime = Date.now();
 
       endTime.current = Date.now();
 
       const stat: Omit<IStat, "id"> = {
-        avg,
-        min_value: minValue,
-        max_value: maxValue,
-        mode,
-        mode_count: modeCount,
-        even_values: evenValues,
-        odd_values: oddValues,
-        standard_deviation: standardDeviation || 0,
-        lost_quotes: lostQuotesCounter.get(),
+        avg: computed.avg,
+        min_value: computed.minValue,
+        max_value: computed.maxValue,
+        mode: computed.mode,
+        standard_deviation: computed.standardDeviation || 0,
+
+        mode_count: computed.modeCount,
+        even_values: computed.evenValuesCount,
+        odd_values: computed.oddValuesCount,
+        lost_quotes: computed.lostQuotesCount,
 
         time_spent: endComputationTime - startComputationTime,
         start_time: startTime.current!,
@@ -92,11 +110,11 @@ export const HomeRoute = () => {
 
   useEffect(() => {
     const unbind = appStore.on("statComputed", (stat: Omit<IStat, "id">) => {
-      lastStat.current = stat;
+      lastComputedStat.current = stat;
       const isTimeToSaveStat = progress.current === step;
 
       if (isTimeToSaveStat) {
-        appStore.emit("statSaved", lastStat.current);
+        appStore.emit("statSaved", lastComputedStat.current);
         addStatMutation.mutate(stat);
         progress.current = 0;
       }
@@ -107,7 +125,17 @@ export const HomeRoute = () => {
 
   useEffect(() => {
     const unbind = appStore.on("appStopped", () => {
-      statsCalculator.reset();
+      minValueFinder.reset();
+      maxValueFinder.reset();
+      modeFinder.reset();
+
+      avgCalculator.reset();
+      standardDeviationCalculator.reset();
+
+      evenValuesCounter.reset();
+      oddValuesCounter.reset();
+      modeCounter.reset();
+
       progress.current = 0;
     });
 
@@ -115,9 +143,9 @@ export const HomeRoute = () => {
   }, []);
 
   const viewStats = () => {
-    if (lastStat.current) {
-      addStatMutation.mutate(lastStat.current);
-      appStore.emit("statSaved", lastStat.current);
+    if (lastComputedStat.current) {
+      addStatMutation.mutate(lastComputedStat.current);
+      appStore.emit("statSaved", lastComputedStat.current);
     }
     navigate(statsRoutePaths.list);
   };
