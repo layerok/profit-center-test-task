@@ -60,7 +60,6 @@ export class QuotesStepper extends Stepper {
 
   check(quote: IQuote) {
     this.quotesReceivedAfterLastStatCreated++;
-
     return this.quotesReceivedAfterLastStatCreated === this.step;
   }
 

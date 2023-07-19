@@ -23,7 +23,7 @@ export const HomeRoute = observer(() => {
   useEffect(() => {
     const unbind = appStore.on("appStarted", () => {
       const time = Date.now();
-      statsStore.setStartTime(time);
+      statsStore.timer.setStartTime(time);
       debugStore.setStartTime(time);
     });
     return () => unbind();
@@ -34,7 +34,8 @@ export const HomeRoute = observer(() => {
       debugStore.incrementTotalQuotesCount();
       debugStore.setLastQuote(incomingQuote);
 
-      const stat = statsStore.compute(incomingQuote);
+      const stat = statsStore.recalculate(incomingQuote);
+      statsStore.setLastStat(stat);
       debugStore.setLastStat(stat);
 
       const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);

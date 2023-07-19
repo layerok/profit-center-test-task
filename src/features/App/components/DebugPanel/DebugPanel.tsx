@@ -25,25 +25,13 @@ export const DebugPanel = observer(() => {
               <S.Value>{Math.round(debugStore.speed)} quotes/second</S.Value>
             </S.Stat>
             <S.Stat>
-              <S.Label>Last quote id: </S.Label>
-              <S.Value> {debugStore?.lastQuote?.id || "?"}</S.Value>
-            </S.Stat>
-
-            <S.Stat>
               <S.Label>Reports created: </S.Label>
               <S.Value> {debugStore.reportsCreatedCount}</S.Value>
             </S.Stat>
-
             <S.Stat>
-              <S.Label>Time spent on computations: </S.Label>
-              <S.Value>
-                {debugStore.lastStat === null
-                  ? "?"
-                  : debugStore.lastStat.time_spent / 1000}
-                (seconds)
-              </S.Value>
+              <S.Label>Last quote id: </S.Label>
+              <S.Value> {debugStore?.lastQuote?.id || "?"}</S.Value>
             </S.Stat>
-
             <S.Stat>
               <S.Label>Lost quotes: </S.Label>
               <S.Value>

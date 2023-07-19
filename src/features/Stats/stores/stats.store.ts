@@ -3,110 +3,105 @@ import { IQuote, IStat } from "../types";
 import { useContext } from "react";
 import { MobXProviderContext } from "mobx-react";
 
-import { recalculateAvg, resetAvg } from "../../App/computations/avg";
-import {
-  recalculateMaxValue,
-  resetMaxValue,
-} from "../../App/computations/maxValue";
-import {
-  recalculateMinValue,
-  resetMinValue,
-} from "../../App/computations/minValue";
-import {
-  recalculateOddValues,
-  resetOddValues,
-} from "../../App/computations/oddValues";
-import {
-  recalculateEvenValues,
-  resetEvenValues,
-} from "../../App/computations/evenValues";
-import {
-  recalculateMode,
-  getModeCount,
-  resetMode,
-} from "../../App/computations/mode";
-import {
-  recalculateStandardDeviation,
-  resetStandardDeviation,
-} from "../../App/computations/standardDeviation";
-import {
-  recalculateLostQuotes,
-  resetLastLostQuotes,
-} from "../../App/computations/lostQuotes";
+import { AvgCalculator } from "../calculators/avg";
+import { MaxValueCalculator } from "../calculators/maxValue";
+import { MinValueCalculator } from "../calculators/minValue";
+import { OddValuesCalculator } from "../calculators/oddValues";
+import { EvenValuesCalculator } from "../calculators/evenValues";
+import { ModeCalculator } from "../calculators/mode";
+import { StandardDeviationCalculator } from "../calculators/standardDeviation";
+import { LostQuotesCalculator } from "../calculators/lostQuotes";
+import { Timer } from "../timer";
 
 class StatsStore {
   constructor() {
     makeAutoObservable(this);
+    this.avgCalculator = new AvgCalculator();
+    this.evenValuesCalculator = new EvenValuesCalculator();
+    this.oddValuesCalculator = new OddValuesCalculator();
+    this.maxValueCalculator = new MaxValueCalculator();
+    this.minValueCalculator = new MinValueCalculator();
+    this.standardDeviationCalculator = new StandardDeviationCalculator();
+    this.modeCalculator = new ModeCalculator();
+    this.lostQuotesCalculator = new LostQuotesCalculator();
+
+    this.timer = new Timer();
   }
 
-  startTime: number | null = null;
-  endTime: number | null = null;
-  timeSpent = 0;
+  timer: Timer;
+
   totalQuotesCount = 0;
+
+  avgCalculator: AvgCalculator;
+  evenValuesCalculator: EvenValuesCalculator;
+  oddValuesCalculator: OddValuesCalculator;
+  maxValueCalculator: MaxValueCalculator;
+  minValueCalculator: MinValueCalculator;
+  standardDeviationCalculator: StandardDeviationCalculator;
+  modeCalculator: ModeCalculator;
+  lostQuotesCalculator: LostQuotesCalculator;
 
   lastStat: null | Omit<IStat, "id"> = null;
 
-  setStartTime(time: number) {
-    this.startTime = time;
-  }
-
-  compute(incomingQuote: IQuote) {
-    if (this.startTime === null) {
-      this.startTime = Date.now();
+  recalculate(incomingQuote: IQuote): Omit<IStat, 'id'> {
+    if (this.timer.startTime === null) {
+      this.timer.startTime = Date.now();
     }
     this.totalQuotesCount++;
 
     const computationStartTime = Date.now();
 
-    const avg = recalculateAvg(incomingQuote.value);
-    const maxValue = recalculateMaxValue(incomingQuote.value);
-    const minValue = recalculateMinValue(incomingQuote.value);
-    const oddValues = recalculateOddValues(incomingQuote.value);
-    const evenValues = recalculateEvenValues(incomingQuote.value);
-    const mode = recalculateMode(incomingQuote.value);
-    const standardDeviation = recalculateStandardDeviation(incomingQuote.value);
-    const lostQuotes = recalculateLostQuotes(incomingQuote.id);
+    const avg = this.avgCalculator.recalculate(incomingQuote.value);
+    const maxValue = this.maxValueCalculator.recalculate(incomingQuote.value);
+    const minValue = this.minValueCalculator.recalculate(incomingQuote.value);
+    const oddValues = this.oddValuesCalculator.recalculate(incomingQuote.value);
+    const evenValues = this.evenValuesCalculator.recalculate(
+      incomingQuote.value
+    );
+    const mode = this.modeCalculator.recalculate(incomingQuote.value);
+    const standardDeviation = this.standardDeviationCalculator.recalculate(
+      incomingQuote.value
+    );
+    const lostQuotes = this.lostQuotesCalculator.recalculate(incomingQuote.id);
 
     const computationEndTime = Date.now();
 
-    this.timeSpent += computationEndTime - computationStartTime;
+    this.timer.endTime = Date.now();
 
-    this.endTime = Date.now();
-
-    this.lastStat = {
+    return {
       avg: avg,
       min_value: minValue,
       max_value: maxValue,
       standard_deviation: standardDeviation!,
       mode: mode,
-      mode_count: getModeCount(),
+      mode_count: this.modeCalculator.getCount(),
       lost_quotes: lostQuotes,
       odd_values: oddValues,
       even_values: evenValues,
 
-      end_time: this.endTime,
-      start_time: this.startTime,
-      time_spent: this.timeSpent,
+      end_time: this.timer.endTime,
+      start_time: this.timer.startTime,
+      time_spent: computationEndTime - computationStartTime,
       quotes_count: this.totalQuotesCount,
     };
+  }
 
-    return this.lastStat;
+  setLastStat(stat: Omit<IStat, 'id'>) {
+    this.lastStat = stat;
   }
 
   reset() {
-    resetAvg();
-    resetMinValue();
-    resetMaxValue();
-    resetMode();
-    resetLastLostQuotes();
-    resetStandardDeviation();
-    resetEvenValues();
-    resetOddValues();
-    resetLastLostQuotes();
+    this.avgCalculator.reset();
+    this.minValueCalculator.reset();
+    this.maxValueCalculator.reset();
+    this.modeCalculator.reset();
+    this.lostQuotesCalculator.reset();
+    this.standardDeviationCalculator.reset();
+    this.evenValuesCalculator.reset();
+    this.oddValuesCalculator.reset();
 
-    this.startTime = null;
-    this.endTime = null;
-    this.timeSpent = 0;
+    this.timer.startTime = null;
+    this.timer.endTime = null;
     this.totalQuotesCount = 0;
     this.lastStat = null;
   }
