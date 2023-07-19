@@ -2,24 +2,21 @@ import { Outlet, useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 import { appRoutePaths } from "../../../App/route.paths";
 import * as S from "./layout.style";
-import styles from './layout.module.css';
 
 export const LayoutRoute = () => {
   const navigate = useNavigate();
   return (
-    <ReactModal
-      isOpen={true}
-      onRequestClose={() => {
+    <S.Overlay
+      onClick={() => {
         navigate(appRoutePaths.home);
       }}
-      className={styles.content}
-      overlayClassName={styles.overlay}
-      style={styles}
     >
-      <S.Container>
-        <Outlet />
-      </S.Container>
-    </ReactModal>
+      <S.Content>
+        <S.Container>
+          <Outlet />
+        </S.Container>
+      </S.Content>
+    </S.Overlay>
   );
 };
 
