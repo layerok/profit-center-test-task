@@ -49,9 +49,9 @@ export const HomeRoute = () => {
       totalQuotes.current++;
       progress.current++;
 
-      lostQuotesCounter.check(incomingQuote);
-
       const startComputationTime = Date.now();
+
+      lostQuotesCounter.check(incomingQuote);
 
       const {
         avg,
