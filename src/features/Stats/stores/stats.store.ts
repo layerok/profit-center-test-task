@@ -84,10 +84,6 @@ class StatsStore {
     };
   }
 
-  setLastStat(stat: Omit<IStat, "id">) {
-    this.lastStat = stat;
-  }
-
   reset() {
     this.avgCalculator.reset();
     this.minValueCalculator.reset();
@@ -102,6 +98,10 @@ class StatsStore {
     this.endTime = null;
     this.totalQuotesCount = 0;
     this.lastStat = null;
+  }
+
+  setLastStat(stat: Omit<IStat, "id">) {
+    this.lastStat = stat;
   }
 
   setStartTime(time: number) {
