@@ -84,7 +84,7 @@ class StatsStore {
       lost_quotes: lostQuotes,
       odd_values: oddValues,
       even_values: evenValues,
-      
+
       end_time: this.endTime,
       start_time: this.startTime,
       time_spent: this.timeSpent,
@@ -109,6 +109,7 @@ class StatsStore {
     this.endTime = null;
     this.timeSpent = 0;
     this.totalQuotesCount = 0;
+    this.lastStat = null;
   }
 }
 
