@@ -14,7 +14,7 @@ class DebugStore {
   startTime: null | number = null;
   totalQuotesCount = 0;
   lastQuote: null | IQuote = null;
-  lastStat: null | Omit<IStat, 'id'> = null;
+  lastStat: null | Omit<IStat, "id"> = null;
 
   hideDebugPanel() {
     this.panelHidden = true;
@@ -56,6 +56,18 @@ class DebugStore {
       return this.totalQuotesCount / (this.time / 1000);
     }
     return 0;
+  }
+
+  incrementTotalQuotesCount() {
+    this.totalQuotesCount++;
+  }
+
+  setStartTime(time: number) {
+    this.startTime = time;
+  }
+
+  setLastQuote(quote: IQuote) {
+    this.lastQuote = quote;
   }
 }
 

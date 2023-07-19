@@ -25,20 +25,13 @@ export const DebugPanel = observer(() => {
               <S.Value>{Math.round(debugStore.speed)} quotes/second</S.Value>
             </S.Stat>
             <S.Stat>
+              <S.Label>Last quote id: </S.Label>
+              <S.Value> {debugStore?.lastQuote?.id || "?"}</S.Value>
+            </S.Stat>
+
+            <S.Stat>
               <S.Label>Reports created: </S.Label>
               <S.Value> {debugStore.reportsCreatedCount}</S.Value>
-            </S.Stat>
-            <S.Stat>
-              <S.Label>Even values: </S.Label>
-              <S.Value> {debugStore.lastStat?.even_values}</S.Value>
-            </S.Stat>
-            <S.Stat>
-              <S.Label>Odd values: </S.Label>
-              <S.Value> {debugStore.lastStat?.odd_values}</S.Value>
-            </S.Stat>
-            <S.Stat>
-              <S.Label>Lost quotes: </S.Label>
-              <S.Value> {debugStore.lastStat?.lost_quotes}</S.Value>
             </S.Stat>
 
             <S.Stat>
@@ -52,8 +45,28 @@ export const DebugPanel = observer(() => {
             </S.Stat>
 
             <S.Stat>
-              <S.Label>Last quote id: </S.Label>
-              <S.Value> {debugStore?.lastQuote?.id || "?"}</S.Value>
+              <S.Label>Lost quotes: </S.Label>
+              <S.Value>
+                {debugStore.lastStat === null
+                  ? "?"
+                  : debugStore.lastStat.lost_quotes}
+              </S.Value>
+            </S.Stat>
+            <S.Stat>
+              <S.Label>Even values: </S.Label>
+              <S.Value>
+                {debugStore.lastStat === null
+                  ? "?"
+                  : debugStore.lastStat.even_values}
+              </S.Value>
+            </S.Stat>
+            <S.Stat>
+              <S.Label>Odd values: </S.Label>
+              <S.Value>
+                {debugStore.lastStat === null
+                  ? "?"
+                  : debugStore.lastStat.odd_values}
+              </S.Value>
             </S.Stat>
 
             <S.Stat>

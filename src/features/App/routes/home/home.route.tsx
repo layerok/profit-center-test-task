@@ -22,20 +22,28 @@ export const HomeRoute = observer(() => {
 
   useEffect(() => {
     const unbind = appStore.on("appStarted", () => {
-      statsStore.setStartTime(Date.now());
+      const time = Date.now();
+      statsStore.setStartTime(time);
+      debugStore.setStartTime(time);
     });
     return () => unbind();
   }, []);
 
   useEffect(() => {
     const unbind = appStore.on("quoteReceived", (incomingQuote) => {
-      const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);
+      debugStore.incrementTotalQuotesCount();
+      debugStore.setLastQuote(incomingQuote);
+
       const stat = statsStore.compute(incomingQuote);
       debugStore.setLastStat(stat);
+
+      const isTimeToSaveStat = stepperStore.stepper.check(incomingQuote);
+
       if (isTimeToSaveStat) {
         addStatMutation.mutate(stat);
-        debugStore.incrementReportsCreatedCount();
         stepperStore.stepper.reset();
+
+        debugStore.incrementReportsCreatedCount();
       }
     });
     return () => unbind();

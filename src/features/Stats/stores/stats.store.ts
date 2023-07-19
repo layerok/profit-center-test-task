@@ -81,12 +81,13 @@ class StatsStore {
       standard_deviation: standardDeviation!,
       mode: mode,
       mode_count: modeCount,
-      end_time: this.endTime,
-      start_time: this.startTime,
       lost_quotes: lostQuotes,
-      time_spent: this.timeSpent,
       odd_values: oddValues,
       even_values: evenValues,
+      
+      end_time: this.endTime,
+      start_time: this.startTime,
+      time_spent: this.timeSpent,
       quotes_count: this.totalQuotesCount,
     };
 
