@@ -64,7 +64,6 @@ class StatsStore {
     const oddValues = recalculateOddValues(incomingQuote.value);
     const evenValues = recalculateEvenValues(incomingQuote.value);
     const mode = recalculateMode(incomingQuote.value);
-    const modeCount = getModeCount();
     const standardDeviation = recalculateStandardDeviation(incomingQuote.value);
     const lostQuotes = recalculateLostQuotes(incomingQuote.id);
 
@@ -80,7 +79,7 @@ class StatsStore {
       max_value: maxValue,
       standard_deviation: standardDeviation!,
       mode: mode,
-      mode_count: modeCount,
+      mode_count: getModeCount(),
       lost_quotes: lostQuotes,
       odd_values: oddValues,
       even_values: evenValues,
