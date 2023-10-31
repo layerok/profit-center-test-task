@@ -151,11 +151,8 @@ export const HomeRoute = () => {
   };
 
   const startApp = () => {
-    if (appStore.state === AppStateEnum.Idling) {
-      appStore.start();
-    } else {
-      appStore.stop();
-    }
+    const { start, stop } = appStore;
+    appStore.state === AppStateEnum.Idling ? start() : stop();
   };
 
   return (
