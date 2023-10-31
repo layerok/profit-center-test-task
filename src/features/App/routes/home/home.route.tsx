@@ -1,6 +1,6 @@
 import * as S from "./home.style";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAppStore } from "../../stores/app.store";
+import { AppStateEnum, useAppStore } from "../../stores/app.store";
 import { DebugPanel } from "../../components/DebugPanel/DebugPanel";
 import { useAddStat } from "../../../Stats/mutations";
 import { useEffect, useRef, useState } from "react";
@@ -151,7 +151,7 @@ export const HomeRoute = () => {
   };
 
   const startApp = () => {
-    if (appStore.isIdling) {
+    if (appStore.state === AppStateEnum.Idling) {
       appStore.start();
     } else {
       appStore.stop();
@@ -164,7 +164,7 @@ export const HomeRoute = () => {
         <S.Inner>
           <div>
             <Stepper
-              disabled={!appStore.isIdling}
+              disabled={!(appStore.state === AppStateEnum.Idling)}
               minStep={MIN_STEP}
               step={step}
               onChange={(step) => {
@@ -177,15 +177,17 @@ export const HomeRoute = () => {
                 <PrimaryButton
                   disabled={
                     step < MIN_STEP ||
-                    appStore.isStarting ||
-                    appStore.isStopping
+                    appStore.state === AppStateEnum.Starting ||
+                    appStore.state === AppStateEnum.Stopping
                   }
                   onClick={startApp}
                 >
-                  {appStore.isIdling ? "Start" : ""}
-                  {appStore.isStarting ? "starting..." : ""}
-                  {appStore.isStarted ? "Stop" : ""}
-                  {appStore.isStopping ? "stopping..." : ""}
+                  {{
+                    starting: "Starting...",
+                    stopping: "Stoppping...",
+                    started: "Stop",
+                    idling: "Start",
+                  }[appStore.state]}
                 </PrimaryButton>
               </S.StartButton>
 

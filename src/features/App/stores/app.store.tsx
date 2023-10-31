@@ -13,7 +13,7 @@ type IEvents = {
   statComputed: (stat: Omit<IStat, 'id'>) => void;
 };
 
-enum AppStateEnum {
+export enum AppStateEnum {
   Idling = "idling",
   Stopping = "stopping",
   Starting = "starting",
@@ -21,10 +21,7 @@ enum AppStateEnum {
 }
 
 type IAppStore = {
-  isIdling: boolean;
-  isStarting: boolean;
-  isStopping: boolean;
-  isStarted: boolean;
+  state: AppStateEnum;
   start: () => void;
   stop: () => void;
   on: <E extends keyof IEvents>(event: E, callback: IEvents[E]) => Unsubscribe;
@@ -37,16 +34,13 @@ type IAppStore = {
 export const AppContext = createContext<undefined | IAppStore>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactElement }) => {
-  const [state, setState] = useState(AppStateEnum.Idling);
+  const [state, setState] = useState<AppStateEnum>(AppStateEnum.Idling);
   const [emitter] = useState(createNanoEvents<IEvents>());
   const [ws, setWs] = useState<WebSocket | null>(null);
-  const isIdling = state === AppStateEnum.Idling;
-  const isStarting = state === AppStateEnum.Starting;
-  const isStopping = state === AppStateEnum.Stopping;
-  const isStarted = state === AppStateEnum.Started;
+
 
   const start = () => {
-    if (isIdling) {
+    if (state === AppStateEnum.Idling) {
       emitter.emit("appStarting");
       setState(AppStateEnum.Starting);
       const ws = new WebSocket(appConfig.wsUrl);
@@ -78,7 +72,7 @@ export const AppProvider = ({ children }: { children: ReactElement }) => {
   };
 
   const stop = () => {
-    if (!isStopping && !isIdling) {
+    if (!(state === AppStateEnum.Stopping) && !(state === AppStateEnum.Idling)) {
       emitter.emit("appStopping");
       setState(AppStateEnum.Stopping);
       ws?.close(1000);
@@ -98,10 +92,7 @@ export const AppProvider = ({ children }: { children: ReactElement }) => {
   };
 
   const ctx = {
-    isIdling,
-    isStarted,
-    isStopping,
-    isStarting,
+    state,
     stop,
     start,
     on,
