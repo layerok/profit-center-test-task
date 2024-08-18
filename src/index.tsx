@@ -2,31 +2,50 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { RouterProvider } from "react-router-dom";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./queryClient";
-import { router } from "./router";
-
-import { appConfig, AppConfigContext } from "./config/app.config";
-import { AppProvider } from "./features/App/stores/app.store";
-import { DebugProvider } from "./features/App/stores/debug.store";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AppProvider } from "./stores/app.store";
+import { DebugProvider } from "./stores/debug.store";
+import { routePaths } from "./constants";
 
 console.log("env", process.env);
+
+const router = createBrowserRouter([
+  {
+    path: routePaths.home,
+    lazy: () => import("./routes/home/home.route"),
+    children: [
+      {
+        lazy: () => import("./routes/stats/layout/layout"),
+        children: [
+          {
+            path: routePaths.statsList,
+            lazy: () => import("./routes/stats/list/list.route"),
+          },
+          {
+            path: routePaths.statsDetail,
+            lazy: () => import("./routes/stats/detail/detail.route"),
+          },
+        ],
+      },
+    ],
+  },
+]);
+
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <AppConfigContext.Provider value={appConfig}>
-      <QueryClientProvider client={queryClient}>
-        <DebugProvider>
-          <AppProvider>
-            <RouterProvider router={router} />
-          </AppProvider>
-        </DebugProvider>
-      </QueryClientProvider>
-    </AppConfigContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <DebugProvider>
+        <AppProvider>
+          <RouterProvider router={router} />
+        </AppProvider>
+      </DebugProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 
