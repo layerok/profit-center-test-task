@@ -2,25 +2,26 @@ import { useDebugStore } from "../stores/debug.store";
 import { ReactComponent as DebugIcon } from "../assets/debug.svg";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { useAppStore } from "../stores/app.store";
+
 import { IQuote, IStat } from "../api";
 import styled from "styled-components";
 import { media } from "../lib/styled-components";
+import {emitter} from "../emitter";
 
 export const DebugPanel = () => {
   const debugStore = useDebugStore();
-  const appStore = useAppStore();
+
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
-    const unbind = appStore.on("appStarted", () => {
+    const unbind = emitter.on("appStarted", () => {
       debugStore.setStartTime(Date.now());
     });
     return () => unbind();
   }, []);
 
   useEffect(() => {
-    const unbind = appStore.on("appStopped", () => {
+    const unbind = emitter.on("appStopped", () => {
       debugStore.reset();
     });
 
@@ -28,7 +29,7 @@ export const DebugPanel = () => {
   }, []);
 
   useEffect(() => {
-    const unbind = appStore.on("statSaved", () => {
+    const unbind = emitter.on("statSaved", () => {
       debugStore.incrementReportsCreatedCount();
     });
 
@@ -36,7 +37,7 @@ export const DebugPanel = () => {
   }, []);
 
   useEffect(() => {
-    const unbind = appStore.on("statComputed", (stat: Omit<IStat, "id">) => {
+    const unbind = emitter.on("statComputed", (stat: Omit<IStat, "id">) => {
       debugStore.setLastStat(stat);
     });
 
@@ -44,7 +45,7 @@ export const DebugPanel = () => {
   }, []);
 
   useEffect(() => {
-    const unbind = appStore.on("quoteReceived", (quote: IQuote) => {
+    const unbind = emitter.on("quoteReceived", (quote: IQuote) => {
       debugStore.incrementTotalQuotesCount();
       debugStore.setLastQuote(quote);
     });
