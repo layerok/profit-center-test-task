@@ -37,6 +37,15 @@ const StatsButton = styled.div`
   `}
 `;
 
+export const Trigger = styled.div`
+  margin-top: 100px;
+  position: fixed;
+  bottom: 50px;
+  width: 30px;
+  right: 50px;
+  cursor: pointer;
+`;
+
 const StartButton = styled.div`
   width: 190px;
 

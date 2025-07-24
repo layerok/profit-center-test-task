@@ -9,6 +9,7 @@ import { PrimaryButton } from "../../components/PrimaryButton";
 import { routePaths, WS_URL } from "../../constants";
 import { useAddStat } from "../../hooks";
 import { emitter } from "../../emitter";
+import { ReactComponent as DebugIcon } from "../../assets/debug.svg";
 
 const MIN_STEP = 2;
 const INITIAL_STEP = 10000;
@@ -37,6 +38,7 @@ export const HomeRoute = () => {
   const mode = useRef< number>(0);
   const temp = useRef< number>(0);
   const standardDeviation = useRef< null | number>(null);
+  const [debugPanelHidde, setDebugPanelHidden] = useState(true);
 
   const startTime = useRef<null | number>(null);
   const endTime = useRef<null | number>(null);
@@ -260,7 +262,14 @@ export const HomeRoute = () => {
             </S.ButtonContainer>
           </div>
         </S.Inner>
-        <DebugPanel />
+        <DebugPanel onChangeVisibility={(visible) => setDebugPanelHidden(!visible)} isHidden={debugPanelHidde} />
+        <S.Trigger
+          onClick={() => {
+            setDebugPanelHidden(prev => !prev)
+          }}
+        >
+          <DebugIcon />
+        </S.Trigger>
       </main>
       <Outlet />
     </S.Container>

@@ -4,7 +4,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { DebugProvider } from "./stores/debug.store";
+
 import { routePaths } from "./constants";
 
 console.log("env", process.env);
@@ -39,11 +39,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <DebugProvider>
-
-          <RouterProvider router={router} />
-
-      </DebugProvider>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   </React.StrictMode>
 );
