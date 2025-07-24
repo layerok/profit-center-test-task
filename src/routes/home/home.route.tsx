@@ -5,7 +5,7 @@ import { DebugPanel } from "../../components/DebugPanel";
 import { useEffect, useRef, useState } from "react";
 import { Stepper } from "../../components/Stepper";
 import { SecondaryButton } from "../../components/SecondaryButton";
-import { IQuote, IStat } from "../../api";
+import {  IStat } from "../../api";
 import { PrimaryButton } from "../../components/PrimaryButton";
 import { routePaths } from "../../constants";
 import { useAddStat } from "../../hooks";
@@ -13,222 +13,28 @@ import { useAddStat } from "../../hooks";
 const MIN_STEP = 2;
 const INITIAL_STEP = 10000;
 
-class ModeCounter {
-  modeMap: Record<number, number> = {};
-  maxCount = 0;
-  mode = 0;
-
-  count(value: number) {
-    let count = this.modeMap[value] || 0;
-    this.modeMap[value] = ++count;
-
-    if (count > this.maxCount) {
-      this.mode = value;
-      this.maxCount = count;
-    }
-    return this.maxCount;
-  }
-  reset() {
-    this.mode = 0;
-    this.maxCount = 0;
-    this.modeMap = {};
-  }
-  get() {
-    return this.maxCount;
-  }
-
-}
-
-class OddValuesCounter {
-  oddValues = 0;
-  count(value: number) {
-    if (value % 2 !== 0) {
-      this.oddValues++;
-    }
-    return this.oddValues;
-  }
-  reset() {
-    this.oddValues = 0;
-  }
-  get() {
-    return this.oddValues;
-  }
-}
-
-class LostQuotesCounter {
-  lastQuoteId: null | number = null;
-  lostQuotes = 0;
-  count(quote: IQuote) {
-    if (this.lastQuoteId !== null) {
-      this.lostQuotes += quote.id - this.lastQuoteId - 1;
-    }
-
-    this.lastQuoteId = quote.id;
-
-    return this.lostQuotes;
-  }
-  reset() {
-    this.lastQuoteId = null;
-    this.lostQuotes = 0;
-  }
-  get() {
-    return this.lostQuotes;
-  }
-}
-
-class EvenValuesCounter {
-  evenValues = 0;
-  count(value: number) {
-    if (value % 2 === 0) {
-      this.evenValues++;
-    }
-    return this.evenValues;
-  }
-  reset() {
-    this.evenValues = 0;
-  }
-  get() {
-    return this.evenValues;
-  }
-}
-
-class StandardDeviationCalculator {
-  sum = 0;
-  avg = 0;
-  quotesCount = 0;
-
-  temp = 0;
-  standardDeviation: null | number = null;
-
-  calculate() {
-    if (this.quotesCount > 1) {
-      this.standardDeviation = Math.sqrt(this.temp / (this.quotesCount - 1));
-    }
-    return this.standardDeviation;
-  }
-
-  add(value: number) {
-    this.quotesCount++;
-    this.sum += value;
-    this.avg = this.sum / this.quotesCount;
-    const diff = value - this.avg;
-
-    this.temp += diff * diff;
-    return this;
-  }
-
-  reset() {
-    this.sum = 0;
-    this.avg = 0;
-    this.quotesCount = 0;
-    this.temp = 0;
-  }
-  get() {
-    return this.standardDeviation;
-  }
-}
-
-
-class MaxValueFinder {
-  maxValue = -Infinity;
-  find(value: number) {
-    if (value > this.maxValue) {
-      this.maxValue = value;
-    }
-    return this.maxValue;
-  }
-  reset() {
-    this.maxValue = -Infinity;
-  }
-  get() {
-    return this.maxValue;
-  }
-}
-
-export class ModeFinder {
-  modeMap: Record<number, number> = {};
-  maxCount = 0;
-  mode = 0;
-
-  find(value: number) {
-    let count = this.modeMap[value] || 0;
-    this.modeMap[value] = ++count;
-
-    if (count > this.maxCount) {
-      this.mode = value;
-      this.maxCount = count;
-    }
-    return this.mode;
-  }
-
-  reset() {
-    this.mode = 0;
-    this.maxCount = 0;
-    this.modeMap = {};
-  }
-  get() {
-    return this.mode;
-  }
-}
-
-class MinValueFinder {
-  minValue = +Infinity;
-  find(value: number) {
-    if (value < this.minValue) {
-      this.minValue = value;
-    }
-    return this.minValue;
-  }
-  reset() {
-    this.minValue = +Infinity;
-  }
-  get() {
-    return this.minValue;
-  }
-}
-
-class AvgCalculator {
-  sum = 0;
-  quotesCount = 0;
-  avg = 0;
-  calculate() {
-    this.avg = this.sum / this.quotesCount;
-    return this.avg;
-  }
-  add(value: number) {
-    this.quotesCount++;
-    this.sum += value;
-    return this;
-  }
-  reset() {
-    this.sum = 0;
-    this.quotesCount = 0;
-    this.avg = 0;
-  }
-  get() {
-    return this.avg;
-  }
-}
-
 export const HomeRoute = () => {
   const appStore = useAppStore();
   const addStatMutation = useAddStat();
   const navigate = useNavigate();
-
-  const avgCalculator = useRef(new AvgCalculator()).current;
-  const minValueFinder =  useRef(new MinValueFinder()).current;
-  const maxValueFinder = useRef(new MaxValueFinder()).current;
-  const modeFinder = useRef(new ModeFinder()).current;
-  const standardDeviationCalculator = useRef(new StandardDeviationCalculator()).current;
-
-  const evenValuesCounter = useRef(new EvenValuesCounter()).current;
-  const oddValuesCounter = useRef(new OddValuesCounter()).current;
-  const lostQuotesCounter = useRef(new LostQuotesCounter()).current;
-  const modeCounter = useRef(new ModeCounter()).current;
+  const sum = useRef<number>(0);
+  const quotesCount = useRef<number>(0);
+  const avg = useRef<number>(0);
+  const minValue = useRef<number>(+Infinity);
+  const maxValue = useRef<number>(-Infinity);
+  const evenValues = useRef<number>(0);
+  const oddValues = useRef<number>(0);
+  const lostQuotes = useRef<number>(0);
+  const lastQuoteId = useRef<null | number>(0);
+  const modeMap = useRef<Record<number, number>>({});
+  const maxCount = useRef<number>(0);
+  const mode = useRef< number>(0);
+  const temp = useRef< number>(0);
+  const standardDeviation = useRef< null | number>(null);
 
   const startTime = useRef<null | number>(null);
   const endTime = useRef<null | number>(null);
-  const totalQuotes = useRef(0);
+
   const lastComputedStat = useRef<null | Omit<IStat, "id">>(null);
 
   const [step, setStep] = useState(INITIAL_STEP);
@@ -246,25 +52,64 @@ export const HomeRoute = () => {
       if (!startTime.current) {
         startTime.current = Date.now();
       }
-      totalQuotes.current++;
+
       progress.current++;
 
       const startComputationTime = Date.now();
 
+      quotesCount.current++;
+      sum.current += incomingQuote.value;
+
+      avg.current = sum.current / quotesCount.current;
+
+      if (incomingQuote.value < minValue.current) {
+        minValue.current = incomingQuote.value;
+      }
+
+      if (incomingQuote.value > maxValue.current) {
+        maxValue.current = incomingQuote.value;
+      }
+
+      if (incomingQuote.value % 2 === 0) {
+        evenValues.current++;
+      }
+
+      if (incomingQuote.value % 2 !== 0) {
+        oddValues.current++;
+      }
+
+      if (lastQuoteId.current !== null) {
+        lostQuotes.current += incomingQuote.id - lastQuoteId.current - 1;
+      }
+
+      lastQuoteId.current = incomingQuote.id;
+
+      let count = modeMap.current[incomingQuote.value] || 0;
+      modeMap.current[incomingQuote.value] = ++count;
+
+      if (count > maxCount.current) {
+        mode.current = incomingQuote.value;
+        maxCount.current = count;
+      }
+
+      const diff = incomingQuote.value - avg.current;
+
+      temp.current += diff * diff;
+
+      if (quotesCount.current > 1) {
+        standardDeviation.current = Math.sqrt(temp.current / (quotesCount.current - 1));
+      }
+
       const computed = {
-        minValue: minValueFinder.find(incomingQuote.value),
-        maxValue: maxValueFinder.find(incomingQuote.value),
-        mode: modeFinder.find(incomingQuote.value),
-
-        avg: avgCalculator.add(incomingQuote.value).calculate(),
-        standardDeviation: standardDeviationCalculator
-          .add(incomingQuote.value)
-          .calculate(),
-
-        modeCount: modeCounter.count(incomingQuote.value),
-        evenValuesCount: evenValuesCounter.count(incomingQuote.value),
-        oddValuesCount: oddValuesCounter.count(incomingQuote.value),
-        lostQuotesCount: lostQuotesCounter.count(incomingQuote),
+        minValue: minValue.current,
+        maxValue: maxValue.current,
+        mode: mode.current,
+        avg: avg.current,
+        standardDeviation: standardDeviation.current,
+        modeCount: maxCount.current,
+        evenValuesCount: evenValues.current,
+        oddValuesCount: oddValues.current,
+        lostQuotesCount: lostQuotes.current,
       };
 
       const endComputationTime = Date.now();
@@ -286,7 +131,7 @@ export const HomeRoute = () => {
         time_spent: endComputationTime - startComputationTime,
         start_time: startTime.current!,
         end_time: endTime.current,
-        quotes_count: totalQuotes.current,
+        quotes_count: quotesCount.current,
       };
 
       appStore.emit("statComputed", stat);
@@ -311,16 +156,22 @@ export const HomeRoute = () => {
 
   useEffect(() => {
     const unbind = appStore.on("appStopped", () => {
-      minValueFinder.reset();
-      maxValueFinder.reset();
-      modeFinder.reset();
-
-      avgCalculator.reset();
-      standardDeviationCalculator.reset();
-
-      evenValuesCounter.reset();
-      oddValuesCounter.reset();
-      modeCounter.reset();
+      sum.current = 0;
+      quotesCount.current = 0;
+      avg.current = 0;
+      minValue.current = +Infinity;
+      maxValue.current = -Infinity;
+      evenValues.current = 0;
+      oddValues.current = 0;
+      lastQuoteId.current = null;
+      lostQuotes.current = 0;
+      mode.current = 0;
+      maxCount.current = 0;
+      modeMap.current = {};
+      sum.current = 0;
+      avg.current = 0;
+      quotesCount.current = 0;
+      temp.current = 0;
 
       progress.current = 0;
     });
