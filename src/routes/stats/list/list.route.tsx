@@ -70,7 +70,9 @@ export const StatsRoute = () => {
   }
 
   return (
-    <div>
+    <div onClick={e => {
+      e.stopPropagation();
+    }}>
       <S.CloseSvgContainer onClick={goHome}>
         <CloseSvg />
       </S.CloseSvgContainer>
